@@ -1,0 +1,194 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage{tikz}
+\thispagestyle{empty}
+\geometry{a4paper, left=0cm, right=1cm, top=2cm, bottom=2cm}
+\begin{document}
+    \begin{minipage}[t]{0.25\textwidth}
+        \begin{tikzpicture}
+            \draw[red, line width=3pt] (0,0) circle (4cm);
+            \draw[blue, line width=3pt] (-60:1.5) circle (2.5cm);
+            
+            \filldraw[red] (0,0) circle (1pt) node[above left, text=black] {$D$};
+            \filldraw[red] (-10:4) circle (1pt) node[above right, text=black] {$F$};
+            \filldraw[red] (-10:1.5) circle (1pt) node[above right, text=black] {$A$};
+            \filldraw (-60:1.5) circle (1pt) node[below left] {$B$};
+            \filldraw (-150:2) circle (1pt) node[below left] {$C$};
+            \filldraw (-60:4) circle (1pt) node[below right] {$E$};
+        
+            %Линии
+            \draw[red, line width=3pt] (0,0) -- (-10:1.5);
+            \draw[blue, line width=3pt] (-10:1.5) -- (-10:4);
+            \draw[red, line width=3pt, densely dashed] (0,0) -- (-60:1.5);
+            \draw[black, line width=3pt, densely dashed] (-10:1.5) -- (-60:1.5);
+            \draw[black, line width=3pt] (-150:2) -- (-60:1.5);
+            \draw[orange, line width=3pt] (-60:1.5) -- (-60:4);
+        \end{tikzpicture}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.6\textwidth}
+        \raggedright
+        \Large
+        26 \qquad \textbf{КНИГА I ПРЕДЛ. II. ЗАДАЧА}
+        \vspace{1cm}
+        
+        { \includegraphics[width=0.2\linewidth]{Letter_O.png}}
+        \begin{minipage}{0.75\textwidth}
+            \raggedright 
+            \vspace*{-3cm}
+            \textit{т данной точки} 
+            \begin{tikzpicture}
+                \node at (0,0.2) {\small A};
+                \draw[line width=3pt, red] (-0.7,0) -- (0,0);    
+                \draw[line width=3pt, blue] (0,0) -- (0.7,0);  
+            \end{tikzpicture}
+            \textit{отложить прямую, равную данной прямой}
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small C};
+                \draw[line width=3pt] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture}.
+        \end{minipage}
+        
+        \vspace{1cm}
+        
+        \begin{center}
+            Проведем 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small A};
+                \node at (0.7,0.2) {\small B};
+                \draw[line width=3pt, densely dashed] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (пост. I), \\
+            \vspace{0.3cm}
+            построим 
+            \raisebox{-5ex}{
+            \begin{tikzpicture}
+                \node at (-0.7,1) {\small D};
+                \node at (0.7,0.9) {\small A};
+                \node at (0,-1) {\small B};
+                \draw[line width=3pt, red] (-0.7,0.7) -- (0.7,0.6);  
+                \draw[line width=3pt, densely dashed] (0.7,0.6) -- (0,-0.7);
+                \draw[line width=3pt, densely dashed, red] (0,-0.7) -- (-0.7,0.7);
+            \end{tikzpicture}} (пр. I.I), \\
+            продлим 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small D};
+                \draw[line width=3pt, densely dashed, red] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (пост. II), \\
+            опишем \raisebox{-3ex}{
+            \begin{tikzpicture}
+                \draw[blue, line width=3pt] (0,0) circle (0.7cm);
+                \node at (0.1,0) {\small$B$};
+                \node at (-1,0) {\small$C$};
+                \draw[black,line width=3pt] (0,0) -- (-0.7,0);
+            \end{tikzpicture}} (пост. III), 
+            и \raisebox{-6ex}{
+            \begin{tikzpicture}
+                \draw[red, line width=3pt] (0,0) circle (1.1cm);
+                \node at (0,0.2) {\small$D$};
+                \filldraw[orange] (-60:1.1) circle (1pt) node[below right, text=black] {\small$E$};
+                \draw[red,line width=3pt, densely dashed] (0,0) -- (-60:0.4);
+                \draw[orange,line width=3pt] (-60:0.4) -- (-60:1.1);
+            \end{tikzpicture}} (пост. III); \\
+            продлим 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small D};
+                \node at (0.7,0.2) {\small A};
+                \draw[line width=3pt, red] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (пост. II), \\
+            тогда искомая прямая это 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small A};
+                \node at (0.7,0.2) {\small F};
+                \draw[line width=3pt, blue] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture}.
+            
+            
+            \vspace{1cm}
+            
+            Поскольку 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small E};
+                \node at (0.7,0.2) {\small D};
+                \draw[line width=3pt, orange] (-0.7,0) -- (0.2,0);
+                \draw[line width=3pt, densely dashed, red] (0.2,0) -- (0.7,0);    
+            \end{tikzpicture} = 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small D};
+                \node at (0.7,0.2) {\small F};
+                \draw[line width=3pt, red] (-0.7,0) -- (-0.2,0);
+                \draw[line width=3pt, blue] (-0.2,0) -- (0.7,0);    
+            \end{tikzpicture}(опр. 15),\\
+            и 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small D};
+                \draw[line width=3pt, densely dashed, red] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} = 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small D};
+                \node at (0.7,0.2) {\small A};
+                \draw[line width=3pt, red] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (постр.), \\
+            $\therefore$ 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small E};
+                \draw[line width=3pt, orange] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} = 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small A};
+                \node at (0.7,0.2) {\small F};
+                \draw[line width=3pt, blue] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (акс. III),\\
+            но (опр. 15) 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small C};
+                \draw[line width=3pt, black] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} = 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small E};
+                \draw[line width=3pt, orange] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} = 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small A};
+                \node at (0.7,0.2) {\small F};
+                \draw[line width=3pt, blue] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture}.
+            
+            \vspace{1cm}
+            
+            $\therefore$ 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small A};
+                \node at (0.7,0.2) {\small F};
+                \draw[line width=3pt, blue] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture}, проведенная из данной точки \\
+            (
+            \begin{tikzpicture}
+                \node at (0,0.2) {\small A};
+                \draw[line width=3pt, red] (-0.7,0) -- (0,0);    
+                \draw[line width=3pt, blue] (0,0) -- (0.7,0);  
+            \end{tikzpicture}) равна данной прямой 
+            \begin{tikzpicture}
+                \node at (-0.7,0.2) {\small B};
+                \node at (0.7,0.2) {\small C};
+                \draw[line width=3pt] (-0.7,0) -- (0.7,0);    
+            \end{tikzpicture} (акс. I).
+            \vspace{0.3cm}
+        \end{center}
+        
+        \begin{flushright}
+        ч. т. д.
+        \end{flushright}
+    \end{minipage}
+\end{document}

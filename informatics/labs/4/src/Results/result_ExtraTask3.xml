@@ -1,0 +1,115 @@
+<data>
+    <title>Schedule</title>
+    <wednesday>
+        <lesson1>
+            <time>08:10-09:40</time>
+            <weeks>2</weeks>
+            <weeks>3</weeks>
+            <weeks>4</weeks>
+            <weeks>5</weeks>
+            <weeks>6</weeks>
+            <weeks>7</weeks>
+            <weeks>8</weeks>
+            <weeks>9</weeks>
+            <weeks>10</weeks>
+            <weeks>11</weeks>
+            <weeks>12</weeks>
+            <weeks>13</weeks>
+            <weeks>14</weeks>
+            <weeks>15</weeks>
+            <weeks>16</weeks>
+            <weeks>17</weeks>
+            <group>АЯ-B1.2/31&lt</group>
+            <place>3227 ауд. ул.Ломоносова, д.9, лит. Е</place>
+            <subject>English B1.2 / Английский язык B1.2 (Прак)</subject>
+            <format>Очно - дистанционный</format>
+        </lesson1>
+        <lesson2>
+            <time>09:50-11:20</time>
+            <weeks>2</weeks>
+            <weeks>3</weeks>
+            <weeks>4</weeks>
+            <weeks>5</weeks>
+            <weeks>6</weeks>
+            <weeks>7</weeks>
+            <weeks>8</weeks>
+            <weeks>9</weeks>
+            <weeks>10</weeks>
+            <weeks>11</weeks>
+            <weeks>12</weeks>
+            <weeks>13</weeks>
+            <weeks>14</weeks>
+            <weeks>15</weeks>
+            <weeks>16</weeks>
+            <weeks>17</weeks>
+            <group>АЯ-B1.2/31</group>
+            <place>3227 ауд. ул.Ломоносова, д.9, лит. Е</place>
+            <subject>English B1.2 / Английский язык B1.2 (Прак)</subject>
+            <format>Очно - дистанционный</format>
+        </lesson2>
+        <lesson3>
+            <time>13:30-15:00</time>
+            <weeks>3</weeks>
+            <weeks>5</weeks>
+            <weeks>9</weeks>
+            <weeks>11</weeks>
+            <weeks>13</weeks>
+            <weeks>15</weeks>
+            <weeks>17</weeks>
+            <group>ПРОГ КСиТ 2</group>
+            <place>1216/0 (усл) ауд. ул.Ломоносова, д.9, лит. М</place>
+            <subject>Программирование (Лек)</subject>
+            <format>Очно - дистанционный</format>
+        </lesson3>
+    </wednesday>
+    <friday>
+        <lesson1>
+            <time>09:50-11:20</time>
+            <weeks>1</weeks>
+            <weeks>2</weeks>
+            <weeks>3</weeks>
+            <weeks>4</weeks>
+            <weeks>5</weeks>
+            <weeks>6</weeks>
+            <weeks>7</weeks>
+            <weeks>8</weeks>
+            <weeks>9</weeks>
+            <weeks>10</weeks>
+            <weeks>11</weeks>
+            <weeks>12</weeks>
+            <weeks>13</weeks>
+            <weeks>14</weeks>
+            <weeks>15</weeks>
+            <weeks>16</weeks>
+            <weeks>17</weeks>
+            <group>ОДМ баз 3</group>
+            <place>2337 ауд. Кронверкский пр., д.49, лит.А</place>
+            <subject>Основы дискретной математики (базовый уровень) (Лек)</subject>
+            <format>Очно - дистанционный</format>
+        </lesson1>
+        <lesson2>
+            <time>11:30-13:00</time>
+            <weeks>1</weeks>
+            <weeks>2</weeks>
+            <weeks>3</weeks>
+            <weeks>4</weeks>
+            <weeks>5</weeks>
+            <weeks>6</weeks>
+            <weeks>7</weeks>
+            <weeks>8</weeks>
+            <weeks>9</weeks>
+            <weeks>10</weeks>
+            <weeks>11</weeks>
+            <weeks>12</weeks>
+            <weeks>13</weeks>
+            <weeks>14</weeks>
+            <weeks>15</weeks>
+            <weeks>16</weeks>
+            <weeks>17</weeks>
+            <group>ОДМ баз 3</group>
+            <place>2337 ауд. Кронверкский пр., д.49, лит.А</place>
+            <subject>Основы дискретной математики (базовый уровень) (Прак)</subject>
+            <format>Очно - дистанционный</format>
+        </lesson2>
+    </friday>
+</data>
