@@ -24,7 +24,6 @@ The repository is organized **by subjects**, each subject having its own directo
 | [Discrete Maths](./discrete) |      🟩 / 96      |
 
 > 🔹 **Status**: 🟩 Passed / ⬜ Not passed yet
-> 🔹 **Semester Score**: Final score or grade for the semester
 
 ---
 
