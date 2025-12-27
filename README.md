@@ -17,7 +17,6 @@ The repository is organized **by subjects**, each subject having its own directo
 |         English B1.2         |      🟩 / 73      |
 |         [OPD](./opd)         | ⬜ Not passed / — |
 |           History            |      🟩 / 72      |
-|         [OPD](./opd)         | ⬜ Not passed / — |
 |      [MathAn](./matan)       | ⬜ Not passed / — |
 |    [Culculus](./culculus)    | ⬜ Not passed / — |
 |              PE              |     🟩 / 100      |
