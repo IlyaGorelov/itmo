@@ -12,13 +12,13 @@ The repository is organized **by subjects**, each subject having its own directo
 
 |      Subject / Semester      |         1         |
 | :--------------------------: | :---------------: |
-| [Programming](./programming) | ⬜ Not passed / — |
-| [Informatics](./informatics) | ⬜ Not passed / — |
+| [Programming](./programming) |      🟩 / 94      |
+| [Informatics](./informatics) |   🟩 A / 92.81    |
 |         English B1.2         |      🟩 / 73      |
 |         [OPD](./opd)         | ⬜ Not passed / — |
 |           History            |      🟩 / 72      |
 |      [MathAn](./matan)       | ⬜ Not passed / — |
-|    [Culculus](./culculus)    | ⬜ Not passed / — |
+|    [Culculus](./calculus)    |     🟩 C / 81     |
 |              PE              |     🟩 / 100      |
 | [Discrete Maths](./discrete) |      🟩 / 96      |
 

@@ -9,6 +9,6 @@
 | Visiting |   10   |
 | Project  |   18   |
 |   RGR    |   20   |
-|   Exam   |   -    |
+|   Exam   |   15   |
 
-Sum:
+Sum: 81
