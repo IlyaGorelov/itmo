@@ -10,17 +10,17 @@ The repository is organized **by subjects**, each subject having its own directo
 
 ## 📚 Subjects Overview
 
-|      Subject / Semester      |         1         |
-| :--------------------------: | :---------------: |
-| [Programming](./programming) |      🟩 / 94      |
-| [Informatics](./informatics) |   🟩 A / 92.81    |
-|         English B1.2         |      🟩 / 73      |
-|         [OPD](./opd)         | ⬜ Not passed / — |
-|           History            |      🟩 / 72      |
-|      [MathAn](./matan)       | ⬜ Not passed / — |
-|    [Culculus](./calculus)    |     🟩 C / 81     |
-|              PE              |     🟩 / 100      |
-| [Discrete Maths](./discrete) |      🟩 / 96      |
+|      Subject / Semester      |      1       |
+| :--------------------------: | :----------: |
+| [Programming](./programming) |   🟩 / 94    |
+| [Informatics](./informatics) | 🟩 A / 92.81 |
+|         English B1.2         |   🟩 / 73    |
+|         [OPD](./opd)         |   🟩 / 83    |
+|           History            |   🟩 / 72    |
+|      [MathAn](./matan)       | 🟩 C / 80.5  |
+|    [Culculus](./calculus)    |  🟩 C / 81   |
+|              PE              |   🟩 / 100   |
+| [Discrete Maths](./discrete) |   🟩 / 96    |
 
 > 🔹 **Status**: 🟩 Passed / ⬜ Not passed yet
 
