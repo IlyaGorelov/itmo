@@ -13,8 +13,19 @@
 |         RGR          |   20   |
 |         Exam         |   15   |
 
+Sum: 81
+
 ### Term 2
 
-### Term 3
+|         Work         | Points |
+| :------------------: | :----: |
+|        Test 1        |   -    |
+|        Test 2        |   -    |
+|       Visiting       |   -    |
+| [Project](./project) |   -    |
+|         RGR          |   -    |
+|         Exam         |   -    |
 
-Sum: 81
+Sum: -
+
+### Term 3

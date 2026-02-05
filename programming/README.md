@@ -20,9 +20,14 @@ Sum: 94
 
 ### Term 2
 
-|  Lab №   |  Score / Points   |
-| :------: | :---------------: |
-| [5](./5) | ⬜ Not passed / — |
-| [6](./6) | ⬜ Not passed / — |
-| [7](./7) | ⬜ Not passed / — |
-| [8](./8) | ⬜ Not passed / — |
+|   Lab №    |  Score / Points   |
+| :--------: | :---------------: |
+|  [5](./5)  | ⬜ Not passed / — |
+|  [6](./6)  | ⬜ Not passed / — |
+|  [7](./7)  | ⬜ Not passed / — |
+|  [8](./8)  | ⬜ Not passed / — |
+|   Test 1   |         -         |
+|   Test 2   |         -         |
+| Final Test |         -         |
+
+Sum: -

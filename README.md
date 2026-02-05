@@ -10,17 +10,20 @@ The repository is organized **by subjects**, each subject having its own directo
 
 ## 📚 Subjects Overview
 
-|      Subject / Semester      |      1       |
-| :--------------------------: | :----------: |
-| [Programming](./programming) |   🟩 / 94    |
-| [Informatics](./informatics) | 🟩 A / 92.81 |
-|         English B1.2         |   🟩 / 73    |
-|         [OPD](./opd)         |   🟩 / 83    |
-|           History            |   🟩 / 72    |
-|      [MathAn](./matan)       | 🟩 C / 80.5  |
-|    [Culculus](./calculus)    |  🟩 C / 81   |
-|              PE              |   🟩 / 100   |
-| [Discrete Maths](./discrete) |   🟩 / 96    |
+|  №  |                     Subject / Semester                     |      1       |   2    |
+| :-: | :--------------------------------------------------------: | :----------: | :----: |
+|  1  |                [Informatics](./informatics)                | 🟩 A / 92.81 |   -    |
+|  2  |                [Programming](./programming)                |   🟩 / 94    | ⬜ / - |
+|  3  |                        English B1.2                        |   🟩 / 73    | ⬜ / - |
+|  4  |                        [OPD](./opd)                        |   🟩 / 83    | ⬜ / - |
+|  5  |                          History                           |   🟩 / 72    | ⬜ / - |
+|  6  |                     [MathAn](./matan)                      | 🟩 C / 80.5  | ⬜ / - |
+|  7  |                   [Culculus](./calculus)                   |  🟩 C / 81   | ⬜ / - |
+|  8  |                             PE                             |   🟩 / 100   | ⬜ / - |
+|  9  |                [Discrete Maths](./discrete)                |   🟩 / 96    | ⬜ / - |
+| 10  |                     [Databases](./db)                      |      -       | ⬜ / - |
+| 11  | <span title="Communications and Team Building">CaTB</span> |      -       | ⬜ / - |
+| 12  |                        Life Safety                         |      -       | ⬜ / - |
 
 > 🔹 **Status**: 🟩 Passed / ⬜ Not passed yet
 
