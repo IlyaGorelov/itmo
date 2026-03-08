@@ -1,5 +1,6 @@
 package Objects.Managers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ import Objects.CommandsControllers.Commands.*;
 public class CommandManager {
     /** map of command kind of name - Command */
     private HashMap<String, Command> commandMap = new HashMap<>();
+
     private Scanner scanner;
 
     /**
@@ -21,22 +23,28 @@ public class CommandManager {
      */
     public CommandManager(CollectionManager collectionManager, Scanner scanner) {
         this.scanner = scanner;
-        commandMap.put("help", new Help(collectionManager));
-        commandMap.put("info", new Info(collectionManager));
-        commandMap.put("show", new Show(collectionManager));
-        commandMap.put("add", new Add(collectionManager));
-        commandMap.put("update", new Update(collectionManager, true));
-        commandMap.put("remove_by_id", new Remove(collectionManager, true));
-        commandMap.put("clear", new Clear(collectionManager));
-        commandMap.put("save", new Save(collectionManager));
-        commandMap.put("execute_script", new ExecuteScript(collectionManager, true));
-        commandMap.put("exit", new Exit(collectionManager));
-        commandMap.put("add_if_max", new AddIfMax(collectionManager));
-        commandMap.put("add_if_min", new AddIfMin(collectionManager));
-        commandMap.put("remove_greater", new RemoveGreater(collectionManager));
-        commandMap.put("remove_all_by_unit_of_measure", new RemoveByUnitOfMeasure(collectionManager, true));
-        commandMap.put("min_by_unit_of_measure", new MinByUnit(collectionManager));
-        commandMap.put("filter_greater_than_owner", new GreaterThanOwner(collectionManager, true));
+        ArrayList<Command> commands = new ArrayList<>();
+
+        commands.add(new Help(collectionManager));
+        commands.add(new Info(collectionManager));
+        commands.add(new Show(collectionManager));
+        commands.add(new Add(collectionManager));
+        commands.add(new Update(collectionManager, true));
+        commands.add(new Remove(collectionManager, true));
+        commands.add(new Clear(collectionManager));
+        commands.add(new Save(collectionManager));
+        commands.add(new ExecuteScript(collectionManager, true));
+        commands.add(new Close(collectionManager));
+        commands.add(new AddIfMax(collectionManager));
+        commands.add(new AddIfMin(collectionManager));
+        commands.add(new RemoveGreater(collectionManager));
+        commands.add(new RemoveByUnitOfMeasure(collectionManager, true));
+        commands.add(new MinByUnit(collectionManager));
+        commands.add(new GreaterThanOwner(collectionManager));
+
+        for (Command command : commands) {
+            commandMap.put(command.getName(), command);
+        }
     }
 
     public HashMap<String, Command> getCommandMap() {
@@ -46,21 +54,44 @@ public class CommandManager {
     /** Executes commands and handles exceptions */
     public void executeCommand(String commandName) {
         try {
-            String[] commandWithArg = commandName.split(" ");
+            String[] commandWithArg = commandName.split(" ", 3);
             if (commandMap.containsKey(commandWithArg[0])) {
                 var command = commandMap.get(commandWithArg[0]);
-                if (commandWithArg.length > 1)
-                    command.setArgument(commandWithArg[1]);
-                command.setScanner(scanner);
-                command.execute();
+
+                switch (commandWithArg.length) {
+                    case 3:
+                        if (commandWithArg[2].startsWith("{")) {
+                            command.setScanner(scanner);
+                            command.setArgument(commandWithArg[1]);
+                            command.executeFromScript(commandWithArg[2]);
+                            return;
+                        } else
+                            throw new IllegalArgumentException("There is no such command: " + commandName);
+                    case 2:
+                        if (commandWithArg[1].startsWith("{")) {
+                            command.setScanner(scanner);
+                            command.executeFromScript(commandWithArg[1]);
+                            return;
+                        } else {
+                            command.setScanner(scanner);
+                            command.setArgument(commandWithArg[1]);
+                            command.execute();
+                        }
+                        break;
+                    case 1:
+                        command.setScanner(scanner);
+                        command.execute();
+                }
             } else
                 throw new IllegalArgumentException("There is no such command: " + commandName);
         } catch (Exception e) {
-            System.out.println(e.getMessage() + "\n" + "Skip command");
+            if (e.getMessage() != null)
+                System.out.println(e.getMessage() + "\n" + "Skip command");
+            else
+                System.out.println("Skip command");
         } finally {
             CommandBuffer.buffer.remove(commandName);
         }
-
     }
 
 }

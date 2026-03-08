@@ -51,6 +51,10 @@ public abstract class Command {
 
     public abstract void execute();
 
+    public void executeFromScript(String complexArg) {
+        execute();
+    };
+
     public void setScanner(Scanner scanner) {
         this.scanner = scanner;
     }

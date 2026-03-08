@@ -1,19 +1,18 @@
 package Objects.Validators;
 
-import java.io.InputStream;
 import java.util.Scanner;
 
 public class PriceValidator extends Validator<Double> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             Double x = Double.parseDouble(value);
             if (x <= 0)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Price must be greater than 0");
             return true;
         } catch (Exception e) {
-            if (value.isBlank()) {
+            if (value.isBlank() || value == "null") {
                 if (canBeNull)
                     return true;
                 else {
@@ -32,11 +31,8 @@ public class PriceValidator extends Validator<Double> {
         DoubleValidator doubleValidator = new DoubleValidator();
         do {
             System.out.print(request);
-            value = doubleValidator.get(scanner, canBeNull, "Enter double: ");
-            if (!validate(value.toString(), canBeNull))
-                System.out.println("Incorrect input");
-
-        } while (!validate(value.toString(), canBeNull));
+            value = doubleValidator.get(scanner, canBeNull, "");
+        } while (!isValid(String.valueOf(value), canBeNull));
 
         return value;
     }

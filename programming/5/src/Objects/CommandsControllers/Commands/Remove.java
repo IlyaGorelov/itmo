@@ -19,7 +19,6 @@ public class Remove extends Command {
         try {
             long id = Long.parseLong(getArgument());
             getCollectionManager().deleteById(id);
-            System.out.println("Successfully deleted");
         } catch (IndexOutOfBoundsException e) {
             throw new IndexOutOfBoundsException(e.getMessage());
         } catch (Exception e) {

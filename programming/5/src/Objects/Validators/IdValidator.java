@@ -6,7 +6,7 @@ import Objects.Managers.IdManager;
 public class IdValidator extends Validator<Long> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             Long x = Long.parseLong(value);
             if (!IdManager.isIdIn(x))
@@ -35,10 +35,10 @@ public class IdValidator extends Validator<Long> {
             System.out.println(request);
             id = stringValidator.get(scanner, false, "");
 
-            if (!validate(id, canBeNull))
+            if (!isValid(id, canBeNull))
                 System.out.println("Incorrect input");
 
-        } while (!validate(id, canBeNull));
+        } while (!isValid(id, canBeNull));
 
         return Long.parseLong(id);
     }

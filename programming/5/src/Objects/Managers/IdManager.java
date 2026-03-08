@@ -26,6 +26,10 @@ public class IdManager {
         }
     }
 
+    public static void removeId(long id) {
+        ids.remove(id);
+    }
+
     public static boolean isIdIn(Long id) {
         return ids.contains(id);
     }

@@ -55,9 +55,9 @@ public class Location implements Comparable<Location> {
     }
 
     /**
-     * compares with other Coordinates
+     * compares with other Location
      * 
-     * @param o other coordinates
+     * @param o other location
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
      *         if this object is less than other
      */
@@ -69,5 +69,27 @@ public class Location implements Comparable<Location> {
         if (result == 0)
             result = z > o.z ? (z == o.z ? 0 : 1) : -1;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("x: %.2f; y: %d; z: %.2f; name: %s", x, y, z, name);
+    }
+
+    /**
+     * Parse toString (@see toString of this class) into new Location
+     * 
+     * @param input String represantation of this object that is got from toString
+     * @return new Coordinates
+     */
+    public static Location parse(String input) throws NumberFormatException, NullPointerException {
+        String[] parts = input.split("; ");
+        Double x = Double.parseDouble(parts[0].replace(",", ".").split(": ")[1]);
+        Integer y = Integer.parseInt(parts[1].replace(",", ".").split(": ")[1]);
+        double z = Double.parseDouble(parts[2].replace(",", ".").split(": ")[1]);
+        String name = parts[3].split(": ")[1];
+
+        return new Location(x, y, z, name);
+
     }
 }

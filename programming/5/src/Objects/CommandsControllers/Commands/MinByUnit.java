@@ -17,6 +17,7 @@ public class MinByUnit extends Command {
     public void execute() {
         checkArgument();
         try {
+            System.out.println("Any element with min unit of measure:\n");
             System.out.println(getCollectionManager().getMinByUnitOfMeasure());
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -19,9 +19,14 @@ public class Show extends Command {
         checkArgument();
         var products = getCollectionManager().getElements();
 
-        for (var p : products) {
-            System.out.println(p.toString() + "\n");
-        }
+        if (products.size() > 0) {
+            System.out.println("Showing all elements of collection:\n");
+            for (var p : products) {
+                System.out.println(p.toString() + "\n");
+            }
+            System.out.println("END OF LIST");
+        } else
+            System.out.println("Collection has no arguments");
     }
 
     @Override

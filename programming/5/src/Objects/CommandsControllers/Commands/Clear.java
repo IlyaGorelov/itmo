@@ -30,4 +30,9 @@ public class Clear extends Command {
         return "remove all elements from the collection";
     }
 
+    @Override
+    public void executeFromScript(String complexArg) {
+        execute();
+    }
+
 }

@@ -1,6 +1,5 @@
 package Objects.Validators;
 
-import java.io.InputStream;
 import java.util.Scanner;
 
 import Objects.Enums.UnitOfMeasure;
@@ -8,9 +7,9 @@ import Objects.Enums.UnitOfMeasure;
 public class UnitValidator extends Validator<UnitOfMeasure> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
-            if (enumContains(value) == false)
+            if (enumContains(value.toUpperCase()) == false)
                 throw new IllegalArgumentException("No such unit of measure");
             return true;
         } catch (Exception e) {
@@ -36,12 +35,12 @@ public class UnitValidator extends Validator<UnitOfMeasure> {
             unit = stringValidator.get(scanner, true,
                     "Enter name:\n" + getChoiceMenu());
 
-        } while (!validate(String.valueOf(unit), canBeNull));
+        } while (!isValid(String.valueOf(unit), canBeNull));
 
         if (unit == null)
             return null;
 
-        return UnitOfMeasure.valueOf(unit);
+        return UnitOfMeasure.valueOf(unit.toUpperCase());
     }
 
     private String getChoiceMenu() {

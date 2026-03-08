@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import Objects.CommandsControllers.CommandExecutor;
 import Objects.Managers.CollectionManager;
 
@@ -7,6 +10,9 @@ import Objects.Managers.CollectionManager;
  * @author Ilya Gorelov
  */
 public class App {
+        // 4. Добавить обработку Ctrl+D ?
+        // умный script
+
         /** Environment key which stores a path to csv file */
         private static final String ENV_KEY = "lab5";
 

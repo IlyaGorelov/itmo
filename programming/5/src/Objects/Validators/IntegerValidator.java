@@ -5,20 +5,23 @@ import java.util.Scanner;
 public class IntegerValidator extends Validator<Integer> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             Integer.parseInt(value);
             return true;
-        } catch (Exception e) {
-            if (value.isBlank()) {
+        } catch (NumberFormatException e) {
+            if (value.isBlank() || value == "null") {
                 if (canBeNull)
                     return true;
                 else {
-                    System.out.println(e.getMessage());
+                    System.out.println("Invalid number format | " + e.getMessage());
                     return false;
                 }
             }
-            System.out.println(e.getMessage() + " | Invalid format");
+            System.out.println("Invalid number format | " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -31,7 +34,7 @@ public class IntegerValidator extends Validator<Integer> {
 
             value = scanner.nextLine();
 
-        } while (!validate(value, canBeNull));
+        } while (!isValid(value, canBeNull));
 
         return Integer.parseInt(value);
     }

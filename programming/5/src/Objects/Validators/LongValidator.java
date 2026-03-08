@@ -1,12 +1,11 @@
 package Objects.Validators;
 
-import java.io.InputStream;
 import java.util.Scanner;
 
 public class LongValidator extends Validator<Long> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             Long.parseLong(value);
             return true;
@@ -19,7 +18,7 @@ public class LongValidator extends Validator<Long> {
                     return false;
                 }
             }
-            System.out.println(e.getMessage());
+            System.out.println("Invalid number format | " + e.getMessage());
             return false;
         }
     }
@@ -31,10 +30,10 @@ public class LongValidator extends Validator<Long> {
             System.out.print(request);
 
             value = scanner.nextLine();
-            if (!validate(value, canBeNull))
+            if (!isValid(value, canBeNull))
                 System.out.println("Incorrect input");
 
-        } while (!validate(value, canBeNull));
+        } while (!isValid(value, canBeNull));
 
         return Long.parseLong(value);
     }

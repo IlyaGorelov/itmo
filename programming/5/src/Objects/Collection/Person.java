@@ -89,12 +89,17 @@ public class Person implements Comparable<Person> {
      */
     @Override
     public int compareTo(Person o) {
-        int result = height.compareTo(o.height);
+        int result = Integer.compare(name != null ? name.length() : 0, o.getName() != null ? o.getName().length() : 0);
         if (result == 0)
-            result = location.compareTo(o.location);
-        if (result == 0)
-            result = Integer.compare(name.length(), o.getName().length());
+            result = height.compareTo(o.height);
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "\tName: %s\n\tHeight: %.2f\n\tEye Color: %s\n\tHair Color: %s\n\tNationality: %s\n\tLocation: %s",
+                name, height, eyeColor, hairColor, nationality, String.valueOf(location));
     }
 }

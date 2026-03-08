@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,9 +16,10 @@ import org.apache.commons.csv.CSVRecord;
 public class CSVManager {
 
     /** Headers for .csv file */
-    String[] headers = { "id", "name", "x", "y", "creationDate", "price", "manufactureCost",
-            "unitOfMeasure",
-            "owner" };
+    public enum Headers {
+        id, name, x, y, creationDate, price, manufactureCost, unitOfMeasure, ownerName, height, eyeColor, hairColor,
+        nationality, locX, locY, locZ, locName
+    }
 
     /**
      * Reads .csv
@@ -30,7 +32,9 @@ public class CSVManager {
         try {
             String file = fileToString(path);
             CSVParser csvParser = CSVParser.parse(file,
-                    CSVFormat.DEFAULT.builder().setHeader().setNullString("").get());
+                    CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setNullString("")
+                            .get());
+
             for (CSVRecord i : csvParser) {
                 result.add(i);
             }
@@ -71,15 +75,16 @@ public class CSVManager {
      * @param path    path to the new file
      * @param records array of strings ready to transform into CSVRecord
      */
-    public void write(String path, ArrayList<String> records) {
+    public void write(String path, ArrayList<ArrayList<Object>> records) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path));
 
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter,
-                    CSVFormat.DEFAULT.builder().setHeader(headers).get());
+                    CSVFormat.DEFAULT.builder().setHeader(Headers.class).setNullString("")
+                            .get());
 
-            for (String i : records) {
-                csvPrinter.printRecord(i.split(","));
+            for (var i : records) {
+                csvPrinter.printRecord(i);
             }
 
             csvPrinter.close();

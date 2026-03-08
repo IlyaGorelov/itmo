@@ -100,15 +100,13 @@ public class Product implements Comparable<Product> {
      */
     @Override
     public int compareTo(Product o) {
-        int result = Double.compare(price, o.price);
+        int result = Double.compare(price == null ? 0 : price, o.price == null ? 0 : o.price);
         if (result == 0)
             result = this.creationDate.compareTo(o.creationDate);
         if (result == 0)
             result = this.coordinates.compareTo(o.coordinates);
         if (result == 0)
             result = Integer.compare(manufactureCost, o.manufactureCost);
-        if (result == 0)
-            result = owner.compareTo(o.owner);
 
         return result;
 
@@ -116,10 +114,16 @@ public class Product implements Comparable<Product> {
 
     @Override
     public String toString() {
-        return String.format(
-                "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.2f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
-                id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                String.valueOf(unitOfMeasure), owner.getName());
+        if (owner != null)
+            return String.format(
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.2f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s",
+                    id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
+                    String.valueOf(unitOfMeasure), String.valueOf(owner));
+        else
+            return String.format(
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.2f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
+                    id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
+                    String.valueOf(unitOfMeasure), String.valueOf(owner));
 
     }
 }

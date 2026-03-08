@@ -7,7 +7,7 @@ import Objects.Collection.Coordinates;
 public class CoordinatesValidator extends Validator<Coordinates> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             var coords = Coordinates.parse(value);
             if (coords.getY() <= -990)
@@ -31,14 +31,21 @@ public class CoordinatesValidator extends Validator<Coordinates> {
     public Coordinates get(Scanner scanner, boolean canBeNull, String request) {
         IntegerValidator integerValidator = new IntegerValidator();
         DoubleValidator doubleValidator = new DoubleValidator();
-        Coordinates coordinates = null;
+        Coordinates coordinates = new Coordinates(0, 0);
         do {
             System.out.println(request);
-            Integer x = integerValidator.get(scanner, false, "Enter x coordinate (integer): ");
-            Double y = doubleValidator.get(scanner, false, "Enter y coordinate (double): ");
 
-            coordinates = new Coordinates(x, y);
-        } while (!validate(coordinates.toString(), canBeNull));
+            do {
+                Integer x = integerValidator.get(scanner, false, "Enter x coordinate (integer): ");
+                coordinates.setX(x);
+            } while (!isValid(coordinates.toString(), canBeNull));
+
+            do {
+                Double y = doubleValidator.get(scanner, false, "Enter y coordinate (double, must be > -990): ");
+                coordinates.setY(y);
+            } while (!isValid(coordinates.toString(), canBeNull));
+
+        } while (!isValid(coordinates.toString(), canBeNull));
 
         return coordinates;
     }

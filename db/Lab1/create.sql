@@ -31,13 +31,13 @@ CREATE TABLE education (
 
 CREATE TABLE animal (
 	id SERIAL PRIMARY KEY,
-	name TEXT NOT NULL
+	name TEXT NOT NULL,
+	ancestor_id INTEGER REFERENCES reptile(id) NOT  NULL
 );
 
 CREATE TABLE reptile (
 	id SERIAL PRIMARY KEY,
-	name TEXT NOT NULL,
-	successor_id INTEGER REFERENCES animal(id) NOT  NULL
+	name TEXT NOT NULL
 );
 
 CREATE TABLE bone (
@@ -58,7 +58,7 @@ CREATE TABLE scientist (
 
 CREATE TABLE research (
 	id SERIAL PRIMARY KEY,
-	finded_bone_id INTEGER REFERENCES bone(id) NOT NULL
+	name TEXT NOT NULL
 );
 
 CREATE TABLE trip (
@@ -67,4 +67,10 @@ CREATE TABLE trip (
 	place_id INTEGER REFERENCES place(id) NOT NULL,
 	scientist_id INTEGER REFERENCES scientist(id) NOT NULL,
 	research_id INTEGER REFERENCES research(id) NOT NULL
+);
+
+CREATE TABLE trip_bone (
+	id SERIAL PRIMARY KEY,
+	trip_id INTEGER REFERENCES trip(id) NOT NULL,
+	bone_id INTEGER REFERENCES bone(id) NOT NULL,
 );

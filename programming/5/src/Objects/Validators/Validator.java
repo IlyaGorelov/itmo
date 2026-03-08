@@ -10,7 +10,7 @@ public abstract class Validator<T> {
      * @param value     string for checking
      * @param canBeNull should method allow null value or not
      */
-    public abstract boolean validate(String value, boolean canBeNull);
+    public abstract boolean isValid(String value, boolean canBeNull);
 
     /**
      * gives guaranteed output of needed type

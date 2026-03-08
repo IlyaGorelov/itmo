@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.CollectionManager;
+import Objects.Validators.UnitValidator;
 
 /* remove all elements with the same unit of measure*/
 public class RemoveByUnitOfMeasure extends Command {
@@ -18,15 +19,22 @@ public class RemoveByUnitOfMeasure extends Command {
     public void execute() {
         checkArgument();
         try {
-            UnitOfMeasure unit = UnitOfMeasure.values()[Integer.parseInt(getArgument())];
-            var ids = getCollectionManager().getIdsByUnitOfMeasure(unit);
+            UnitValidator unitValidator = new UnitValidator();
+            if (unitValidator.isValid(getArgument(), false)) {
+                System.out.println("Removing all products with this unit of measure\n");
+                UnitOfMeasure unit = UnitOfMeasure.valueOf(getArgument().toUpperCase());
+                var ids = getCollectionManager().getIdsByUnitOfMeasure(unit);
 
-            for (var i : ids) {
-                getCollectionManager().deleteById(i);
-                System.out.println("Successfully deleted");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException(e.getMessage());
+                if (ids.size() > 0)
+                    for (var i : ids) {
+                        getCollectionManager().deleteById(i);
+                    }
+                else
+                    System.out.println("No elements with unit of measure " + unit);
+            } else
+                throw new IllegalArgumentException("Unknown unit of measure");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException();
         }
     }
 

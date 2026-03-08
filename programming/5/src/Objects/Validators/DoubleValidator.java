@@ -5,20 +5,20 @@ import java.util.Scanner;
 public class DoubleValidator extends Validator<Double> {
 
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             Double.parseDouble(value);
             return true;
         } catch (Exception e) {
-            if (value.isBlank()) {
+            if (value.isBlank() | value == "null") {
                 if (canBeNull)
                     return true;
                 else {
-                    System.out.println(e.getMessage());
+                    System.out.println("Invalid number format | " + e.getMessage());
                     return false;
                 }
             }
-            System.out.println(e.getMessage());
+            System.out.println("Invalid number format | " + e.getMessage());
             return false;
         }
     }
@@ -31,7 +31,7 @@ public class DoubleValidator extends Validator<Double> {
 
             value = scanner.nextLine();
 
-        } while (!validate(value, canBeNull));
+        } while (!isValid(value, canBeNull));
 
         if (value.isBlank())
             return null;

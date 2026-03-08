@@ -1,0 +1,50 @@
+org 0x2d4
+start: 
+cla
+st R
+ld X
+push
+call $function
+pop
+add R
+st R
+ld Y
+dec
+push
+call 0x65b
+pop
+add R
+st R
+ld Z
+push
+call 0x65b
+pop 
+inc
+sub R
+st R
+hlt
+
+Z: word 0x2eb
+Y: word 0x2ec
+X: word 0x2ed
+R: word 0xFD50
+
+org 0x65b
+function:
+ld &1
+bmi T1
+beq T1
+cmp A
+bge T1
+asl
+asl
+sub &1
+add B
+jump T2
+T1: ld A
+T2: st &1
+ret
+
+A: word 0x2b1
+B: word 0x80
+

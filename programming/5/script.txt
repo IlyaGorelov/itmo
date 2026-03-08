@@ -1,3 +1,6 @@
-show
+
+
+
 info
-dfhdt
+update 2 {Updated thing;45;0;56;45;liters;;;;hair color;country;location x, loc y, loc z, loc name}
+

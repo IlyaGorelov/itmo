@@ -17,6 +17,7 @@ public class Info extends Command {
     @Override
     public void execute() {
         checkArgument();
+        System.out.println("Information about collection:\n");
         System.out.println(getCollectionManager().getCollectionInfo());
     }
 

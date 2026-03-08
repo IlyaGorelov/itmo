@@ -32,9 +32,6 @@ public class Coordinates implements Comparable<Coordinates> {
     }
 
     public void setY(double y) {
-        if (y <= -990) {
-            throw new IllegalArgumentException("y must be greater than -990");
-        }
         this.y = y;
     }
 

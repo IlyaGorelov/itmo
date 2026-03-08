@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class StringValidator extends Validator<String> {
     @Override
-    public boolean validate(String value, boolean canBeNull) {
+    public boolean isValid(String value, boolean canBeNull) {
         try {
             if (value.isBlank()) {
                 if (canBeNull)
@@ -27,7 +27,7 @@ public class StringValidator extends Validator<String> {
         do {
             System.out.print(request);
             name = scanner.nextLine();
-        } while (!validate(name, canBeNull));
+        } while (!isValid(name, canBeNull));
 
         if (name.isBlank())
             return null;
