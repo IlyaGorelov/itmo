@@ -23,14 +23,8 @@ public class RemoveByUnitOfMeasure extends Command {
             if (unitValidator.isValid(getArgument(), false)) {
                 System.out.println("Removing all products with this unit of measure\n");
                 UnitOfMeasure unit = UnitOfMeasure.valueOf(getArgument().toUpperCase());
-                var ids = getCollectionManager().getIdsByUnitOfMeasure(unit);
+                getCollectionManager().removeByUnitOfMeasure(unit);
 
-                if (ids.size() > 0)
-                    for (var i : ids) {
-                        getCollectionManager().deleteById(i);
-                    }
-                else
-                    System.out.println("No elements with unit of measure " + unit);
             } else
                 throw new IllegalArgumentException("Unknown unit of measure");
         } catch (IllegalArgumentException e) {

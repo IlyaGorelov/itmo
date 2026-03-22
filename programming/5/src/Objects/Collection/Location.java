@@ -1,5 +1,7 @@
 package Objects.Collection;
 
+import java.util.Locale;
+
 /** Class representing location of a person */
 public class Location implements Comparable<Location> {
     private Double x; // Поле не может быть null
@@ -91,5 +93,9 @@ public class Location implements Comparable<Location> {
 
         return new Location(x, y, z, name);
 
+    }
+
+    public String getFuncString() {
+        return String.format(Locale.US, "%f;%d;%f;%s", x, y, z, name);
     }
 }

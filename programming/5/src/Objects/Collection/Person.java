@@ -1,5 +1,7 @@
 package Objects.Collection;
 
+import java.util.Locale;
+
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -101,5 +103,12 @@ public class Person implements Comparable<Person> {
         return String.format(
                 "\tName: %s\n\tHeight: %.2f\n\tEye Color: %s\n\tHair Color: %s\n\tNationality: %s\n\tLocation: %s",
                 name, height, eyeColor, hairColor, nationality, String.valueOf(location));
+    }
+
+    public String getFuncString() {
+        return String.format(Locale.US, "%s;%f;%s;%s;%s;%s", name, height,
+                eyeColor == null ? "" : String.valueOf(eyeColor),
+                String.valueOf(hairColor), String.valueOf(nationality),
+                location == null ? "" : location.getFuncString());
     }
 }

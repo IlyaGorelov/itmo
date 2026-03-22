@@ -1,7 +1,6 @@
 package Objects.Managers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /** Controls id */
 public class IdManager {
@@ -14,16 +13,12 @@ public class IdManager {
      * @return unique id
      */
     public static long getId() {
-        if (ids.size() == 0) {
-            ids.add((long) 1);
-            return 1;
-        } else {
-            Collections.sort(ids);
-            long maxId = ids.get(ids.size() - 1);
-            long newId = maxId + 1;
-            ids.add(newId);
-            return newId;
+        Long start = 1L;
+        while (ids.contains(start)) {
+            start++;
         }
+        ids.add(start);
+        return start;
     }
 
     public static void removeId(long id) {
@@ -32,6 +27,14 @@ public class IdManager {
 
     public static boolean isIdIn(Long id) {
         return ids.contains(id);
+    }
+
+    public static void addId(Long id) {
+        ids.add(id);
+    }
+
+    public static void clear() {
+        ids.clear();
     }
 
 }

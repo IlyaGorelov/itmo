@@ -73,7 +73,8 @@ public class Update extends Command {
 
     @Override
     public void executeFromScript(String complexArg) {
-        String[] tokens = complexArg.replace("{", "").replace("}", "").split(";");
+        String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
+        int tokenCounter = 0;
 
         StringValidator stringValidator = new StringValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -93,15 +94,15 @@ public class Update extends Command {
             if (!idValidator.isValid(getArgument(), false))
                 throw new IllegalArgumentException();
 
-            String name = tokens[0];
+            String name = tokens[tokenCounter++].trim();
             if (!stringValidator.isValid(String.valueOf(name), false))
                 throw new IllegalArgumentException("Product name can't be null");
 
-            String x = tokens[1];
+            String x = tokens[tokenCounter++].trim();
             if (!integerValidator.isValid(String.valueOf(x), false))
                 throw new IllegalArgumentException("Invalid value for x");
 
-            String y = tokens[2];
+            String y = tokens[tokenCounter++].trim();
             if (!doubleValidator.isValid(String.valueOf(y), false))
                 throw new IllegalArgumentException("Invalid value for y");
 
@@ -110,20 +111,20 @@ public class Update extends Command {
             if (!coordinatesValidator.isValid(String.valueOf(coordinates), false))
                 throw new IllegalArgumentException("Invalid value for coordinates");
 
-            String price = tokens[3];
+            String price = tokens[tokenCounter++].trim();
             if (!priceValidator.isValid(String.valueOf(price), true))
                 throw new IllegalArgumentException("Invalid value for price");
 
-            String manufactureCost = tokens[4];
+            String manufactureCost = tokens[tokenCounter++].trim();
             if (!integerValidator.isValid(String.valueOf(manufactureCost), false))
                 throw new IllegalArgumentException("Invalid value for manufacture cost");
 
-            String unitOfMeasure = tokens[5];
+            String unitOfMeasure = tokens[tokenCounter++].trim();
             if (!unitValidator.isValid(String.valueOf(unitOfMeasure), true))
                 throw new IllegalArgumentException(
                         "Invalid value for unit of measure. Should be one of KILOGRAMS, METERS, LITERS, MILLILITERS");
 
-            String ownerName = tokens[6];
+            String ownerName = tokens[tokenCounter++].trim();
             if (ownerName.isBlank())
                 getCollectionManager().updateElement(id, name, coordinates,
                         price != null ? Double.parseDouble(price) : null,
@@ -131,33 +132,34 @@ public class Update extends Command {
                         unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         null);
             else {
-                String height = tokens[7];
+                String height = tokens[tokenCounter++].trim();
                 if (!heightValidator.isValid(String.valueOf(height), false))
                     throw new IllegalArgumentException("Invalid value for height");
 
-                String eyeColor = tokens[8];
+                String eyeColor = tokens[tokenCounter++].trim();
                 if (!eyeValidator.isValid(String.valueOf(eyeColor), true))
                     throw new IllegalArgumentException(
                             "Invalid value for eye color. Should be one of GREEN,RED,ORANGE");
 
-                String hairColor = tokens[9];
+                String hairColor = tokens[tokenCounter++].trim();
                 if (!hairValidator.isValid(String.valueOf(hairColor), false))
                     throw new IllegalArgumentException(
                             "Invalid value for hair color. Should be one of GREEN, BLACK, WHITE");
 
-                String nationality = tokens[10];
+                String nationality = tokens[tokenCounter++].trim();
                 if (!countryValidator.isValid(String.valueOf(nationality), false))
                     throw new IllegalArgumentException(
                             "Invalid value for country. Should be one of USA, VATICAN, THAILAND");
 
-                String locX = tokens[11];
-                String locY = tokens[12];
-                String locZ = tokens[13];
-                String locName = tokens[14];
+                String locX = tokens[tokenCounter++].trim();
                 Location location = null;
                 if (!locX.isBlank()) {
                     if (!doubleValidator.isValid(String.valueOf(locX), false))
                         throw new IllegalArgumentException("Invalid value for locX");
+
+                    String locY = tokens[tokenCounter++].trim();
+                    String locZ = tokens[tokenCounter++].trim();
+                    String locName = tokens[tokenCounter++].trim();
 
                     if (!integerValidator.isValid(String.valueOf(locY), false))
                         throw new IllegalArgumentException("Invalid value for locY");

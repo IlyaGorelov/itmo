@@ -16,6 +16,12 @@ public class CommandManager {
     private Scanner scanner;
 
     /**
+     * used for detecting then undo|redo cycle is over. While it>0 commands aren't
+     * saved in the History
+     */
+    private static int countOfUnrecordedCommands = 0;
+
+    /**
      * Constructor that fill command map with available commands
      * 
      * @param collectionManager controls collection
@@ -41,6 +47,8 @@ public class CommandManager {
         commands.add(new RemoveByUnitOfMeasure(collectionManager, true));
         commands.add(new MinByUnit(collectionManager));
         commands.add(new GreaterThanOwner(collectionManager));
+        commands.add(new Undo(collectionManager));
+        commands.add(new Redo(collectionManager));
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -57,7 +65,6 @@ public class CommandManager {
             String[] commandWithArg = commandName.split(" ", 3);
             if (commandMap.containsKey(commandWithArg[0])) {
                 var command = commandMap.get(commandWithArg[0]);
-
                 switch (commandWithArg.length) {
                     case 3:
                         if (commandWithArg[2].startsWith("{")) {
@@ -94,4 +101,16 @@ public class CommandManager {
         }
     }
 
+    public static void addUnrecordedCommands(int i) {
+        countOfUnrecordedCommands += i;
+    }
+
+    public static void minusUnrecordedCommand() {
+        if (countOfUnrecordedCommands > 0)
+            countOfUnrecordedCommands--;
+    }
+
+    public static int getCountOfUnrecorded() {
+        return countOfUnrecordedCommands;
+    }
 }

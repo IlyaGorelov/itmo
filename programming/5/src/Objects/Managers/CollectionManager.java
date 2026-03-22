@@ -1,12 +1,10 @@
 package Objects.Managers;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 
@@ -15,6 +13,13 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.Collection.ProductsComparator;
+import Objects.CommandsControllers.History;
+import Objects.CommandsControllers.Commands.Add;
+import Objects.CommandsControllers.Commands.Clear;
+import Objects.CommandsControllers.Commands.Remove;
+import Objects.CommandsControllers.Commands.RemoveByUnitOfMeasure;
+import Objects.CommandsControllers.Commands.RemoveGreater;
+import Objects.CommandsControllers.Commands.Update;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -197,10 +202,6 @@ public class CollectionManager {
      * returns current date
      * 
      * @return Date current date
-     *         /**
-     *         returns current date
-     * 
-     * @return Date current date
      */
     private Date getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
@@ -294,6 +295,28 @@ public class CollectionManager {
             UnitOfMeasure unitOfMeasure, Person person) {
         Product p = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
                 person);
+        String command = new Add(this).getName() + " {" + p.getFuncString(true) + "}";
+        String antiCommand = new Remove(this).getName() + " " + p.getId();
+        History.add(command, antiCommand);
+        if (CommandManager.getCountOfUnrecorded() == 0)
+            History.clearUndoHistory();
+        CommandManager.minusUnrecordedCommand();
+        products.add(p);
+    }
+
+    /**
+     * add element to collection with id
+     */
+    public void addElement(Long id, String name, Coordinates coordinates, Double price, Integer manufactureCost,
+            UnitOfMeasure unitOfMeasure, Person person) {
+        Product p = createProduct(id, name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
+                person);
+        String command = new Add(this).getName() + " {" + p.getFuncString(true) + "}";
+        String antiCommand = new Remove(this).getName() + " " + p.getId();
+        History.add(command, antiCommand);
+        if (CommandManager.getCountOfUnrecorded() == 0)
+            History.clearUndoHistory();
+        CommandManager.minusUnrecordedCommand();
         products.add(p);
     }
 
@@ -304,6 +327,7 @@ public class CollectionManager {
         Product newProduct = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
                 person);
 
+        String command = new Update(this).getName() + " " + existingId + " {" + newProduct.getFuncString(false) + "}";
         Product existingProduct = null;
 
         for (Product product : products) {
@@ -315,11 +339,19 @@ public class CollectionManager {
         if (existingProduct == null)
             throw new IndexOutOfBoundsException("There is no element with such id!");
 
+        String antiCommand = new Update(this).getName() + " " + existingId + " {" + existingProduct.getFuncString(false)
+                + "}";
+
+        History.add(command, antiCommand);
+
         existingProduct.setName(newProduct.getName());
         existingProduct.setCoordinates(coordinates);
         existingProduct.setPrice(price);
         existingProduct.setManufactureCost(manufactureCost);
         existingProduct.setUnitOfMeasure(unitOfMeasure);
+        if (CommandManager.getCountOfUnrecorded() == 0)
+            History.clearUndoHistory();
+        CommandManager.minusUnrecordedCommand();
         existingProduct.setOwner(person);
     }
 
@@ -331,6 +363,7 @@ public class CollectionManager {
      */
     public void deleteById(long existingId) throws IndexOutOfBoundsException {
         Product existingProduct = null;
+        String command = new Remove(this).getName() + " " + existingId;
         for (Product product : products) {
             if (product.getId() == existingId) {
                 existingProduct = product;
@@ -339,14 +372,29 @@ public class CollectionManager {
         }
         if (existingProduct == null)
             throw new IndexOutOfBoundsException("There is no element with such id!");
+        String antiCommand = new Add(null).getName() + " {" + existingProduct.getFuncString(true) + "}";
+        History.add(command, antiCommand);
         products.remove(existingProduct);
         IdManager.removeId(existingId);
+        if (CommandManager.getCountOfUnrecorded() == 0)
+            History.clearUndoHistory();
+        CommandManager.minusUnrecordedCommand();
         System.out.println("Successfully deleted product with id " + existingId);
     }
 
     /** clear all collection */
     public void clear() {
+        String antiCommand = "";
+        for (Product product : products) {
+            antiCommand += new Add(null).getName() + " {" + product.getFuncString(true) + "}\n";
+        }
         products.clear();
+        IdManager.clear();
+        String command = new Clear(null).getName();
+        if (CommandManager.getCountOfUnrecorded() == 0)
+            History.clearUndoHistory();
+        CommandManager.minusUnrecordedCommand();
+        History.add(command, antiCommand);
     }
 
     /**
@@ -384,19 +432,26 @@ public class CollectionManager {
      * 
      * @return ArrayList of ids
      */
-    public ArrayList<Long> getGreaterIds(String name, Coordinates coordinates, Double price,
+    public void removeGreaters(String name, Coordinates coordinates, Double price,
             Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
-        ArrayList<Long> greaterIds = new ArrayList<>();
         Product newProduct = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost,
                 unitOfMeasure,
                 person);
 
-        for (Product p : products)
-            if (p.compareTo(newProduct) == 1)
-                greaterIds.add(p.getId());
+        String command = new RemoveGreater(null).getName() + " {" + newProduct.getFuncString(true) + "}";
+        String antiCommand = "";
 
-        return greaterIds;
+        for (Product p : products)
+            if (p.compareTo(newProduct) == 1) {
+                products.remove(p);
+                IdManager.removeId(p.getId());
+                antiCommand += new Add(null).getName() + " {" + p.getFuncString(true) + "}";
+                if (CommandManager.getCountOfUnrecorded() == 0)
+                    History.clearUndoHistory();
+                CommandManager.minusUnrecordedCommand();
+            }
+        History.add(command, antiCommand);
     }
 
     /**
@@ -404,14 +459,21 @@ public class CollectionManager {
      * 
      * @return ArrayList of ids with the same unit of measure
      */
-    public ArrayList<Long> getIdsByUnitOfMeasure(UnitOfMeasure comparing) {
-        ArrayList<Long> ids = new ArrayList<>();
+    public void removeByUnitOfMeasure(UnitOfMeasure comparing) {
+
+        String command = new RemoveByUnitOfMeasure(null).getName() + " " + comparing;
+        String antiCommand = "";
 
         for (Product p : products)
-            if (p.getUnitOfMeasure().equals(comparing))
-                ids.add(p.getId());
-
-        return ids;
+            if (p.getUnitOfMeasure().equals(comparing)) {
+                IdManager.removeId(p.getId());
+                products.remove(p);
+                antiCommand += new Add(null).getName() + " {" + p.getFuncString(true) + "}";
+                if (CommandManager.getCountOfUnrecorded() == 0)
+                    History.clearUndoHistory();
+                CommandManager.minusUnrecordedCommand();
+            }
+        History.add(command, antiCommand);
     }
 
     /**
@@ -463,6 +525,13 @@ public class CollectionManager {
     private Product createProduct(String name, Coordinates coordinates, Date creationDate, Double price,
             Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) {
         long id = IdManager.getId();
+        return new Product(id, name, coordinates, creationDate, price, manufactureCost, unitOfMeasure, owner);
+    }
+
+    /** create product example with give id */
+    private Product createProduct(long id, String name, Coordinates coordinates, Date creationDate, Double price,
+            Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) {
+        IdManager.addId(id);
         return new Product(id, name, coordinates, creationDate, price, manufactureCost, unitOfMeasure, owner);
     }
 }

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Карта городов - Города трудовой доблести</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo">
+          <h1>Города трудовой доблести</h1>
+          <span>1941-1945</span>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="/" data-link>Главная</a></li>
+            <li><a href="/search" data-link>Поиск</a></li>
+            <li><a href="/map" data-link>Карта</a></li>
+            <li id="adminLink" style="display: none">
+              <a href="/admin" data-link>Админ-панель</a>
+            </li>
+            <li><a href="#" id="authLink">Выйти</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container full-width">
+        <div class="map-container">
+          <div id="map"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <p>© 1941-1945 Трудовой подвиг тыла. Память навсегда.</p>
+        <p>
+          Все представленные города удостоены звания "Город трудовой доблести"
+        </p>
+      </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+  </body>
+</html>

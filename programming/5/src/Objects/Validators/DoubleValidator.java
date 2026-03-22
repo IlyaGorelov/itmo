@@ -7,10 +7,10 @@ public class DoubleValidator extends Validator<Double> {
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            Double.parseDouble(value);
+            Double.parseDouble(value.trim());
             return true;
         } catch (Exception e) {
-            if (value.isBlank() | value == "null") {
+            if (value.isBlank() | value.trim() == "null") {
                 if (canBeNull)
                     return true;
                 else {
@@ -36,7 +36,7 @@ public class DoubleValidator extends Validator<Double> {
         if (value.isBlank())
             return null;
 
-        return Double.parseDouble(value);
+        return Double.parseDouble(value.trim());
     }
 
 }

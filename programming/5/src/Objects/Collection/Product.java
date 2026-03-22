@@ -1,5 +1,7 @@
 package Objects.Collection;
 
+import java.util.Locale;
+
 import Objects.Enums.UnitOfMeasure;
 
 /** Class representing a Product - element of the collection */
@@ -116,14 +118,28 @@ public class Product implements Comparable<Product> {
     public String toString() {
         if (owner != null)
             return String.format(
-                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.2f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s",
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
                     String.valueOf(unitOfMeasure), String.valueOf(owner));
         else
             return String.format(
-                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.2f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
                     String.valueOf(unitOfMeasure), String.valueOf(owner));
+    }
 
+    public String getFuncString(boolean askForId) {
+        if (askForId)
+            return String.format(Locale.US, "$%d;%s;%d;%f;%s;%d;%s;%s", id, name, coordinates.getX(),
+                    coordinates.getY(),
+                    price == null ? "" : price, manufactureCost,
+                    unitOfMeasure == null ? "" : String.valueOf(unitOfMeasure),
+                    owner == null ? "" : owner.getFuncString());
+        else
+            return String.format(Locale.US, "%s;%d;%f;%s;%d;%s;%s", name, coordinates.getX(),
+                    coordinates.getY(),
+                    price == null ? "" : price, manufactureCost,
+                    unitOfMeasure == null ? "" : String.valueOf(unitOfMeasure),
+                    owner == null ? "" : owner.getFuncString());
     }
 }

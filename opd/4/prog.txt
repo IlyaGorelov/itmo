@@ -24,9 +24,9 @@ sub R
 st R
 hlt
 
-Z: word 0x2eb
-Y: word 0x2ec
-X: word 0x2ed
+Z: word -4
+Y: word 978
+X: word 654
 R: word 0xFD50
 
 org 0x65b

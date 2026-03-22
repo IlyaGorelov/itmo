@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ-панель - Города трудовой доблести</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-container">
+        <div class="logo">
+          <h1>Города трудовой доблести</h1>
+          <span>Админ-панель</span>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="/" data-link>Главная</a></li>
+            <li><a href="/search" data-link>Поиск</a></li>
+            <li><a href="/map" data-link>Карта</a></li>
+            <li><a href="#" id="authLink">Выйти</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="admin-panel">
+          <div class="admin-header">
+            <h2>Управление городами</h2>
+            <button id="addCityBtn" class="btn-primary">
+              + Добавить город
+            </button>
+          </div>
+
+          <div class="admin-cities-list">
+            <div id="citiesList">
+              <!-- Список городов загружается через API -->
+            </div>
+          </div>
+
+          <!-- Модальное окно для добавления/редактирования города -->
+          <div id="cityModal" class="modal" style="display: none">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Добавить город</h3>
+                <span class="close-modal">&times;</span>
+              </div>
+              <div class="modal-body">
+                <form id="cityForm">
+                  <div class="form-group">
+                    <label>Название города *</label>
+                    <input type="text" id="cityName" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Краткое описание</label>
+                    <textarea id="cityShortDesc" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Полное описание (Quill редактор)</label>
+                    <div id="fullDescriptionEditor"></div>
+                    <input type="hidden" id="fullDescription" />
+                  </div>
+                  <div class="form-group">
+                    <label>Вклад в победу</label>
+                    <input type="text" id="cityContribution" />
+                  </div>
+                  <div class="form-group">
+                    <label>Категории</label>
+                    <div class="checkbox-group">
+                      <label
+                        ><input type="checkbox" value="weapon" /> Оружие</label
+                      >
+                      <label
+                        ><input type="checkbox" value="tech" /> Техника</label
+                      >
+                      <label
+                        ><input type="checkbox" value="food" />
+                        Продовольствие</label
+                      >
+                      <label
+                        ><input type="checkbox" value="uniform" />
+                        Обмундирование</label
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>URL изображения</label>
+                    <input type="text" id="cityImage" />
+                  </div>
+                  <div class="form-group">
+                    <label>Координаты (широта, долгота)</label>
+                    <div class="coord-group">
+                      <input
+                        type="number"
+                        id="cityLat"
+                        step="any"
+                        placeholder="Широта"
+                      />
+                      <input
+                        type="number"
+                        id="cityLng"
+                        step="any"
+                        placeholder="Долгота"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                    <button type="button" id="cancelBtn" class="btn-secondary">
+                      Отмена
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <p>© 1941-1945 Трудовой подвиг тыла. Память навсегда.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>

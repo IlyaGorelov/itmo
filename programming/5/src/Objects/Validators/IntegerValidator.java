@@ -7,10 +7,10 @@ public class IntegerValidator extends Validator<Integer> {
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            Integer.parseInt(value);
+            Integer.parseInt(value.trim());
             return true;
         } catch (NumberFormatException e) {
-            if (value.isBlank() || value == "null") {
+            if (value.isBlank() || value.trim() == "null") {
                 if (canBeNull)
                     return true;
                 else {
@@ -36,7 +36,7 @@ public class IntegerValidator extends Validator<Integer> {
 
         } while (!isValid(value, canBeNull));
 
-        return Integer.parseInt(value);
+        return Integer.parseInt(value.trim());
     }
 
 }

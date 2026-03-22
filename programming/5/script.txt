@@ -1,6 +1,5 @@
 
-
-
 info
-update 2 {Updated thing;45;0;56;45;liters;;;;hair color;country;location x, loc y, loc z, loc name}
+add {$45;add;56;56;56;56;liters;}
+
 

@@ -7,12 +7,12 @@ public class PriceValidator extends Validator<Double> {
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            Double x = Double.parseDouble(value);
+            Double x = Double.parseDouble(value.trim());
             if (x <= 0)
                 throw new IllegalArgumentException("Price must be greater than 0");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value == "null") {
+            if (value.isBlank() || value.trim() == "null") {
                 if (canBeNull)
                     return true;
                 else {

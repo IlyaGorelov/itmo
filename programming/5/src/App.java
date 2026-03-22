@@ -11,7 +11,6 @@ import Objects.Managers.CollectionManager;
  */
 public class App {
         // 4. Добавить обработку Ctrl+D ?
-        // умный script
 
         /** Environment key which stores a path to csv file */
         private static final String ENV_KEY = "lab5";

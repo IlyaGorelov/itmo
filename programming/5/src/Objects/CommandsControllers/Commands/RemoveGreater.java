@@ -38,8 +38,6 @@ public class RemoveGreater extends Command {
         CountryValidator countryValidator = new CountryValidator();
         LocationValidator locationValidator = new LocationValidator();
 
-        ArrayList<Long> ids = null;
-
         String name = stringValidator.get(getScanner(), false, "Enter product name: ");
         Coordinates coordinates = coordinatesValidator.get(getScanner(), false, "Enter coordinates:");
         Double price = priceValidator.get(getScanner(), true, "Enter price(double): ");
@@ -53,22 +51,17 @@ public class RemoveGreater extends Command {
             HairColor hairColor = hairValidator.get(getScanner(), false, "Choose hair color: ");
             Country country = countryValidator.get(getScanner(), false, "Choose nationality: ");
             Location location = locationValidator.get(getScanner(), true, "Enter location: ");
-            ids = getCollectionManager().getGreaterIds(name, coordinates, price, manufactureCost, unitOfMeasure,
+            getCollectionManager().removeGreaters(name, coordinates, price, manufactureCost, unitOfMeasure,
                     new Person(ownerName, height, eyeColor, hairColor, country, location));
         } else {
-            ids = getCollectionManager().getGreaterIds(name, coordinates, price, manufactureCost, unitOfMeasure,
+            getCollectionManager().removeGreaters(name, coordinates, price, manufactureCost, unitOfMeasure,
                     null);
-        }
-
-        for (Long id : ids) {
-            getCollectionManager().deleteById(id);
         }
     }
 
     @Override
     public void executeFromScript(String complexArg) {
         String[] tokens = complexArg.replace("{", "").replace("}", "").split(";");
-        ArrayList<Long> ids = null;
 
         StringValidator stringValidator = new StringValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -115,7 +108,7 @@ public class RemoveGreater extends Command {
 
             String ownerName = tokens[6];
             if (ownerName.isBlank())
-                ids = getCollectionManager().getGreaterIds(name, coordinates,
+                getCollectionManager().removeGreaters(name, coordinates,
                         price != null ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -167,7 +160,7 @@ public class RemoveGreater extends Command {
                         throw new IllegalArgumentException("Invalid value for location");
                 }
 
-                ids = getCollectionManager().getGreaterIds(name, coordinates,
+                getCollectionManager().removeGreaters(name, coordinates,
                         price != null ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -177,9 +170,7 @@ public class RemoveGreater extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
-            for (Long id : ids) {
-                getCollectionManager().deleteById(id);
-            }
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
