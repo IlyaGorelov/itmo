@@ -45,14 +45,15 @@ public class Update extends Command {
             String name = stringValidator.get(getScanner(), false, "Enter product name: ");
             System.out.println(name);
             Coordinates coordinates = coordinatesValidator.get(getScanner(), false, "Enter coordinates:");
-            Double price = priceValidator.get(getScanner(), true, "Enter price(double): ");
+            Double price = priceValidator.get(getScanner(), true, "Enter price(double) or type nothing: ");
             Integer manufactureCost = integerValidator.get(getScanner(), false, "Enter manufacture cost(integer): ");
-            UnitOfMeasure unitOfMeasure = unitValidator.get(getScanner(), true, "Choose unit of measure: ");
+            UnitOfMeasure unitOfMeasure = unitValidator.get(getScanner(), true,
+                    "Choose unit of measure or type nothing: ");
 
-            String ownerName = stringValidator.get(getScanner(), true, "Enter owner's name: ");
+            String ownerName = stringValidator.get(getScanner(), true, "Enter owner's name or type nothing: ");
             if (ownerName != null) {
                 Float height = heightValidator.get(getScanner(), false, "Enter owner's height: ");
-                EyeColor eyeColor = eyeValidator.get(getScanner(), true, "Choose eye color: ");
+                EyeColor eyeColor = eyeValidator.get(getScanner(), true, "Choose eye color or type nothing: ");
                 HairColor hairColor = hairValidator.get(getScanner(), false, "Choose hair color: ");
                 Country country = countryValidator.get(getScanner(), false, "Choose nationality: ");
                 Location location = locationValidator.get(getScanner(), true, "Enter location: ");
@@ -127,9 +128,9 @@ public class Update extends Command {
             String ownerName = tokens[tokenCounter++].trim();
             if (ownerName.isBlank())
                 getCollectionManager().updateElement(id, name, coordinates,
-                        price != null ? Double.parseDouble(price) : null,
+                        !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
-                        unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                        !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         null);
             else {
                 String height = tokens[tokenCounter++].trim();
@@ -180,11 +181,11 @@ public class Update extends Command {
                 }
 
                 getCollectionManager().updateElement(id, name, coordinates,
-                        price != null ? Double.parseDouble(price) : null,
+                        !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
-                        unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                        !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         new Person(ownerName, Float.parseFloat(height),
-                                eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
+                                !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                                 HairColor.valueOf(hairColor.toUpperCase()),
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));

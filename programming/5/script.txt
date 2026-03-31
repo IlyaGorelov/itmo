@@ -1,5 +1,5 @@
 
-info
-add {$45;add;56;56;56;56;liters;}
+add {$2;Xiomi Redmi Note 10S;23;34.000000;20000.0;15000;;Ilya Gorelov;183.000000;;BLACK;USA;}
+execute_script script.txt
 
 

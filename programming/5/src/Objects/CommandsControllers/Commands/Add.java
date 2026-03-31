@@ -41,14 +41,14 @@ public class Add extends Command implements Revertable {
 
         String name = stringValidator.get(getScanner(), false, "Enter product name: ");
         Coordinates coordinates = coordinatesValidator.get(getScanner(), false, "Enter coordinates:");
-        Double price = priceValidator.get(getScanner(), true, "Enter price(double): ");
+        Double price = priceValidator.get(getScanner(), true, "Enter price(double) or type nothing: ");
         Integer manufactureCost = integerValidator.get(getScanner(), false, "Enter manufacture cost(integer): ");
-        UnitOfMeasure unitOfMeasure = unitValidator.get(getScanner(), true, "Choose unit of measure: ");
+        UnitOfMeasure unitOfMeasure = unitValidator.get(getScanner(), true, "Choose unit of measure or type nothing: ");
 
-        String ownerName = stringValidator.get(getScanner(), true, "Enter owner's name: ");
+        String ownerName = stringValidator.get(getScanner(), true, "Enter owner's name or type nothing: ");
         if (ownerName != null) {
             Float height = heightValidator.get(getScanner(), false, "Enter owner's height: ");
-            EyeColor eyeColor = eyeValidator.get(getScanner(), true, "Choose eye color: ");
+            EyeColor eyeColor = eyeValidator.get(getScanner(), true, "Choose eye color or type nothing: ");
             HairColor hairColor = hairValidator.get(getScanner(), false, "Choose hair color: ");
             Country country = countryValidator.get(getScanner(), false, "Choose nationality: ");
             Location location = locationValidator.get(getScanner(), true, "Enter location: ");
@@ -83,8 +83,10 @@ public class Add extends Command implements Revertable {
             String id = null;
             if (tokens[tokenCounter].trim().startsWith("$")) {
                 id = tokens[tokenCounter++].trim().replace("$", "");
-                if (Long.parseLong(id) < 0 || IdManager.isIdIn(Long.parseLong(id)))
-                    throw new IllegalArgumentException("Invalid value for id");
+                if (Long.parseLong(id) < 0)
+                    throw new IllegalArgumentException("Id must be non negative");
+                else if (IdManager.isIdIn(Long.parseLong(id)))
+                    throw new IllegalArgumentException("Id is already taken");
             }
 
             String name = tokens[tokenCounter++].trim();
@@ -181,21 +183,21 @@ public class Add extends Command implements Revertable {
 
                 if (id == null)
                     getCollectionManager().addElement(name, coordinates,
-                            price != null ? Double.parseDouble(price) : null,
+                            !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
-                            unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                            !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                             new Person(ownerName, Float.parseFloat(height),
-                                    eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
+                                    !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                                     HairColor.valueOf(hairColor.toUpperCase()),
                                     Country.valueOf(nationality.toUpperCase()),
                                     location));
                 else
                     getCollectionManager().addElement(Long.parseLong(id), name, coordinates,
-                            price != null ? Double.parseDouble(price) : null,
+                            !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
-                            unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                            !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                             new Person(ownerName, Float.parseFloat(height),
-                                    eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
+                                    !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                                     HairColor.valueOf(hairColor.toUpperCase()),
                                     Country.valueOf(nationality.toUpperCase()),
                                     location));

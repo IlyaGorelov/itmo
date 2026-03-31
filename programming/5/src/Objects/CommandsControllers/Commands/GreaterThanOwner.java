@@ -133,7 +133,7 @@ public class GreaterThanOwner extends Command {
                 ids = getCollectionManager()
                         .getIdsGreaterThanOwner(
                                 new Person(ownerName, Float.parseFloat(height),
-                                        eyeColor != null ? EyeColor.valueOf(eyeColor) : null,
+                                        !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor) : null,
                                         HairColor.valueOf(hairColor), Country.valueOf(nationality),
                                         location));
 

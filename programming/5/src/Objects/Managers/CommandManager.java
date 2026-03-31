@@ -2,7 +2,10 @@ package Objects.Managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
@@ -19,7 +22,7 @@ public class CommandManager {
      * used for detecting then undo|redo cycle is over. While it>0 commands aren't
      * saved in the History
      */
-    private static int countOfUnrecordedCommands = 0;
+    private static int countOfUnrecordingCommands = 0;
 
     /**
      * Constructor that fill command map with available commands
@@ -62,7 +65,7 @@ public class CommandManager {
     /** Executes commands and handles exceptions */
     public void executeCommand(String commandName) {
         try {
-            String[] commandWithArg = commandName.split(" ", 3);
+            String[] commandWithArg = parseCommand(commandName);
             if (commandMap.containsKey(commandWithArg[0])) {
                 var command = commandMap.get(commandWithArg[0]);
                 switch (commandWithArg.length) {
@@ -101,16 +104,30 @@ public class CommandManager {
         }
     }
 
+    public static String[] parseCommand(String input) {
+        List<String> parts = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("\\{[^}]*}|\\S+");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            String match = matcher.group();
+            parts.add(match);
+        }
+
+        return parts.toArray(new String[0]);
+    }
+
     public static void addUnrecordedCommands(int i) {
-        countOfUnrecordedCommands += i;
+        countOfUnrecordingCommands += i;
     }
 
     public static void minusUnrecordedCommand() {
-        if (countOfUnrecordedCommands > 0)
-            countOfUnrecordedCommands--;
+        if (countOfUnrecordingCommands > 0)
+            countOfUnrecordingCommands--;
     }
 
     public static int getCountOfUnrecorded() {
-        return countOfUnrecordedCommands;
+        return countOfUnrecordingCommands;
     }
 }

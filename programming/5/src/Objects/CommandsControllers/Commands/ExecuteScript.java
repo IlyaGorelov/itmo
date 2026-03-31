@@ -33,7 +33,7 @@ public class ExecuteScript extends Command {
                 if (newCommand.contains(getName())) {
                     String path = newCommand.split(" ")[1];
                     if (new File(path).equals(script))
-                        System.out.println("Skip command execute_script because it refers to the same file");
+                        System.out.println("Skip command " + newCommand + " because it refers to the same file");
                     else {
                         System.out.println("Add new command in queue: " + newCommand);
                         CommandBuffer.buffer.add(newCommand);
@@ -44,6 +44,7 @@ public class ExecuteScript extends Command {
                 }
             }
             scanner.close();
+            System.out.println("Executing...");
 
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());

@@ -44,7 +44,6 @@ public class History {
 
             undoHistory.removeLast();
             String lastCommand = antiUndoHistory.getLast();
-            commandsHistory.removeLast();
             antiUndoHistory.removeLast();
             return lastCommand.split("\n");
         } catch (Exception e) {

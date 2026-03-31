@@ -109,9 +109,9 @@ public class RemoveGreater extends Command {
             String ownerName = tokens[6];
             if (ownerName.isBlank())
                 getCollectionManager().removeGreaters(name, coordinates,
-                        price != null ? Double.parseDouble(price) : null,
+                        !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
-                        unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                        !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         null);
             else {
                 String height = tokens[7];
@@ -161,11 +161,11 @@ public class RemoveGreater extends Command {
                 }
 
                 getCollectionManager().removeGreaters(name, coordinates,
-                        price != null ? Double.parseDouble(price) : null,
+                        !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
-                        unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                        !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         new Person(ownerName, Float.parseFloat(height),
-                                eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
+                                !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                                 HairColor.valueOf(hairColor.toUpperCase()),
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
