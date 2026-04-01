@@ -61,6 +61,22 @@ public class CollectionManager {
 
         for (var record : CSVRecords) {
             try {
+                String id = record.get(CSVManager.Headers.id);
+                try {
+                    if (IdManager.isIdIn(Long.parseLong(id)))
+                        throw new IllegalArgumentException(String.format("Id is taken\nInvalid value for %s in row %d",
+                                String.valueOf(CSVManager.Headers.id), record.getRecordNumber()));
+
+                    if (Long.parseLong(id) < 0)
+                        throw new IllegalArgumentException(
+                                String.format("Id must be non negative\nInvalid value for %s in row %d",
+                                        String.valueOf(CSVManager.Headers.id), record.getRecordNumber()));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(
+                            String.format("Id must be number\nInvalid value for %s in row %d",
+                                    String.valueOf(CSVManager.Headers.id), record.getRecordNumber()));
+                }
+
                 String name = record.get(CSVManager.Headers.name);
                 if (!stringValidator.isValid(String.valueOf(name), false))
                     throw new IllegalArgumentException("Product name can't be null");
@@ -108,14 +124,15 @@ public class CollectionManager {
                             String.valueOf(CSVManager.Headers.unitOfMeasure), record.getRecordNumber()));
 
                 String ownerName = record.get(CSVManager.Headers.ownerName);
-                if (ownerName == null)
+                if (ownerName == null) {
                     products.add(
-                            createProduct(name, coordinates, creationDate,
+                            new Product(Long.parseLong(id), name, coordinates, creationDate,
                                     price != null ? Double.parseDouble(price) : null,
                                     Integer.parseInt(manufactureCost),
                                     unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                                     null));
-                else {
+                    IdManager.addId(Long.parseLong(id));
+                } else {
                     String height = record.get(CSVManager.Headers.height);
                     if (!heightValidator.isValid(String.valueOf(height), false))
                         throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
@@ -169,7 +186,7 @@ public class CollectionManager {
                     }
 
                     products.add(
-                            createProduct(name, coordinates, creationDate,
+                            new Product(Long.parseLong(id), name, coordinates, creationDate,
                                     price != null ? Double.parseDouble(price) : null,
                                     Integer.parseInt(manufactureCost),
                                     unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -178,6 +195,7 @@ public class CollectionManager {
                                             HairColor.valueOf(hairColor.toUpperCase()),
                                             Country.valueOf(nationality.toUpperCase()),
                                             location)));
+                    IdManager.addId(Long.parseLong(id));
                 }
             } catch (Exception e) {
                 if (e.getMessage() != null)

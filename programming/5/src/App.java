@@ -10,7 +10,7 @@ import Objects.Managers.CollectionManager;
  * @author Ilya Gorelov
  */
 public class App {
-        // 4. Добавить обработку Ctrl+D ?
+        // 1. Исправить location input
 
         /** Environment key which stores a path to csv file */
         private static final String ENV_KEY = "lab5";

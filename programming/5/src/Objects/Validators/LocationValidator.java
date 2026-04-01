@@ -36,13 +36,9 @@ public class LocationValidator extends Validator<Location> {
         do {
             System.out.println(request);
 
-            do {
-                Double x = doubleValidator.get(scanner, true,
-                        "Enter x coordinate (double). Type nothing if want to leave location as null: ");
-                location.setX(x);
-                if (x == null)
-                    break;
-            } while (!isValid(location.toString(), true));
+            Double x = doubleValidator.get(scanner, true,
+                    "Enter x coordinate (double). Type nothing if want to leave location as null: ");
+            location.setX(x);
             if (location.getX() == null)
                 return null;
 
