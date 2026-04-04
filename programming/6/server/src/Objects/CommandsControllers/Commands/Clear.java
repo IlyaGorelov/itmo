@@ -1,0 +1,38 @@
+package Objects.CommandsControllers.Commands;
+
+import Objects.CommandsControllers.Command;
+import Objects.Managers.CollectionManager;
+
+/** removes all elements from the collection */
+public class Clear extends Command {
+    public Clear(CollectionManager collectionManager, boolean hasArgument) {
+        super(collectionManager, hasArgument);
+    }
+
+    public Clear(CollectionManager collectionManager) {
+        super(collectionManager);
+    }
+
+    @Override
+    public void execute() {
+        checkArgument();
+        getCollectionManager().clear();
+        System.out.println("Successfully cleared");
+    }
+
+    @Override
+    public String getName() {
+        return "clear";
+    }
+
+    @Override
+    public String getDescription() {
+        return "remove all elements from the collection";
+    }
+
+    @Override
+    public void executeFromScript(String complexArg) {
+        execute();
+    }
+
+}
