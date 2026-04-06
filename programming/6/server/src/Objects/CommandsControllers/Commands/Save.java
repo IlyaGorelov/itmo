@@ -18,6 +18,7 @@ public class Save extends Command {
     public void execute() {
         checkArgument();
         getCollectionManager().setCollection();
+        getReceiver().addToAnswer(this, null, "Successfully saved");
         System.out.println("Successfully saved");
     }
 

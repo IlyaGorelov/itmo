@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.Revertable;
 import Objects.Enums.Country;
@@ -94,6 +95,7 @@ public class Add extends Command implements Revertable {
 
         try {
             String id = null;
+            Product newProduct = null;
             if (tokens[tokenCounter].trim().startsWith("$")) {
                 id = tokens[tokenCounter++].trim().replace("$", "");
                 if (Long.parseLong(id) < 0)
@@ -135,13 +137,13 @@ public class Add extends Command implements Revertable {
             String ownerName = tokens[tokenCounter++].trim();
             if (ownerName.isBlank())
                 if (id == null)
-                    getCollectionManager().addElement(name, coordinates,
+                    newProduct = getCollectionManager().addElement(name, coordinates,
                             !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
                             !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                             null);
                 else
-                    getCollectionManager().addElement(Long.parseLong(id), name, coordinates,
+                    newProduct = getCollectionManager().addElement(Long.parseLong(id), name, coordinates,
                             !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
                             !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -195,7 +197,7 @@ public class Add extends Command implements Revertable {
                 }
 
                 if (id == null)
-                    getCollectionManager().addElement(name, coordinates,
+                    newProduct = getCollectionManager().addElement(name, coordinates,
                             !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
                             !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -205,7 +207,7 @@ public class Add extends Command implements Revertable {
                                     Country.valueOf(nationality.toUpperCase()),
                                     location));
                 else
-                    getCollectionManager().addElement(Long.parseLong(id), name, coordinates,
+                    newProduct = getCollectionManager().addElement(Long.parseLong(id), name, coordinates,
                             !price.isBlank() ? Double.parseDouble(price) : null,
                             Integer.parseInt(manufactureCost),
                             !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -216,6 +218,7 @@ public class Add extends Command implements Revertable {
                                     location));
             }
             System.out.println("Successfully added " + name);
+            getReceiver().addToAnswer(this, null, newProduct);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

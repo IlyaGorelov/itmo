@@ -19,6 +19,7 @@ public class Info extends Command {
         checkArgument();
         System.out.println("Information about collection:\n");
         System.out.println(getCollectionManager().getCollectionInfo());
+        getReceiver().addToAnswer(this, null, getCollectionManager().getCollectionInfo());
     }
 
     @Override

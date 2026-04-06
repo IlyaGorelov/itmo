@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -74,7 +75,7 @@ public class RemoveGreater extends Command {
 
     @Override
     public void executeFromScript(String complexArg) {
-        String[] tokens = complexArg.replace("{", "").replace("}", "").split(";");
+        String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
 
         StringValidator stringValidator = new StringValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -88,16 +89,18 @@ public class RemoveGreater extends Command {
         CountryValidator countryValidator = new CountryValidator();
         LocationValidator locationValidator = new LocationValidator();
 
+        Product[] greaters = null;
+
         try {
-            String name = tokens[0];
+            String name = tokens[0].trim();
             if (!stringValidator.isValid(String.valueOf(name), false))
                 throw new IllegalArgumentException("Product name can't be null");
 
-            String x = tokens[1];
+            String x = tokens[1].trim();
             if (!integerValidator.isValid(String.valueOf(x), false))
                 throw new IllegalArgumentException("Invalid value for x");
 
-            String y = tokens[2];
+            String y = tokens[2].trim();
             if (!doubleValidator.isValid(String.valueOf(y), false))
                 throw new IllegalArgumentException("Invalid value for y");
 
@@ -106,50 +109,51 @@ public class RemoveGreater extends Command {
             if (!coordinatesValidator.isValid(String.valueOf(coordinates), false))
                 throw new IllegalArgumentException("Invalid value for coordinates");
 
-            String price = tokens[3];
+            String price = tokens[3].trim();
             if (!priceValidator.isValid(String.valueOf(price), true))
                 throw new IllegalArgumentException("Invalid value for price");
 
-            String manufactureCost = tokens[4];
+            String manufactureCost = tokens[4].trim();
             if (!integerValidator.isValid(String.valueOf(manufactureCost), false))
                 throw new IllegalArgumentException("Invalid value for manufacture cost");
 
-            String unitOfMeasure = tokens[5];
+            String unitOfMeasure = tokens[5].trim();
             if (!unitValidator.isValid(String.valueOf(unitOfMeasure), true))
                 throw new IllegalArgumentException(
                         "Invalid value for unit of measure. Should be one of KILOGRAMS, METERS, LITERS, MILLILITERS");
 
-            String ownerName = tokens[6];
+            String ownerName = tokens[6].trim();
             if (ownerName.isBlank())
-                getCollectionManager().removeGreaters(name, coordinates,
+                greaters = getCollectionManager().removeGreaters(name, coordinates,
                         !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         null);
+
             else {
-                String height = tokens[7];
+                String height = tokens[7].trim();
                 if (!heightValidator.isValid(String.valueOf(height), false))
                     throw new IllegalArgumentException("Invalid value for height");
 
-                String eyeColor = tokens[8];
+                String eyeColor = tokens[8].trim();
                 if (!eyeValidator.isValid(String.valueOf(eyeColor), true))
                     throw new IllegalArgumentException(
                             "Invalid value for eye color. Should be one of GREEN, RED, ORANGE");
 
-                String hairColor = tokens[9];
+                String hairColor = tokens[9].trim();
                 if (!hairValidator.isValid(String.valueOf(hairColor), false))
                     throw new IllegalArgumentException(
                             "Invalid value for hair color. Should be one of GREEN ,BLACK, WHITE");
 
-                String nationality = tokens[10];
+                String nationality = tokens[10].trim();
                 if (!countryValidator.isValid(String.valueOf(nationality), false))
                     throw new IllegalArgumentException(
                             "Invalid value for country. Should be one of USA, VATICAN, THAILAND");
 
-                String locX = tokens[11];
-                String locY = tokens[12];
-                String locZ = tokens[13];
-                String locName = tokens[14];
+                String locX = tokens[11].trim();
+                String locY = tokens[12].trim();
+                String locZ = tokens[13].trim();
+                String locName = tokens[14].trim();
                 Location location = null;
                 if (!locX.isBlank()) {
                     if (!doubleValidator.isValid(String.valueOf(locX), false))
@@ -173,7 +177,7 @@ public class RemoveGreater extends Command {
                         throw new IllegalArgumentException("Invalid value for location");
                 }
 
-                getCollectionManager().removeGreaters(name, coordinates,
+                greaters = getCollectionManager().removeGreaters(name, coordinates,
                         !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -183,10 +187,13 @@ public class RemoveGreater extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
+            getReceiver().addToAnswer(this, null, greaters);
 
         } catch (Exception e) {
-            if (e.getMessage() != null)
+            if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
+                getReceiver().addToAnswer(this, null, e);
+            }
             System.out.println("Skip\n");
         }
 

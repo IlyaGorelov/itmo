@@ -44,7 +44,7 @@ public class CommandManager {
         commands.add(new Clear(collectionManager));
         commands.add(new Save(collectionManager));
         commands.add(new ExecuteScript(collectionManager, true));
-        commands.add(new Close(collectionManager));
+        commands.add(new Exit(collectionManager));
         commands.add(new AddIfMax(collectionManager));
         commands.add(new AddIfMin(collectionManager));
         commands.add(new RemoveGreater(collectionManager));
@@ -53,9 +53,11 @@ public class CommandManager {
         commands.add(new GreaterThanOwner(collectionManager));
         commands.add(new Undo(collectionManager));
         commands.add(new Redo(collectionManager));
+        commands.add(new GetById(collectionManager, true));
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
+            command.setReceiver(receiver);
         }
     }
 
@@ -72,7 +74,6 @@ public class CommandManager {
                 switch (commandWithArg.length) {
                     case 3:
                         if (commandWithArg[2].startsWith("{")) {
-                            command.setReceiver(receiver);
                             command.setArgument(commandWithArg[1]);
                             command.executeFromScript(commandWithArg[2]);
                             return;
@@ -80,17 +81,14 @@ public class CommandManager {
                             throw new IllegalArgumentException("There is no such command: " + commandName);
                     case 2:
                         if (commandWithArg[1].startsWith("{")) {
-                            command.setReceiver(receiver);
                             command.executeFromScript(commandWithArg[1]);
                             return;
                         } else {
-                            command.setReceiver(receiver);
                             command.setArgument(commandWithArg[1]);
                             command.execute();
                         }
                         break;
                     case 1:
-                        command.setReceiver(receiver);
                         command.execute();
                 }
             } else

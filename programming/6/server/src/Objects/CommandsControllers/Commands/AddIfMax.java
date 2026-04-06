@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -86,11 +87,15 @@ public class AddIfMax extends Command {
 
     private void addIfMax(String name, Coordinates coordinates, Double price, Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
+        Product newProduct = null;
         if (getCollectionManager().isMax(name, coordinates, price, manufactureCost, unitOfMeasure, person)) {
-            getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure, person);
+            newProduct = getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure,
+                    person);
             System.out.println("Successfully added");
+            getReceiver().addToAnswer(this, null, newProduct);
         } else {
             System.out.println("Not added because not Max");
+            getReceiver().addToAnswer(this, null, newProduct);
         }
     }
 
@@ -206,6 +211,7 @@ public class AddIfMax extends Command {
                                 location));
             }
             System.out.println("Successfully added " + name);
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

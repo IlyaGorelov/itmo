@@ -1,6 +1,6 @@
 package Objects.CommandsControllers;
 
-import java.util.Scanner;
+import java.io.Serializable;
 
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
@@ -9,7 +9,7 @@ import Objects.Managers.CollectionManager;
 public abstract class Command {
     /** Collection manager so we can control a collection */
     private CollectionManager collectionManager;
-    /** Receiver to read a script file */
+    /** Receiver to send answers */
     private Receiver receiver;
     /** An argument of a command presented in one line format */
     private String argument;

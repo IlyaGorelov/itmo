@@ -5,29 +5,35 @@ import Objects.CommandsControllers.CommandExecutor;
 import Objects.Managers.CollectionManager;
 
 /** stop program */
-public class Close extends Command {
+public class Exit extends Command {
 
-    public Close(CollectionManager collectionManager, boolean hasArgument) {
+    public Exit(CollectionManager collectionManager, boolean hasArgument) {
         super(collectionManager, hasArgument);
     }
 
-    public Close(CollectionManager collectionManager) {
+    public Exit(CollectionManager collectionManager) {
         super(collectionManager);
     }
 
     @Override
     public String getName() {
-        return "close";
+        return "exit";
     }
 
     @Override
     public String getDescription() {
-        return "close the program";
+        return "exit the program";
     }
 
     @Override
     public void execute() {
         checkArgument();
+        var save = new Save(getCollectionManager());
+        save.setReceiver(getReceiver());
+        save.execute();
+
+        getReceiver().addToAnswer(this, null, "Program successfully stopped");
+        getReceiver().send();
         CommandExecutor.waitForNextCommand = false;
     }
 

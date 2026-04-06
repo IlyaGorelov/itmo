@@ -17,7 +17,7 @@ public class Clear extends Command {
     public void execute() {
         checkArgument();
         getCollectionManager().clear();
-        System.out.println("Successfully cleared");
+        getReceiver().addToAnswer(this, null, null);
     }
 
     @Override

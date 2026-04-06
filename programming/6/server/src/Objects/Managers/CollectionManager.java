@@ -296,8 +296,8 @@ public class CollectionManager {
      * @return info about product
      * @throws IndexOutOfBoundsException if id isn't in collection
      */
-    public String getInfoById(long id) throws IndexOutOfBoundsException {
-        return products.stream().filter(x -> x.getId() == id).findFirst().map(x -> String.valueOf(x)).orElse(null);
+    public Product getById(long id) throws IndexOutOfBoundsException {
+        return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
     }
 
     public HashSet<Product> getElements() {
@@ -307,7 +307,7 @@ public class CollectionManager {
     /**
      * add element to collection
      */
-    public void addElement(String name, Coordinates coordinates, Double price, Integer manufactureCost,
+    public Product addElement(String name, Coordinates coordinates, Double price, Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
         Product p = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
                 person);
@@ -318,12 +318,13 @@ public class CollectionManager {
             History.clearUndoHistory();
         CommandManager.minusUnrecordedCommand();
         products.add(p);
+        return p;
     }
 
     /**
      * add element to collection with id
      */
-    public void addElement(Long id, String name, Coordinates coordinates, Double price, Integer manufactureCost,
+    public Product addElement(Long id, String name, Coordinates coordinates, Double price, Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
         Product p = createProduct(id, name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
                 person);
@@ -334,10 +335,11 @@ public class CollectionManager {
             History.clearUndoHistory();
         CommandManager.minusUnrecordedCommand();
         products.add(p);
+        return p;
     }
 
     /** update element of the collection, find element by id */
-    public void updateElement(long existingId, String name, Coordinates coordinates, Double price,
+    public Product updateElement(long existingId, String name, Coordinates coordinates, Double price,
             Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) throws IndexOutOfBoundsException {
         Product newProduct = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
@@ -369,6 +371,8 @@ public class CollectionManager {
             History.clearUndoHistory();
         CommandManager.minusUnrecordedCommand();
         existingProduct.setOwner(person);
+
+        return existingProduct;
     }
 
     /**
@@ -377,7 +381,7 @@ public class CollectionManager {
      * @param existingId id of a product
      * @throws IndexOutOfBoundsException if id isn't in collection
      */
-    public void deleteById(long existingId) throws IndexOutOfBoundsException {
+    public Product deleteById(long existingId) throws IndexOutOfBoundsException {
         Product existingProduct = null;
         String command = new Remove(this).getName() + " " + existingId;
         for (Product product : products) {
@@ -396,6 +400,7 @@ public class CollectionManager {
             History.clearUndoHistory();
         CommandManager.minusUnrecordedCommand();
         System.out.println("Successfully deleted product with id " + existingId);
+        return existingProduct;
     }
 
     /** clear all collection */
@@ -446,7 +451,7 @@ public class CollectionManager {
      * 
      * @return ArrayList of ids
      */
-    public void removeGreaters(String name, Coordinates coordinates, Double price,
+    public Product[] removeGreaters(String name, Coordinates coordinates, Double price,
             Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
         Product newProduct = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost,
@@ -455,6 +460,9 @@ public class CollectionManager {
 
         String command = new RemoveGreater(null).getName() + " {" + newProduct.getFuncString(true) + "}";
         String antiCommand = "";
+
+        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(newProduct) == 1)
+                .toArray(Product[]::new);
 
         for (Product p : products)
             if (p.compareTo(newProduct) == 1) {
@@ -466,6 +474,7 @@ public class CollectionManager {
                 CommandManager.minusUnrecordedCommand();
             }
         History.add(command, antiCommand);
+        return productsToRemove;
     }
 
     /**
@@ -473,21 +482,31 @@ public class CollectionManager {
      * 
      * @return ArrayList of ids with the same unit of measure
      */
-    public void removeByUnitOfMeasure(UnitOfMeasure comparing) {
+    public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
 
         String command = new RemoveByUnitOfMeasure(null).getName() + " " + comparing;
         String antiCommand = "";
 
+        Product[] productsToRemove = products.stream().filter(p -> {
+            if (p.getUnitOfMeasure() != null)
+                return p.getUnitOfMeasure().equals(comparing);
+            else
+                return false;
+        })
+                .toArray(Product[]::new);
+
         for (Product p : products)
-            if (p.getUnitOfMeasure().equals(comparing)) {
-                IdManager.removeId(p.getId());
-                products.remove(p);
-                antiCommand += new Add(null).getName() + " {" + p.getFuncString(true) + "}";
-                if (CommandManager.getCountOfUnrecorded() == 0)
-                    History.clearUndoHistory();
-                CommandManager.minusUnrecordedCommand();
-            }
+            if (p.getUnitOfMeasure() != null)
+                if (p.getUnitOfMeasure().equals(comparing)) {
+                    IdManager.removeId(p.getId());
+                    products.remove(p);
+                    antiCommand += new Add(null).getName() + " {" + p.getFuncString(true) + "}";
+                    if (CommandManager.getCountOfUnrecorded() == 0)
+                        History.clearUndoHistory();
+                    CommandManager.minusUnrecordedCommand();
+                }
         History.add(command, antiCommand);
+        return productsToRemove;
     }
 
     /**

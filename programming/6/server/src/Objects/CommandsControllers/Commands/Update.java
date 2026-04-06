@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -102,6 +103,8 @@ public class Update extends Command {
         CountryValidator countryValidator = new CountryValidator();
         LocationValidator locationValidator = new LocationValidator();
 
+        Product newProduct = null;
+
         try {
             Long id = Long.parseLong(getArgument());
             IdValidator idValidator = new IdValidator();
@@ -140,7 +143,7 @@ public class Update extends Command {
 
             String ownerName = tokens[tokenCounter++].trim();
             if (ownerName.isBlank())
-                getCollectionManager().updateElement(id, name, coordinates,
+                newProduct = getCollectionManager().updateElement(id, name, coordinates,
                         !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -193,7 +196,7 @@ public class Update extends Command {
                         throw new IllegalArgumentException("Invalid value for location");
                 }
 
-                getCollectionManager().updateElement(id, name, coordinates,
+                newProduct = getCollectionManager().updateElement(id, name, coordinates,
                         !price.isBlank() ? Double.parseDouble(price) : null,
                         Integer.parseInt(manufactureCost),
                         !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
@@ -204,6 +207,7 @@ public class Update extends Command {
                                 location));
             }
             System.out.println("Successfully updated " + name);
+            getReceiver().addToAnswer(this, getArgument(), newProduct);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

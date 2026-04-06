@@ -113,6 +113,7 @@ public class RemoveGreater extends Command {
                         Integer.parseInt(manufactureCost),
                         !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                         null);
+
             else {
                 String height = tokens[7];
                 if (!heightValidator.isValid(String.valueOf(height), false))

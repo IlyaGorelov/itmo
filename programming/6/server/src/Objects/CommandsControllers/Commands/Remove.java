@@ -1,5 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Managers.CollectionManager;
 
@@ -16,13 +17,17 @@ public class Remove extends Command {
     @Override
     public void execute() throws IndexOutOfBoundsException {
         checkArgument();
+        Product p = null;
         try {
             long id = Long.parseLong(getArgument());
-            getCollectionManager().deleteById(id);
+            p = getCollectionManager().deleteById(id);
+            getReceiver().addToAnswer(this, getArgument(), p);
         } catch (IndexOutOfBoundsException e) {
+            getReceiver().addToAnswer(this, null, e.getMessage());
             throw new IndexOutOfBoundsException(e.getMessage());
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            getReceiver().addToAnswer(this, null, e.getMessage());
         }
 
     }

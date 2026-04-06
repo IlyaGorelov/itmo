@@ -203,6 +203,7 @@ public class Add extends Command implements Revertable {
                                     location));
             }
             System.out.println("Successfully added " + name);
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

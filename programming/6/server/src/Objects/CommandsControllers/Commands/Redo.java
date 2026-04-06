@@ -22,12 +22,15 @@ public class Redo extends Command {
         checkArgument();
 
         String[] redos = History.getLastUndo();
-        if (redos.length == 0)
+        if (redos.length == 0) {
             System.out.println("Nothing to redo");
-        else if (redos.length > 0) {
+            getReceiver().addToAnswer(this, null, "Nothing to redo");
+        } else if (redos.length > 0) {
             CommandManager.addUnrecordedCommands(redos.length);
-            for (String string : redos)
+            for (String string : redos) {
                 CommandBuffer.buffer.add(string);
+                getReceiver().addToAnswer(this, null, "");
+            }
         }
 
     }

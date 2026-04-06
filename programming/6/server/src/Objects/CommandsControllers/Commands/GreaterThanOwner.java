@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -67,7 +68,7 @@ public class GreaterThanOwner extends Command {
         // System.out.println("END OF LIST");
         // } else
         // System.out.println("No elements with greater owners");
-
+        executeFromScript("{}");
     }
 
     @Override
@@ -146,15 +147,16 @@ public class GreaterThanOwner extends Command {
                                         location));
 
             }
+            ArrayList<Product> products = new ArrayList<>();
             if (ids.size() > 0) {
                 System.out.println("All products with owner greater than input:\n");
                 for (Long id : ids) {
-                    System.out.println(getCollectionManager().getInfoById(id));
-                    System.out.println();
+                    products.add(getCollectionManager().getById(id));
                 }
                 System.out.println("END OF LIST");
             } else
                 System.out.println("No elements with greater owners");
+            getReceiver().addToAnswer(this, null, products.toArray());
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -86,11 +87,15 @@ public class AddIfMin extends Command {
 
     private void addIfMin(String name, Coordinates coordinates, Double price, Integer manufactureCost,
             UnitOfMeasure unitOfMeasure, Person person) {
+        Product newProduct = null;
         if (getCollectionManager().isMin(name, coordinates, price, manufactureCost, unitOfMeasure, person)) {
-            getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure, person);
+            newProduct = getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure,
+                    person);
             System.out.println("Successfully added " + name);
+            getReceiver().addToAnswer(this, null, newProduct);
         } else {
             System.out.println("Not added because not Max");
+            getReceiver().addToAnswer(this, null, newProduct);
         }
     }
 
@@ -204,7 +209,9 @@ public class AddIfMin extends Command {
                                 HairColor.valueOf(hairColor.toUpperCase()),
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
+
             }
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

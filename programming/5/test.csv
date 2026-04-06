@@ -1,3 +1,2 @@
 id,name,x,y,creationDate,price,manufactureCost,unitOfMeasure,ownerName,height,eyeColor,hairColor,nationality,locX,locY,locZ,locName
-1,null,23,23.0,Sun Mar 08 12:29:26 MSK 2026,,23,,,,,,,,,
-2,Xiomi Redmi Note 10S,23,34.0,Tue Mar 31 21:11:24 MSK 2026,20000.0,15000,,Ilya Gorelov,183.0,,BLACK,USA,,,,
+1,24,34,34.0,Mon Apr 06 21:38:21 MSK 2026,34.0,34,,,,,,,,,

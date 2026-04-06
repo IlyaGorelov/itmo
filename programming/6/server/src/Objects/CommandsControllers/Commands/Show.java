@@ -1,5 +1,8 @@
 package Objects.CommandsControllers.Commands;
 
+import org.openjdk.jol.info.GraphLayout;
+
+import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Managers.CollectionManager;
 
@@ -18,15 +21,27 @@ public class Show extends Command {
     public void execute() {
         checkArgument();
         var products = getCollectionManager().getElements();
+        String answer = "";
 
-        if (products.size() > 0) {
-            System.out.println("Showing all elements of collection:\n");
-            for (var p : products) {
-                System.out.println(p.toString() + "\n");
-            }
-            System.out.println("END OF LIST");
-        } else
-            System.out.println("Collection has no arguments");
+        // if (products.size() > 0) {
+        // answer += ("Showing all elements of collection:\n");
+        // // System.out.println("Showing all elements of collection:\n");
+        // for (var p : products) {
+        // answer += (p.toString() + "\n");
+        // }
+        // answer += ("END OF LIST");
+        // } else
+        // answer += ("Collection has no arguments");
+
+        // for (Product product : products) {
+        // System.out.println(GraphLayout.parseInstance(product).totalSize());
+        // }
+
+        getReceiver()
+                .addToAnswer(this, null,
+                        products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                                GraphLayout.parseInstance(y).totalSize())).toArray());
+
     }
 
     @Override

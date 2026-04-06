@@ -190,6 +190,7 @@ public class Update extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
+
             System.out.println("Successfully updated " + name);
         } catch (Exception e) {
             if (e.getMessage() != null)

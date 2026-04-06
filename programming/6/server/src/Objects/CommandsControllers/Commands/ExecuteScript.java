@@ -22,8 +22,9 @@ public class ExecuteScript extends Command {
     @Override
     public void execute() throws IllegalArgumentException {
         checkArgument();
+        String answer = "";
         try {
-            System.out.println("Scanning script from: " + getArgument());
+            answer += ("Scanning script from: " + getArgument()) + "\n";
             File script = new File(getArgument());
             Scanner scanner = new Scanner(new FileReader(script));
             while (scanner.hasNextLine()) {
@@ -33,20 +34,22 @@ public class ExecuteScript extends Command {
                 if (newCommand.contains(getName())) {
                     String path = newCommand.split(" ")[1];
                     if (new File(path).equals(script))
-                        System.out.println("Skip command " + newCommand + " because it refers to the same file");
+                        answer += ("Skip command " + newCommand + " because it refers to the same file") + "\n";
                     else {
-                        System.out.println("Add new command in queue: " + newCommand);
+                        answer += ("Add new command in queue: " + newCommand) + "\n";
                         CommandBuffer.buffer.add(newCommand);
                     }
                 } else {
-                    System.out.println("Add new command in queue: " + newCommand);
+                    answer += ("Add new command in queue: " + newCommand) + "\n";
                     CommandBuffer.buffer.add(newCommand);
                 }
             }
             scanner.close();
-            System.out.println("Executing...");
+            answer += ("Executing") + "\n";
+            getReceiver().addToAnswer(this, getArgument(), answer);
 
         } catch (Exception e) {
+            getReceiver().addToAnswer(this, getArgument(), e);
             throw new IllegalArgumentException(e.getMessage());
         }
     }
