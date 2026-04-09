@@ -1,8 +1,11 @@
 package Objects.Managers;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +33,9 @@ public class CommandManager {
      * 
      * @param receiver to get input
      */
-    public CommandManager(Scanner reader, ObjectInputStream in, ObjectOutputStream writer) {
+    public CommandManager(Scanner reader, InputStream in, OutputStream out) {
         ArrayList<Command> commands = new ArrayList<>();
-        IdManager.setIO(in, writer);
+        IdManager.setIO(in, out);
 
         commands.add(new Help());
         commands.add(new Info());
@@ -106,7 +109,7 @@ public class CommandManager {
                 default:
                     throw new IllegalArgumentException("Invalid number of arguments!");
             }
-            return new CustomPackage(command, argument, relevantObject);
+            return new CustomPackage(command.getName(), argument, relevantObject);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         } catch (Exception e) {

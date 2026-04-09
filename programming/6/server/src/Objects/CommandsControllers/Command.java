@@ -1,6 +1,7 @@
 package Objects.CommandsControllers;
 
 import java.io.Serializable;
+import java.nio.channels.SocketChannel;
 
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
@@ -11,6 +12,8 @@ public abstract class Command {
     private CollectionManager collectionManager;
     /** Receiver to send answers */
     private Receiver receiver;
+    /** Socket channel to send answers */
+    private SocketChannel client;
     /** An argument of a command presented in one line format */
     private String argument;
     /** Boolean indicates this command requires argument or not */
@@ -62,6 +65,14 @@ public abstract class Command {
 
     public Receiver getReceiver() {
         return receiver;
+    }
+
+    public void setClient(SocketChannel client) {
+        this.client = client;
+    }
+
+    public SocketChannel getCLient() {
+        return client;
     }
 
     public String getArgument() {

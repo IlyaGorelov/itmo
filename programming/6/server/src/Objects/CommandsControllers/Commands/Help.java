@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import java.util.TreeMap;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
 
@@ -19,7 +20,7 @@ public class Help extends Command {
     @Override
     public void execute() {
         checkArgument();
-        CommandManager commandManager = new CommandManager(getCollectionManager(), getReceiver());
+        CommandManager commandManager = new CommandManager(getCollectionManager(), getReceiver(), getCLient());
 
         StringBuilder answer = new StringBuilder();
         new TreeMap<String, Command>(commandManager.getCommandMap()).forEach((name, command) -> {
@@ -28,7 +29,8 @@ public class Help extends Command {
         });
 
         String finalAnswer = answer.toString();
-        getReceiver().addToAnswer(new Help(null), null, finalAnswer);
+        var pkg = new CustomPackage(this.getName(), null, finalAnswer);
+        getReceiver().addToAnswer(getCLient(), pkg);
     }
 
     @Override

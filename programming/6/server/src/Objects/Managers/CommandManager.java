@@ -1,5 +1,6 @@
 package Objects.Managers;
 
+import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ public class CommandManager {
     private HashMap<String, Command> commandMap = new HashMap<>();
 
     private Receiver receiver;
+    private SocketChannel client;
 
     /**
      * used for detecting then undo|redo cycle is over. While it>0 commands aren't
@@ -31,8 +33,9 @@ public class CommandManager {
      * @param collectionManager controls collection
      * @param receiver          to get input
      */
-    public CommandManager(CollectionManager collectionManager, Receiver receiver) {
+    public CommandManager(CollectionManager collectionManager, Receiver receiver, SocketChannel client) {
         this.receiver = receiver;
+        this.client = client;
         ArrayList<Command> commands = new ArrayList<>();
 
         commands.add(new Help(collectionManager));
@@ -58,6 +61,7 @@ public class CommandManager {
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
             command.setReceiver(receiver);
+            command.setClient(client);
         }
     }
 

@@ -25,11 +25,11 @@ public class App {
         public static void main(String[] args) throws Exception {
                 CollectionManager collectionManager = new CollectionManager();
                 collectionManager.loadCollection(ENV_KEY);
-                Receiver receiver = new Receiver(PORT);
+                CommandExecutor executor = new CommandExecutor(collectionManager);
+                Receiver receiver = new Receiver(PORT, executor);
                 receiver.connect();
 
-                CommandExecutor executor = new CommandExecutor();
-                executor.execute(collectionManager, receiver);
+                // executor.execute(collectionManager, receiver);
                 // System.out.println("Enter \"help\" to see all commands");
                 // System.out.println();
         }

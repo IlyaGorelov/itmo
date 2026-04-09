@@ -1,24 +1,46 @@
 package Objects.Managers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
-import Objects.Collection.Product;
+import javax.xml.crypto.Data;
+
 import Objects.CommandsControllers.Commands.GetById;
 import Objects.Connection.CustomPackage;
 
 /** Controls id */
 public class IdManager {
-    static ObjectOutputStream out;
-    static ObjectInputStream in;
+    static OutputStream out;
+    static InputStream in;
 
     public static boolean isIdIn(Long id) {
         try {
-            out.writeObject(new CustomPackage(new GetById(), id, null));
-            out.flush();
+            DataOutputStream dos = new DataOutputStream(out);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(new CustomPackage(new GetById().getName(), id, null));
+            oos.flush();
+            byte[] objectBytes = baos.toByteArray();
+            dos.writeInt(objectBytes.length);
+            dos.write(objectBytes);
+            dos.flush();
 
-            Object[] answer = (Object[]) in.readObject();
+            DataInputStream dis = new DataInputStream(in);
+            int answerLength = dis.readInt();
+            byte[] answerBytes = new byte[answerLength];
+            dis.readFully(answerBytes);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(answerBytes);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+
+            Object[] answer = (Object[]) ois.readObject();
             if (answer.length == 1)
                 return ((CustomPackage) answer[0]).getObject() != null;
             else
@@ -32,7 +54,7 @@ public class IdManager {
         }
     }
 
-    public static void setIO(ObjectInputStream in, ObjectOutputStream out) {
+    public static void setIO(InputStream in, OutputStream out) {
         IdManager.out = out;
         IdManager.in = in;
     }

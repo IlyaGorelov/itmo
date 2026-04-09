@@ -11,8 +11,8 @@ public class CustomPackage implements Serializable {
     Object argument;
     Object object;
 
-    public CustomPackage(Command command, Object argument, Object object) {
-        this.command = command.getName();
+    public CustomPackage(String command, Object argument, Object object) {
+        this.command = command;
         this.argument = argument;
         this.object = object;
     }

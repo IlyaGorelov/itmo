@@ -1,89 +1,199 @@
 package Objects.Connection;
 
-import java.io.DataInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
-import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.Commands.Exit;
+import Objects.CommandsControllers.CommandExecutor;
 
 public class Receiver {
-    private Socket socket;
-    private boolean wasAsked = false;
     private int port;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private ArrayList<CustomPackage> answer = new ArrayList<>();
+    private Selector selector;
+    private ServerSocketChannel serverChannel;
 
-    public Receiver(int port) {
+    private HashMap<SocketChannel, ByteBuffer> buffers = new HashMap<>();
+    private HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
+    private HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
+
+    // private boolean wasAsked = false;
+    // private ObjectInputStream in;
+    // private ObjectOutputStream out;
+    private CommandExecutor commandExecutor;
+
+    public Receiver(int port, CommandExecutor commandExecutor) {
         this.port = port;
+        this.commandExecutor = commandExecutor;
     }
 
     public void connect() {
-        try (ServerSocket server = new ServerSocket(3345)) {
-            socket = server.accept();
-            System.out.print("Connection accepted.\n");
+        try {
 
-            in = new ObjectInputStream(socket.getInputStream());
-            System.out.println("DataInputStream created");
+            selector = Selector.open();
+            serverChannel = ServerSocketChannel.open();
+            serverChannel.bind(new InetSocketAddress(port));
+            serverChannel.configureBlocking(false);
 
-            out = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("ObjectOutputStream created");
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            System.out.println("Server started on port " + port);
+
+            while (true) {
+                selector.select();
+                var keys = selector.selectedKeys().iterator();
+
+                while (keys.hasNext()) {
+                    SelectionKey key = keys.next();
+                    keys.remove();
+
+                    if (!key.isValid())
+                        continue;
+
+                    if (key.isAcceptable()) {
+                        accept(key);
+                    } else if (key.isReadable()) {
+                        read(key);
+                    } else if (key.isWritable()) {
+                        write(key);
+                    }
+                }
+            }
 
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             System.out.println("User input is not detected");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public CustomPackage receive() throws IOException, ClassNotFoundException {
+    public void accept(SelectionKey key) throws IOException {
+        ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
+        SocketChannel clientChannel = serverChannel.accept();
+        clientChannel.configureBlocking(false);
+        clientChannel.register(selector, SelectionKey.OP_READ);
 
-        while (!socket.isClosed()) {
-            wasAsked = true;
-            System.out.println("Server reading from channel");
-            CustomPackage entry = (CustomPackage) in.readObject();
-            System.out.println("READ from client message - " + entry);
-            return entry;
+        buffers.put(clientChannel, ByteBuffer.allocate(4096));
+        answers.put(clientChannel, new LinkedList<>());
+        requests.put(clientChannel, new LinkedList<>());
+
+        // commandExecutor.execute(this, clientChannel);
+
+        System.out.println("Client connected: " + clientChannel.getRemoteAddress());
+    }
+
+    public void read(SelectionKey key) throws IOException, ClassNotFoundException {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
+        ByteBuffer buffer = buffers.get(clientChannel);
+
+        int bytes = clientChannel.read(buffer);
+        if (bytes == -1) {
+            System.out.println("Client disconnected: " + clientChannel.getRemoteAddress());
+            closeClient(clientChannel);
+        }
+
+        if (bytes == 0) {
+            return;
+        }
+
+        buffer.flip();
+
+        while (true) {
+            if (buffer.remaining() < Integer.BYTES) {
+                break;
+            }
+
+            buffer.mark();
+            int length = buffer.getInt();
+
+            if (buffer.remaining() < length) {
+                buffer.reset();
+                break;
+            }
+
+            byte[] objectBytes = new byte[length];
+            buffer.get(objectBytes);
+
+            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(objectBytes))) {
+                CustomPackage pkg = (CustomPackage) ois.readObject();
+                requests.get(clientChannel).add(pkg);
+            }
+
+            commandExecutor.execute(this, clientChannel);
+            key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        }
+
+        buffer.compact();
+    }
+
+    // private CustomPackage deserialize(byte[] data) throws IOException,
+    // ClassNotFoundException {
+    // ByteArrayInputStream bais = new ByteArrayInputStream(data);
+    // ObjectInputStream ois = new ObjectInputStream(bais);
+    // return (CustomPackage) ois.readObject();
+    // }
+
+    public CustomPackage getPackage(SocketChannel client) {
+        var queue = requests.get(client);
+        if (queue != null && !queue.isEmpty()) {
+            return queue.poll();
         }
         return null;
     }
 
-    private void clearAnswer() {
-        answer.clear();
-    }
+    public void write(SelectionKey key) throws IOException {
+        SocketChannel clientCannel = (SocketChannel) key.channel();
+        Queue<CustomPackage> answerQueue = answers.get(clientCannel);
 
-    public void addToAnswer(Command command, Object arg, Object object) {
-        answer.add(new CustomPackage(command, arg, object));
-    }
+        while (!answerQueue.isEmpty()) {
+            Object[] pkg = answerQueue.toArray();
+            answerQueue.clear();
 
-    public void send() {
-        try {
-            if (wasAsked) {
-                out.reset();
-                out.writeObject(answer.toArray());
-                System.out.println("Server send message to client.");
-                out.flush();
-                clearAnswer();
-                wasAsked = false;
+            byte[] bytes;
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+
+            oos.writeObject(pkg);
+            oos.flush();
+            bytes = baos.toByteArray();
+
+            ByteBuffer buffer = ByteBuffer.allocate(4 + bytes.length);
+            buffer.putInt(bytes.length); // 4-byte length
+            buffer.put(bytes);
+            buffer.flip();
+
+            while (buffer.hasRemaining()) {
+                clientCannel.write(buffer);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        key.interestOps(SelectionKey.OP_READ);
+    }
+
+    public void addToAnswer(SocketChannel client, CustomPackage pkg) {
+        Queue<CustomPackage> queue = answers.get(client);
+        if (queue != null) {
+            queue.add(pkg);
         }
     }
 
-    public void close() {
+    public void closeClient(SocketChannel client) {
         try {
-            System.out.println("Client disconnected");
-            System.out.println("Closing connections & channels.");
-            in.close();
-            out.close();
-            socket.close();
+            answers.remove(client);
+            requests.remove(client);
+            buffers.remove(client);
+            client.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

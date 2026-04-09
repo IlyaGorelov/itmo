@@ -1,6 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** show information about collection */
@@ -19,7 +20,8 @@ public class Info extends Command {
         checkArgument();
         System.out.println("Information about collection:\n");
         System.out.println(getCollectionManager().getCollectionInfo());
-        getReceiver().addToAnswer(this, null, getCollectionManager().getCollectionInfo());
+        CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getCollectionInfo());
+        getReceiver().addToAnswer(getCLient(), pkg);
     }
 
     @Override
