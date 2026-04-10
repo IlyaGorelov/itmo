@@ -2,6 +2,7 @@ package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandExecutor;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** stop program */
@@ -30,11 +31,14 @@ public class Exit extends Command {
         checkArgument();
         var save = new Save(getCollectionManager());
         save.setReceiver(getReceiver());
+        save.setClient(getCLient());
         save.execute();
 
-        getReceiver().addToAnswer(this, null, "Program successfully stopped");
-        getReceiver().send();
+        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
+        getReceiver().addToAnswer(getCLient(), pkg);
+
         CommandExecutor.waitForNextCommand = false;
+
     }
 
     @Override

@@ -7,24 +7,70 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import Objects.CommandsControllers.Commands.Exit;
 import Objects.Managers.CommandManager;
 
 public class Client {
-    public void connect(String host, int port) {
-        try {
-            Socket socket = new Socket(host, port);
-            Scanner reader = new Scanner(System.in);
+    private Socket socket = null;
 
+    private static final int MAX_RETRY = 5;
+    private static final int CONNECT_TIMEOUT = 5000;
+
+    public void connect(String host, int port) {
+
+        while (true) {
+            try {
+                socket = getSocketWithRetry(host, port);
+                if (socket == null)
+                    break;
+
+                work();
+                break;
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+                System.out.println("Trying to reconnect...");
+            } catch (IOException e) {
+                System.out.println("Connection lost: " + e.getMessage());
+                System.out.println("Trying to reconnect...");
+            }
+        }
+
+    }
+
+    private Socket getSocketWithRetry(String host, int port)
+            throws IOException, InterruptedException {
+        int retry = 0;
+        int delay = 1000;
+        while (retry < MAX_RETRY) {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(host, port), CONNECT_TIMEOUT);
+                return socket;
+            } catch (ConnectException e) {
+                retry++;
+                System.out.println("Server is unavailable. Attempt " + retry + "/" + MAX_RETRY);
+                Thread.sleep(delay);
+                delay *= 2;
+            }
+
+        }
+        return socket;
+
+    }
+
+    private void work() {
+        try {
+            Scanner reader = new Scanner(System.in);
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
 
@@ -62,11 +108,19 @@ public class Client {
 
                 if (realCommand.getCommand().equals(new Exit().getName())) {
 
-                    System.out.println("Client kill connections");
+                    System.out.println("Client kills connections");
 
-                    // Object[] answer = (Object[]) in.read();
-                    // String realAnswer = commandManager.getRelevantAnswer(answer);
-                    // System.out.println(realAnswer);
+                    System.out.println();
+                    int answerLength = dis.readInt();
+                    byte[] answerBytes = new byte[answerLength];
+                    dis.readFully(answerBytes);
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(answerBytes);
+                    ObjectInputStream ois = new ObjectInputStream(bais);
+
+                    Object[] answer = (Object[]) ois.readObject();
+                    String realAnswer = commandManager.getRelevantAnswer(answer);
+                    System.out.println(realAnswer);
 
                     break;
                 }
@@ -91,6 +145,8 @@ public class Client {
             System.out.println(e.getMessage());
         } catch (ConnectException e) {
             System.out.println("Server doesn't listen on this port or server is not started yet.");
+        } catch (IndexOutOfBoundsException | NoSuchElementException e) {
+            System.out.println("User input is not detected, but all data was saved");
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } // catch (ClassNotFoundException e) {

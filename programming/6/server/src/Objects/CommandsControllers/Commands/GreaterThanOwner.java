@@ -7,6 +7,7 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -156,7 +157,9 @@ public class GreaterThanOwner extends Command {
                 System.out.println("END OF LIST");
             } else
                 System.out.println("No elements with greater owners");
-            getReceiver().addToAnswer(this, null, products.toArray());
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, products.toArray());
+            getReceiver().addToAnswer(getCLient(), pkg);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

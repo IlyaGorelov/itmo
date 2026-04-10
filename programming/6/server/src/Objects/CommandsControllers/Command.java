@@ -59,16 +59,18 @@ public abstract class Command {
         execute();
     };
 
-    public void setReceiver(Receiver receiver) {
+    public Command setReceiver(Receiver receiver) {
         this.receiver = receiver;
+        return this;
     }
 
     public Receiver getReceiver() {
         return receiver;
     }
 
-    public void setClient(SocketChannel client) {
+    public Command setClient(SocketChannel client) {
         this.client = client;
+        return this;
     }
 
     public SocketChannel getCLient() {

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import Objects.Collection.Person;
 import Objects.Collection.Product;
-import Objects.CommandsControllers.Command;
 
 public class CustomPackage implements Serializable {
     String command;

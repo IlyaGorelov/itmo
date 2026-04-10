@@ -1,6 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /*save collection in a file */
@@ -17,9 +18,12 @@ public class Save extends Command {
     @Override
     public void execute() {
         checkArgument();
+
         getCollectionManager().setCollection();
-        getReceiver().addToAnswer(this, null, "Successfully saved");
         System.out.println("Successfully saved");
+        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Successfully saved");
+        getReceiver().addToAnswer(getCLient(), pkg);
+
     }
 
     @Override

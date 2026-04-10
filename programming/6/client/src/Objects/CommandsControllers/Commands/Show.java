@@ -33,10 +33,13 @@ public class Show extends Command {
 
         if (products.length == 0)
             return "Collection is empty.";
-        else
+        else {
             for (Object product : products) {
-                relevant += product.toString() + "\n";
+                relevant += product.toString() + "\n\n";
             }
+            relevant += "END OF LIST\n";
+        }
+
         return relevant;
     }
 

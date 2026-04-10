@@ -4,6 +4,7 @@ import org.openjdk.jol.info.GraphLayout;
 
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /*Show all elements of collection */
@@ -37,10 +38,12 @@ public class Show extends Command {
         // System.out.println(GraphLayout.parseInstance(product).totalSize());
         // }
 
+        CustomPackage pkg = new CustomPackage(this.getName(), null,
+                products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                        GraphLayout.parseInstance(y).totalSize())).toArray());
+
         getReceiver()
-                .addToAnswer(this, null,
-                        products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
-                                GraphLayout.parseInstance(y).totalSize())).toArray());
+                .addToAnswer(getCLient(), pkg);
 
     }
 

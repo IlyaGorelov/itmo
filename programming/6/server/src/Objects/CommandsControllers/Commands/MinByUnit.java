@@ -1,6 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** show any element where unit of measure is minimal */
@@ -19,9 +20,12 @@ public class MinByUnit extends Command {
         try {
             System.out.println("Any element with min unit of measure:\n");
             System.out.println(getCollectionManager().getMinByUnitOfMeasure());
-            getReceiver().addToAnswer(this, null, getCollectionManager().getMinByUnitOfMeasure());
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getMinByUnitOfMeasure());
+            getReceiver().addToAnswer(getCLient(), pkg);
         } catch (Exception e) {
-            getReceiver().addToAnswer(this, null, e);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, e);
+            getReceiver().addToAnswer(getCLient(), pkg);
         }
     }
 

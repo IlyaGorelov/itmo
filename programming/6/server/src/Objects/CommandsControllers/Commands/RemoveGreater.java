@@ -7,6 +7,7 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -187,12 +188,14 @@ public class RemoveGreater extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
-            getReceiver().addToAnswer(this, null, greaters);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, greaters);
+            getReceiver().addToAnswer(getCLient(), pkg);
 
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
-                getReceiver().addToAnswer(this, null, e);
+                CustomPackage pkg = new CustomPackage(this.getName(), null, e);
+                getReceiver().addToAnswer(getCLient(), pkg);
             }
             System.out.println("Skip\n");
         }

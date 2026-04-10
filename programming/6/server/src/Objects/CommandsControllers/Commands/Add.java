@@ -1,11 +1,14 @@
 package Objects.CommandsControllers.Commands;
 
+import org.openjdk.jol.info.GraphLayout;
+
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.Revertable;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -218,7 +221,11 @@ public class Add extends Command implements Revertable {
                                     location));
             }
             System.out.println("Successfully added " + name);
-            getReceiver().addToAnswer(this, null, newProduct);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
+
+            getReceiver()
+                    .addToAnswer(getCLient(), pkg);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

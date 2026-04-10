@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** execute commands from the script file */
@@ -46,10 +47,13 @@ public class ExecuteScript extends Command {
             }
             scanner.close();
             answer += ("Executing") + "\n";
-            getReceiver().addToAnswer(this, getArgument(), answer);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), answer);
+            getReceiver().addToAnswer(getCLient(), pkg);
 
         } catch (Exception e) {
-            getReceiver().addToAnswer(this, getArgument(), e);
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
+            getReceiver().addToAnswer(getCLient(), pkg);
             throw new IllegalArgumentException(e.getMessage());
         }
     }

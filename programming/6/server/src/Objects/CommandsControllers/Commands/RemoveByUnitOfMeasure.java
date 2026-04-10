@@ -2,6 +2,7 @@ package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.CollectionManager;
 import Objects.Validators.UnitValidator;
@@ -19,19 +20,23 @@ public class RemoveByUnitOfMeasure extends Command {
     @Override
     public void execute() {
         checkArgument();
-        Product[] removes = null;
+        Product[] result = null;
         try {
             UnitValidator unitValidator = new UnitValidator();
-            if (unitValidator.isValid(getArgument(), false)) {
+            if (unitValidator.isValid(getArgument(), true)) {
                 System.out.println("Removing all products with this unit of measure\n");
-                UnitOfMeasure unit = UnitOfMeasure.valueOf(getArgument().toUpperCase());
-                removes = getCollectionManager().removeByUnitOfMeasure(unit);
-                getReceiver().addToAnswer(this, getArgument(), removes);
+
+                UnitOfMeasure unit = getArgument() != null ? UnitOfMeasure.valueOf(getArgument().toUpperCase()) : null;
+                result = getCollectionManager().removeByUnitOfMeasure(unit);
+
+                CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), result);
+                getReceiver().addToAnswer(getCLient(), pkg);
 
             } else
                 throw new IllegalArgumentException("Unknown unit of measure");
         } catch (IllegalArgumentException e) {
-            getReceiver().addToAnswer(this, getArgument(), e);
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
+            getReceiver().addToAnswer(getCLient(), pkg);
             throw new IllegalArgumentException();
         }
     }
@@ -44,6 +49,16 @@ public class RemoveByUnitOfMeasure extends Command {
     @Override
     public String getDescription() {
         return "remove all elements with the same unit of measure";
+    }
+
+    @Override
+    public void checkArgument() {
+        return;
+    }
+
+    @Override
+    public boolean getHasArgument() {
+        return false;
     }
 
 }

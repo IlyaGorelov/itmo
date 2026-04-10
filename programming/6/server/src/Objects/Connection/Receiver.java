@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import Objects.CommandsControllers.CommandExecutor;
+import Objects.CommandsControllers.Commands.Save;
 
 public class Receiver {
     private int port;
@@ -58,23 +60,34 @@ public class Receiver {
 
                     if (!key.isValid())
                         continue;
-
-                    if (key.isAcceptable()) {
-                        accept(key);
-                    } else if (key.isReadable()) {
-                        read(key);
-                    } else if (key.isWritable()) {
-                        write(key);
+                    try {
+                        if (key.isAcceptable()) {
+                            accept(key);
+                        } else if (key.isReadable()) {
+                            read(key);
+                        } else if (key.isWritable()) {
+                            write(key);
+                        }
+                    } catch (SocketException e) {
+                        System.out.println("SocketException for client, closing: " + key.channel());
+                        closeClient((SocketChannel) key.channel());
+                    } catch (IOException e) {
+                        System.out.println("IOException for client, closing: " + key.channel());
+                        e.printStackTrace();
+                        closeClient((SocketChannel) key.channel());
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Received unknown object from client, skipping");
+                        e.printStackTrace();
                     }
                 }
             }
 
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             System.out.println("User input is not detected");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            commandExecutor.stop();
         }
     }
 
@@ -156,28 +169,27 @@ public class Receiver {
         SocketChannel clientCannel = (SocketChannel) key.channel();
         Queue<CustomPackage> answerQueue = answers.get(clientCannel);
 
-        while (!answerQueue.isEmpty()) {
-            Object[] pkg = answerQueue.toArray();
-            answerQueue.clear();
+        Object[] pkg = answerQueue.toArray();
+        answerQueue.clear();
 
-            byte[] bytes;
+        byte[] bytes;
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-            oos.writeObject(pkg);
-            oos.flush();
-            bytes = baos.toByteArray();
+        oos.writeObject(pkg);
+        oos.flush();
+        bytes = baos.toByteArray();
 
-            ByteBuffer buffer = ByteBuffer.allocate(4 + bytes.length);
-            buffer.putInt(bytes.length); // 4-byte length
-            buffer.put(bytes);
-            buffer.flip();
+        ByteBuffer buffer = ByteBuffer.allocate(4 + bytes.length);
+        buffer.putInt(bytes.length);
+        buffer.put(bytes);
+        buffer.flip();
 
-            while (buffer.hasRemaining()) {
-                clientCannel.write(buffer);
-            }
+        while (buffer.hasRemaining()) {
+            clientCannel.write(buffer);
         }
+
         key.interestOps(SelectionKey.OP_READ);
     }
 

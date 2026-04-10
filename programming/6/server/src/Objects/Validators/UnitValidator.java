@@ -13,7 +13,7 @@ public class UnitValidator extends Validator<UnitOfMeasure> {
                 throw new IllegalArgumentException("No such unit of measure");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value == "null") {
+            if (value == null || value.isBlank() || value == "null") {
                 if (canBeNull)
                     return true;
                 else {

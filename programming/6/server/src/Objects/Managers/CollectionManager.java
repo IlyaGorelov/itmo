@@ -480,23 +480,23 @@ public class CollectionManager {
     /**
      * get ids with the same unit of measure
      * 
-     * @return ArrayList of ids with the same unit of measure
+     * @return Array of result Products
      */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
 
         String command = new RemoveByUnitOfMeasure(null).getName() + " " + comparing;
         String antiCommand = "";
 
-        Product[] productsToRemove = products.stream().filter(p -> {
+        Product[] result = products.stream().filter(p -> {
             if (p.getUnitOfMeasure() != null)
-                return p.getUnitOfMeasure().equals(comparing);
+                return !p.getUnitOfMeasure().equals(comparing);
             else
-                return false;
+                return comparing == null ? false : true;
         })
                 .toArray(Product[]::new);
 
         for (Product p : products)
-            if (p.getUnitOfMeasure() != null)
+            if (p.getUnitOfMeasure() != null) {
                 if (p.getUnitOfMeasure().equals(comparing)) {
                     IdManager.removeId(p.getId());
                     products.remove(p);
@@ -505,8 +505,18 @@ public class CollectionManager {
                         History.clearUndoHistory();
                     CommandManager.minusUnrecordedCommand();
                 }
+            } else {
+                if (comparing == null) {
+                    IdManager.removeId(p.getId());
+                    products.remove(p);
+                    antiCommand += new Add(null).getName() + " {" + p.getFuncString(true) + "}";
+                    if (CommandManager.getCountOfUnrecorded() == 0)
+                        History.clearUndoHistory();
+                    CommandManager.minusUnrecordedCommand();
+                }
+            }
         History.add(command, antiCommand);
-        return productsToRemove;
+        return result;
     }
 
     /**

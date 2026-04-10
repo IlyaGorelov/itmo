@@ -1,2 +1,3 @@
 help
 clear
+execute_script C:\itmo\programming\6\client\script.txt

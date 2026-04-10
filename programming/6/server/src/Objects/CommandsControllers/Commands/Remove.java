@@ -2,6 +2,7 @@ package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** remove an element by id */
@@ -21,13 +22,18 @@ public class Remove extends Command {
         try {
             long id = Long.parseLong(getArgument());
             p = getCollectionManager().deleteById(id);
-            getReceiver().addToAnswer(this, getArgument(), p);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
+            getReceiver().addToAnswer(getCLient(), pkg);
+
         } catch (IndexOutOfBoundsException e) {
-            getReceiver().addToAnswer(this, null, e.getMessage());
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
+            getReceiver().addToAnswer(getCLient(), pkg);
             throw new IndexOutOfBoundsException(e.getMessage());
         } catch (Exception e) {
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
+            getReceiver().addToAnswer(getCLient(), pkg);
             System.out.println(e.getMessage());
-            getReceiver().addToAnswer(this, null, e.getMessage());
         }
 
     }

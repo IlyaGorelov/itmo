@@ -36,12 +36,22 @@ public class RemoveByUnitOfMeasure extends Command {
         Object[] products = (Object[]) object;
         String relevant = "";
         if (products.length == 0)
-            return "There are no elements with this unit: " + pack.getArgument() + " \n";
+            return "Elements with this unit was removed if they was there: " + pack.getArgument() + " \n";
 
         for (Object product : products) {
             relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
         }
         return relevant;
+    }
+
+    @Override
+    public void checkArgument() {
+        return;
+    }
+
+    @Override
+    public boolean getHasArgument() {
+        return false;
     }
 
 }

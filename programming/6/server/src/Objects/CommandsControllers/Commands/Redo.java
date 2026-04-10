@@ -3,6 +3,7 @@ package Objects.CommandsControllers.Commands;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.History;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
 
@@ -24,12 +25,14 @@ public class Redo extends Command {
         String[] redos = History.getLastUndo();
         if (redos.length == 0) {
             System.out.println("Nothing to redo");
-            getReceiver().addToAnswer(this, null, "Nothing to redo");
+            CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
+            getReceiver().addToAnswer(getCLient(), pkg);
         } else if (redos.length > 0) {
             CommandManager.addUnrecordedCommands(redos.length);
             for (String string : redos) {
                 CommandBuffer.buffer.add(string);
-                getReceiver().addToAnswer(this, null, "");
+                CustomPackage pkg = new CustomPackage(this.getName(), null, "");
+                getReceiver().addToAnswer(getCLient(), pkg);
             }
         }
 

@@ -1,10 +1,13 @@
 package Objects.CommandsControllers.Commands;
 
+import org.openjdk.jol.info.GraphLayout;
+
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -92,10 +95,14 @@ public class AddIfMax extends Command {
             newProduct = getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure,
                     person);
             System.out.println("Successfully added");
-            getReceiver().addToAnswer(this, null, newProduct);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
+            getReceiver().addToAnswer(getCLient(), pkg);
         } else {
             System.out.println("Not added because not Max");
-            getReceiver().addToAnswer(this, null, newProduct);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
+            getReceiver().addToAnswer(getCLient(), pkg);
         }
     }
 

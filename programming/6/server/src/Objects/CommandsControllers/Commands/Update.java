@@ -5,6 +5,7 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
@@ -207,7 +208,10 @@ public class Update extends Command {
                                 location));
             }
             System.out.println("Successfully updated " + name);
-            getReceiver().addToAnswer(this, getArgument(), newProduct);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), newProduct);
+            getReceiver().addToAnswer(getCLient(), pkg);
+
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());

@@ -1,6 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Validators.*;
 
@@ -24,9 +25,13 @@ public class GetById extends Command {
             if (!idValidator.isValid(String.valueOf(id), false))
                 throw new IllegalArgumentException("Invalid value for id");
             var element = getCollectionManager().getById(id);
-            getReceiver().addToAnswer(this, null, element);
+
+            CustomPackage pkg = new CustomPackage(this.getName(), null, element);
+            getReceiver().addToAnswer(getCLient(), pkg);
+
         } catch (Exception e) {
-            getReceiver().addToAnswer(this, null, null);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, null);
+            getReceiver().addToAnswer(getCLient(), pkg);
             throw new IllegalArgumentException(e.getMessage());
         }
     }

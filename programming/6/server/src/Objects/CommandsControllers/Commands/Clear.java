@@ -1,6 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /** removes all elements from the collection */
@@ -17,7 +18,9 @@ public class Clear extends Command {
     public void execute() {
         checkArgument();
         getCollectionManager().clear();
-        getReceiver().addToAnswer(this, null, null);
+
+        CustomPackage pkg = new CustomPackage(this.getName(), null, null);
+        getReceiver().addToAnswer(getCLient(), pkg);
     }
 
     @Override

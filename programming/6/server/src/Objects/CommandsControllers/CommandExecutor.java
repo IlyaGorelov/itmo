@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
 
+import Objects.CommandsControllers.Commands.Exit;
+import Objects.CommandsControllers.Commands.Save;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
@@ -14,6 +16,7 @@ import Objects.Managers.CommandManager;
 public class CommandExecutor {
     private CollectionManager collectionManager;
     public static boolean waitForNextCommand = true;
+    private CommandManager commandManager;
 
     public CommandExecutor(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
@@ -21,7 +24,7 @@ public class CommandExecutor {
 
     /** read command from sysin or buffer, then put command in commandManager */
     public void execute(Receiver receiver, SocketChannel client) {
-        CommandManager commandManager = new CommandManager(collectionManager, receiver, client);
+        commandManager = new CommandManager(collectionManager, receiver, client);
         waitForNextCommand = true;
 
         while (waitForNextCommand) {
@@ -43,16 +46,29 @@ public class CommandExecutor {
             } catch (IndexOutOfBoundsException | NoSuchElementException e) {
                 System.out.println("User input is not detected");
                 break;
+            } catch (Exception e) {
+                System.out.println(e);
+                break;
             }
 
         }
 
         // try {
-        // commandManager.executeCommand(new Exit(collectionManager).getName());
+        // commandManager
+        // .executeCommand(new
+        // Exit(collectionManager).setClient(client).setReceiver(receiver).getName());
         // } catch (Exception e) {
         // System.out.println("ERROR ERROR ERROR");
         // }
-        // receiver.closeClient(client);
+
+    }
+
+    public void stop() {
+        try {
+            new Save(collectionManager).execute();
+        } catch (Exception e) {
+            // System.out.println();
+        }
     }
 
 }
