@@ -220,7 +220,7 @@ public class Add extends Command implements Revertable {
                                     Country.valueOf(nationality.toUpperCase()),
                                     location));
             }
-            System.out.println("Successfully added " + name);
+            // System.out.println("Successfully added " + name);
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
 
@@ -229,7 +229,7 @@ public class Add extends Command implements Revertable {
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
 
     }

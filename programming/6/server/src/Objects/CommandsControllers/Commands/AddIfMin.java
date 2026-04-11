@@ -92,12 +92,12 @@ public class AddIfMin extends Command {
         if (getCollectionManager().isMin(name, coordinates, price, manufactureCost, unitOfMeasure, person)) {
             newProduct = getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure,
                     person);
-            System.out.println("Successfully added " + name);
+            // System.out.println("Successfully added " + name);
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
             getReceiver().addToAnswer(getCLient(), pkg);
         } else {
-            System.out.println("Not added because not Max");
+            // System.out.println("Not added because not Max");
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
             getReceiver().addToAnswer(getCLient(), pkg);
@@ -220,7 +220,7 @@ public class AddIfMin extends Command {
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
 
     }

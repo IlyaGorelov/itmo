@@ -197,7 +197,7 @@ public class RemoveGreater extends Command {
                 CustomPackage pkg = new CustomPackage(this.getName(), null, e);
                 getReceiver().addToAnswer(getCLient(), pkg);
             }
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
 
     }

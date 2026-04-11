@@ -18,8 +18,8 @@ public class Info extends Command {
     @Override
     public void execute() {
         checkArgument();
-        System.out.println("Information about collection:\n");
-        System.out.println(getCollectionManager().getCollectionInfo());
+        // System.out.println("Information about collection:\n");
+        // System.out.println(getCollectionManager().getCollectionInfo());
         CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getCollectionInfo());
         getReceiver().addToAnswer(getCLient(), pkg);
     }

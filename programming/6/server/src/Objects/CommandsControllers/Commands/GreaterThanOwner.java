@@ -150,20 +150,19 @@ public class GreaterThanOwner extends Command {
             }
             ArrayList<Product> products = new ArrayList<>();
             if (ids.size() > 0) {
-                System.out.println("All products with owner greater than input:\n");
+                // System.out.println("All products with owner greater than input:\n");
                 for (Long id : ids) {
                     products.add(getCollectionManager().getById(id));
                 }
-                System.out.println("END OF LIST");
-            } else
-                System.out.println("No elements with greater owners");
+                // System.out.println("END OF LIST");
+            } 
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, products.toArray());
             getReceiver().addToAnswer(getCLient(), pkg);
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
 
     }

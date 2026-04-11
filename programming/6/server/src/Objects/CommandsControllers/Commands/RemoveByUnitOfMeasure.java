@@ -24,7 +24,7 @@ public class RemoveByUnitOfMeasure extends Command {
         try {
             UnitValidator unitValidator = new UnitValidator();
             if (unitValidator.isValid(getArgument(), true)) {
-                System.out.println("Removing all products with this unit of measure\n");
+                // System.out.println("Removing all products with this unit of measure\n");
 
                 UnitOfMeasure unit = getArgument() != null ? UnitOfMeasure.valueOf(getArgument().toUpperCase()) : null;
                 result = getCollectionManager().removeByUnitOfMeasure(unit);

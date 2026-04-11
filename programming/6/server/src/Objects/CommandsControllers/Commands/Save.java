@@ -20,7 +20,7 @@ public class Save extends Command {
         checkArgument();
 
         getCollectionManager().setCollection();
-        System.out.println("Successfully saved");
+        // System.out.println("Successfully saved");
         CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Successfully saved");
         getReceiver().addToAnswer(getCLient(), pkg);
 

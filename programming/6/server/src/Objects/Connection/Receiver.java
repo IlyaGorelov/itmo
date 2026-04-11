@@ -17,10 +17,14 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Objects.CommandsControllers.CommandExecutor;
-import Objects.CommandsControllers.Commands.Save;
 
 public class Receiver {
+    private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
+
     private int port;
     private Selector selector;
     private ServerSocketChannel serverChannel;
@@ -29,9 +33,6 @@ public class Receiver {
     private HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
     private HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
 
-    // private boolean wasAsked = false;
-    // private ObjectInputStream in;
-    // private ObjectOutputStream out;
     private CommandExecutor commandExecutor;
 
     public Receiver(int port, CommandExecutor commandExecutor) {
@@ -48,7 +49,7 @@ public class Receiver {
             serverChannel.configureBlocking(false);
 
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("Server started on port " + port);
+            logger.info("Server started on port {}", port);
 
             while (true) {
                 selector.select();
@@ -69,21 +70,21 @@ public class Receiver {
                             write(key);
                         }
                     } catch (SocketException e) {
-                        System.out.println("SocketException for client, closing: " + key.channel());
+                        logger.error("SocketException for client, closing: {}", key.channel());
                         closeClient((SocketChannel) key.channel());
                     } catch (IOException e) {
-                        System.out.println("IOException for client, closing: " + key.channel());
+                        logger.error("IOException for client, closing: ", key.channel());
                         e.printStackTrace();
                         closeClient((SocketChannel) key.channel());
                     } catch (ClassNotFoundException e) {
-                        System.out.println("Received unknown object from client, skipping");
+                        logger.error("Received unknown object from client, skipping");
                         e.printStackTrace();
                     }
                 }
             }
 
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
-            System.out.println("User input is not detected");
+            logger.error("User input is not detected");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -103,7 +104,7 @@ public class Receiver {
 
         // commandExecutor.execute(this, clientChannel);
 
-        System.out.println("Client connected: " + clientChannel.getRemoteAddress());
+        logger.info("Client connected: {}", clientChannel.getRemoteAddress());
     }
 
     public void read(SelectionKey key) throws IOException, ClassNotFoundException {
@@ -112,7 +113,7 @@ public class Receiver {
 
         int bytes = clientChannel.read(buffer);
         if (bytes == -1) {
-            System.out.println("Client disconnected: " + clientChannel.getRemoteAddress());
+            logger.info("Client disconnected: {}", clientChannel.getRemoteAddress());
             closeClient(clientChannel);
         }
 
@@ -141,6 +142,7 @@ public class Receiver {
             try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(objectBytes))) {
                 CustomPackage pkg = (CustomPackage) ois.readObject();
                 requests.get(clientChannel).add(pkg);
+                logger.info("Received a request: {}", pkg.getCommand());
             }
 
             commandExecutor.execute(this, clientChannel);
@@ -149,13 +151,6 @@ public class Receiver {
 
         buffer.compact();
     }
-
-    // private CustomPackage deserialize(byte[] data) throws IOException,
-    // ClassNotFoundException {
-    // ByteArrayInputStream bais = new ByteArrayInputStream(data);
-    // ObjectInputStream ois = new ObjectInputStream(bais);
-    // return (CustomPackage) ois.readObject();
-    // }
 
     public CustomPackage getPackage(SocketChannel client) {
         var queue = requests.get(client);
@@ -189,6 +184,7 @@ public class Receiver {
         while (buffer.hasRemaining()) {
             clientCannel.write(buffer);
         }
+        logger.info("Sended an answer: {}", pkg);
 
         key.interestOps(SelectionKey.OP_READ);
     }
@@ -205,6 +201,7 @@ public class Receiver {
             answers.remove(client);
             requests.remove(client);
             buffers.remove(client);
+            logger.info("Closed connection with client: {}", client.getRemoteAddress());
             client.close();
         } catch (IOException e) {
             e.printStackTrace();

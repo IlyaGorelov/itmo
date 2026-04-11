@@ -21,6 +21,7 @@ import Objects.CommandsControllers.Commands.Exit;
 import Objects.Managers.CommandManager;
 
 public class Client {
+
     private Socket socket = null;
 
     private static final int MAX_RETRY = 5;

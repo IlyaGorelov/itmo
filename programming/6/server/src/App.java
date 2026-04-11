@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import Objects.CommandsControllers.CommandExecutor;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
@@ -28,9 +25,5 @@ public class App {
                 CommandExecutor executor = new CommandExecutor(collectionManager);
                 Receiver receiver = new Receiver(PORT, executor);
                 receiver.connect();
-
-                // executor.execute(collectionManager, receiver);
-                // System.out.println("Enter \"help\" to see all commands");
-                // System.out.println();
         }
 }

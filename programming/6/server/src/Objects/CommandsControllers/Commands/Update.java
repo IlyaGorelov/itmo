@@ -207,7 +207,7 @@ public class Update extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
-            System.out.println("Successfully updated " + name);
+            // System.out.println("Successfully updated " + name);
 
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), newProduct);
             getReceiver().addToAnswer(getCLient(), pkg);
@@ -215,7 +215,7 @@ public class Update extends Command {
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
     }
 

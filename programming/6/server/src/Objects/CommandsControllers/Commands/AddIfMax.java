@@ -99,7 +99,7 @@ public class AddIfMax extends Command {
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
             getReceiver().addToAnswer(getCLient(), pkg);
         } else {
-            System.out.println("Not added because not Max");
+            // System.out.println("Not added because not Max");
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
             getReceiver().addToAnswer(getCLient(), pkg);
@@ -217,12 +217,12 @@ public class AddIfMax extends Command {
                                 Country.valueOf(nationality.toUpperCase()),
                                 location));
             }
-            System.out.println("Successfully added " + name);
+            // System.out.println("Successfully added " + name);
 
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            System.out.println("Skip\n");
+            // System.out.println("Skip\n");
         }
 
     }

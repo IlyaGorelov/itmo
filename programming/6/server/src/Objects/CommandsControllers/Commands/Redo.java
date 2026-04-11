@@ -24,7 +24,7 @@ public class Redo extends Command {
 
         String[] redos = History.getLastUndo();
         if (redos.length == 0) {
-            System.out.println("Nothing to redo");
+            // System.out.println("Nothing to redo");
             CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
             getReceiver().addToAnswer(getCLient(), pkg);
         } else if (redos.length > 0) {
