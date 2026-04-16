@@ -105,10 +105,6 @@ public class Product implements Comparable<Product>, Serializable {
     public int compareTo(Product o) {
         int result = Double.compare(price == null ? 0 : price, o.price == null ? 0 : o.price);
         if (result == 0)
-            result = this.creationDate.compareTo(o.creationDate);
-        if (result == 0)
-            result = this.coordinates.compareTo(o.coordinates);
-        if (result == 0)
             result = Integer.compare(manufactureCost, o.manufactureCost);
 
         return result;

@@ -20,7 +20,9 @@ public class Help extends Command {
     @Override
     public void execute() {
         checkArgument();
-        CommandManager commandManager = new CommandManager(getCollectionManager(), getReceiver(), getCLient());
+        CommandManager commandManager =  !getIsCLIMode() ?
+                new CommandManager(getCollectionManager(), getReceiver(), getCLient()) :
+                new CommandManager(getCollectionManager(),getReceiver(),true);
 
         StringBuilder answer = new StringBuilder();
         new TreeMap<String, Command>(commandManager.getCommandMap()).forEach((name, command) -> {
@@ -29,8 +31,12 @@ public class Help extends Command {
         });
 
         String finalAnswer = answer.toString();
-        var pkg = new CustomPackage(this.getName(), null, finalAnswer);
-        getReceiver().addToAnswer(getCLient(), pkg);
+
+        if (!getIsCLIMode()) {
+            var pkg = new CustomPackage(this.getName(), null, finalAnswer);
+            getReceiver().addToAnswer(getCLient(), pkg);
+        } else
+            getReceiver().addAnswerForCLI(finalAnswer);
     }
 
     @Override

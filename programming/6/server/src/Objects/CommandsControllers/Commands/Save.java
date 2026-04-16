@@ -21,8 +21,12 @@ public class Save extends Command {
 
         getCollectionManager().setCollection();
         // System.out.println("Successfully saved");
-        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Successfully saved");
-        getReceiver().addToAnswer(getCLient(), pkg);
+        if (!getIsCLIMode()) {
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Successfully saved");
+            getReceiver().addToAnswer(getCLient(), pkg);
+        } else {
+            getReceiver().addAnswerForCLI("Successfully saved");
+        }
 
     }
 

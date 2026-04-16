@@ -34,8 +34,12 @@ public class Exit extends Command {
         save.setClient(getCLient());
         save.execute();
 
-        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
-        getReceiver().addToAnswer(getCLient(), pkg);
+        if (!getIsCLIMode()) {
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
+            getReceiver().addToAnswer(getCLient(), pkg);
+        } else {
+            getReceiver().addAnswerForCLI("Program successfully stopped");
+        }
 
         CommandExecutor.waitForNextCommand = false;
 

@@ -26,12 +26,20 @@ public class GetById extends Command {
                 throw new IllegalArgumentException("Invalid value for id");
             var element = getCollectionManager().getById(id);
 
-            CustomPackage pkg = new CustomPackage(this.getName(), null, element);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode()) {
+                CustomPackage pkg = new CustomPackage(this.getName(), null, element);
+                getReceiver().addToAnswer(getCLient(), pkg);
+            } else {
+                getReceiver().addAnswerForCLI(element.toString());
+            }
 
         } catch (Exception e) {
-            CustomPackage pkg = new CustomPackage(this.getName(), null, null);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode()) {
+                CustomPackage pkg = new CustomPackage(this.getName(), null, null);
+                getReceiver().addToAnswer(getCLient(), pkg);
+            } else {
+                getReceiver().addAnswerForCLI(e.getMessage());
+            }
             throw new IllegalArgumentException(e.getMessage());
         }
     }

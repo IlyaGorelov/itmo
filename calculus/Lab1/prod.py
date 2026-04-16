@@ -172,8 +172,8 @@ def jordan_chains(A, eigenvalue, mult):
     vectors_by_length = {k: [] for k in range(1, mult + 1)}
 
     for k in range(mult, 0, -1):
-        forbidden = independent_basis(K[k - 1] + image_of_space(N, K[k + 1]))
-        tops = basis_extension(forbidden, K[k])
+        used = independent_basis(K[k - 1] + image_of_space(N, K[k + 1]))
+        tops = basis_extension(used, K[k])
         vectors_by_length[k] = tops
 
     chains = []
@@ -202,12 +202,6 @@ def jordan_decomposition(A):
         for _, chain in chains:
             jordan_basis.extend(chain)
             blocks.append((eigenvalue, len(chain)))
-
-    if len(jordan_basis) != n:
-        raise ValueError(
-            f"Не удалось построить полный жорданов базис: "
-            f"получено {len(jordan_basis)} векторов вместо {n}"
-        )
 
     P = simplify_matrix(cols_to_matrix(jordan_basis, n))
 
@@ -337,7 +331,7 @@ def write_case_result(f, A, title, J_src, P_src):
 
 
 
-def run_demo(output_file="pro.txt"):
+def demo(output_file="pro.txt"):
     A_gen, J_src, P_src = generate_test_matrix(seed=42)
     case=(
         A_gen,
@@ -349,4 +343,4 @@ def run_demo(output_file="pro.txt"):
 
 
 if __name__ == "__main__":
-    run_demo("prod.txt")
+    demo("prod.txt")

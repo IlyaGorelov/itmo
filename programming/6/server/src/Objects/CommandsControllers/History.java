@@ -11,7 +11,7 @@ public class History {
     private static ArrayDeque<String> antiUndoHistory = new ArrayDeque<>();
 
     public static void add(String command, String antiCommand) {
-        if (commandsHistory.size() == 0 || !command.equals(undoHistory.peekLast())
+        if (commandsHistory.isEmpty() || !command.equals(undoHistory.peekLast())
                 && !antiCommand.equals(antiUndoHistory.peekLast())) {
             {
                 if (CommandManager.getCountOfUnrecorded() == 0) {

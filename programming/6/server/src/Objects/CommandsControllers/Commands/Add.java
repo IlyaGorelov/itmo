@@ -30,6 +30,8 @@ public class Add extends Command implements Revertable {
     /** Asks for required fields then creates new element - Product */
     @Override
     public void execute() {
+        if (getIsCLIMode())
+            getReceiver().addAnswerForCLI("Write argument in one line style");
         // checkArgument();
         // System.out.println("Adding new element. Type new values.");
         // var stringValidator = new StringValidator();
@@ -83,6 +85,7 @@ public class Add extends Command implements Revertable {
         // add id input with spec sym $
         String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
         int tokenCounter = 0;
+        checkArgument();
 
         StringValidator stringValidator = new StringValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -224,11 +227,21 @@ public class Add extends Command implements Revertable {
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
 
-            getReceiver()
-                    .addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode())
+                getReceiver()
+                        .addToAnswer(getCLient(), pkg);
+            else
+                getReceiver().addAnswerForCLI("Succesfully added " + name);
         } catch (Exception e) {
-            if (e.getMessage() != null)
-                System.out.println(e.getMessage());
+            if (e.getMessage() != null) {
+                CustomPackage pkg = new CustomPackage(this.getName(), null, e);
+                if (!getIsCLIMode())
+                    getReceiver()
+                            .addToAnswer(getCLient(), pkg);
+                else
+                    getReceiver().addAnswerForCLI(e.getMessage());
+
+            }
             // System.out.println("Skip\n");
         }
 

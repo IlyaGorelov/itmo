@@ -24,26 +24,20 @@ public class Show extends Command {
         var products = getCollectionManager().getElements();
         String answer = "";
 
-        // if (products.size() > 0) {
-        // answer += ("Showing all elements of collection:\n");
-        // // System.out.println("Showing all elements of collection:\n");
-        // for (var p : products) {
-        // answer += (p.toString() + "\n");
-        // }
-        // answer += ("END OF LIST");
-        // } else
-        // answer += ("Collection has no arguments");
-
-        // for (Product product : products) {
-        // System.out.println(GraphLayout.parseInstance(product).totalSize());
-        // }
+        var productsSorted = products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                GraphLayout.parseInstance(y).totalSize())).toArray();
 
         CustomPackage pkg = new CustomPackage(this.getName(), null,
                 products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
                         GraphLayout.parseInstance(y).totalSize())).toArray());
 
-        getReceiver()
-                .addToAnswer(getCLient(), pkg);
+        if (!getIsCLIMode()) {
+            getReceiver()
+                    .addToAnswer(getCLient(), pkg);
+        } else {
+            for (Object p : productsSorted)
+                getReceiver().addAnswerForCLI(p.toString());
+        }
 
     }
 

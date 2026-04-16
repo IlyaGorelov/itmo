@@ -12,8 +12,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
@@ -21,17 +23,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Objects.CommandsControllers.CommandExecutor;
+import Objects.Managers.CLIManager;
 
 public class Receiver {
     private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
+    private final CLIManager cliManager = new CLIManager();
 
     private int port;
     private Selector selector;
     private ServerSocketChannel serverChannel;
 
+    private List<String> answersForCLI = new ArrayList<>();
+    private Queue<String> requestsForCLI = new LinkedList<>();
+
     private HashMap<SocketChannel, ByteBuffer> buffers = new HashMap<>();
     private HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
     private HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
+    private HashMap<SocketChannel, ByteBuffer> pendingWrites = new HashMap<>();
 
     private CommandExecutor commandExecutor;
 
@@ -52,7 +60,7 @@ public class Receiver {
             logger.info("Server started on port {}", port);
 
             while (true) {
-                selector.select();
+                selector.select(50);
                 var keys = selector.selectedKeys().iterator();
 
                 while (keys.hasNext()) {
@@ -81,6 +89,8 @@ public class Receiver {
                         e.printStackTrace();
                     }
                 }
+
+                processCLI();
             }
 
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
@@ -101,6 +111,7 @@ public class Receiver {
         buffers.put(clientChannel, ByteBuffer.allocate(4096));
         answers.put(clientChannel, new LinkedList<>());
         requests.put(clientChannel, new LinkedList<>());
+        pendingWrites.put(clientChannel, null);
 
         // commandExecutor.execute(this, clientChannel);
 
@@ -206,5 +217,41 @@ public class Receiver {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addAnswerForCLI(String answer) {
+        answersForCLI.add(answer);
+    }
+
+    private void processCLI() throws IOException {
+        String line;
+
+        while ((line = cliManager.pollLine()) != null) {
+            line = line.trim();
+
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            requestsForCLI.add(line);
+
+            logger.info("CLI command: {}", line);
+
+            if ("exit".equalsIgnoreCase(line)) {
+                cliManager.writeLine("Stopping server...");
+                commandExecutor.stop();
+                System.exit(0);
+            }
+
+            commandExecutor.executeFromCLI(this);
+            for (String a : answersForCLI)
+                cliManager.writeLine(a);
+
+            answersForCLI.clear();
+        }
+    }
+
+    public String getCLICommand() {
+        return requestsForCLI.poll();
     }
 }

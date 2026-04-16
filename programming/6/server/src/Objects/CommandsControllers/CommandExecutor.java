@@ -1,11 +1,8 @@
 package Objects.CommandsControllers;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
 
-import Objects.CommandsControllers.Commands.Exit;
 import Objects.CommandsControllers.Commands.Save;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
@@ -16,6 +13,7 @@ import Objects.Managers.CommandManager;
 public class CommandExecutor {
     private CollectionManager collectionManager;
     public static boolean waitForNextCommand = true;
+    public static boolean waitForNextCommandForCLI = false;
     private CommandManager commandManager;
 
     public CommandExecutor(CollectionManager collectionManager) {
@@ -37,6 +35,45 @@ public class CommandExecutor {
                 CustomPackage pack = receiver.getPackage(client);
                 if (pack != null) {
                     CommandBuffer.buffer.add(pack.toString());
+                    System.out.println();
+                } else {
+                    break;
+                }
+
+                // commandManager.executeCommand(CommandBuffer.buffer.get(0));
+            } catch (IndexOutOfBoundsException | NoSuchElementException e) {
+                System.out.println("User input is not detected");
+                break;
+            } catch (Exception e) {
+                System.out.println(e);
+                break;
+            }
+
+        }
+
+        // try {
+        // commandManager
+        // .executeCommand(new
+        // Exit(collectionManager).setClient(client).setReceiver(receiver).getName());
+        // } catch (Exception e) {
+        // System.out.println("ERROR ERROR ERROR");
+        // }
+
+    }
+
+    public void executeFromCLI(Receiver receiver) {
+        commandManager = new CommandManager(collectionManager, receiver, true);
+        waitForNextCommandForCLI = true;
+
+        while (waitForNextCommandForCLI) {
+            try {
+                if (CommandBuffer.buffer.size() > 0) {
+                    commandManager.executeCommand(CommandBuffer.buffer.get(0));
+                    continue;
+                }
+                String command = receiver.getCLICommand();
+                if (command != null) {
+                    CommandBuffer.buffer.add(command);
                     System.out.println();
                 } else {
                     break;

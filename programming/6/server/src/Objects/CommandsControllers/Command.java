@@ -18,6 +18,7 @@ public abstract class Command {
     private String argument;
     /** Boolean indicates this command requires argument or not */
     private boolean hasArgument = false;
+    private boolean isCLIMode = false;
 
     /**
      * Constructor with 2 parameters
@@ -62,6 +63,15 @@ public abstract class Command {
     public Command setReceiver(Receiver receiver) {
         this.receiver = receiver;
         return this;
+    }
+
+    public Command setCLIMode(boolean isCLIMode) {
+        this.isCLIMode = isCLIMode;
+        return this;
+    }
+
+    public boolean getIsCLIMode() {
+        return isCLIMode;
     }
 
     public Receiver getReceiver() {

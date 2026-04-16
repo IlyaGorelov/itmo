@@ -19,8 +19,12 @@ public class Clear extends Command {
         checkArgument();
         getCollectionManager().clear();
 
-        CustomPackage pkg = new CustomPackage(this.getName(), null, null);
-        getReceiver().addToAnswer(getCLient(), pkg);
+        if (!getIsCLIMode()) {
+            CustomPackage pkg = new CustomPackage(this.getName(), null, null);
+            getReceiver().addToAnswer(getCLient(), pkg);
+        } else {
+            getReceiver().addAnswerForCLI("Collection successfully cleared");
+        }
     }
 
     @Override

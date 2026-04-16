@@ -25,7 +25,8 @@ public class Update extends Command {
 
     @Override
     public void execute() throws IndexOutOfBoundsException {
-        // checkArgument();
+        if (getIsCLIMode())
+            getReceiver().addAnswerForCLI("Write argument in one line style");
         // try {
         // Long id = Long.parseLong(getArgument());
         // IdValidator idValidator = new IdValidator();
@@ -209,8 +210,12 @@ public class Update extends Command {
             }
             // System.out.println("Successfully updated " + name);
 
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), newProduct);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode()) {
+                CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), newProduct);
+                getReceiver().addToAnswer(getCLient(), pkg);
+            } else {
+                getReceiver().addAnswerForCLI("Successfully updated " + name);
+            }
 
         } catch (Exception e) {
             if (e.getMessage() != null)

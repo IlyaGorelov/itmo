@@ -21,13 +21,14 @@ public class ExecuteScript extends Command {
 
     @Override
     public String getName() {
-
         return "execute_script";
     }
 
     @Override
     public String getRelevantObject() {
         checkArgument();
+        File script = new File(getArgument());
+        setArgument(script.getAbsolutePath());
         return null;
     }
 

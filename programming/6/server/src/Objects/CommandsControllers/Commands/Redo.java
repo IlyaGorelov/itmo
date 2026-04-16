@@ -25,14 +25,22 @@ public class Redo extends Command {
         String[] redos = History.getLastUndo();
         if (redos.length == 0) {
             // System.out.println("Nothing to redo");
-            CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
-            getReceiver().addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode()) {
+                CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
+                getReceiver().addToAnswer(getCLient(), pkg);
+            } else {
+                getReceiver().addAnswerForCLI("Nothing to redo");
+            }
         } else if (redos.length > 0) {
             CommandManager.addUnrecordedCommands(redos.length);
             for (String string : redos) {
                 CommandBuffer.buffer.add(string);
-                CustomPackage pkg = new CustomPackage(this.getName(), null, "");
-                getReceiver().addToAnswer(getCLient(), pkg);
+                if (!getIsCLIMode()) {
+                    CustomPackage pkg = new CustomPackage(this.getName(), null, "");
+                    getReceiver().addToAnswer(getCLient(), pkg);
+                } else {
+                    getReceiver().addAnswerForCLI("");
+                }
             }
         }
 

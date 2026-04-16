@@ -249,7 +249,6 @@ def jordan_chains_for_eigenvalue(A, value, mult):
     # верхние вектора для цепочек каждой длины
     vectors_by_length = {k: [] for k in range(1, mult + 1)}
 
-    # верхние начальные вектора
     for k in range(mult, 0, -1):
         # получим недоспустимые вектора: вектора, из ядер пред. степеней, + образы ядер более высоких степеней под действием N
         S = independent_basis(K[k - 1] + image_of_space(N, K[k + 1]))
@@ -291,14 +290,8 @@ def jordan_decomposition(A):
             jordan_basis.extend(chain)
             blocks.append((value2, len(chain)))
 
-    if len(jordan_basis) != n:
-        raise ValueError("Размер жорданова базиса не совпал с размерностью")
-
     P = np.column_stack(jordan_basis)
     P = clean_matrix(P)
-
-    if rank(P) != n:
-        raise ValueError("Матрица перехода P вырождена")
 
     J = np.zeros((n, n), dtype=float)
     pos = 0
@@ -333,7 +326,7 @@ def matrices_equal(A, B):
     return np.all(np.abs(A - B) < EPS)
 
 
-def demo_one(A, title=""):
+def demo(A, title=""):
     result = "";
     result+="=" * 90+"\n"
     if title:
@@ -396,4 +389,4 @@ if __name__ == "__main__":
     ]
 
     for A, title in tests:
-        demo_one(A, title)
+        demo(A, title)

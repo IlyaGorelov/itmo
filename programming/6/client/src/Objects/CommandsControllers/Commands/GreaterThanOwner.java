@@ -36,16 +36,12 @@ public class GreaterThanOwner extends Command {
 
         checkArgument();
 
-        System.out.println("Input an owner you want to compare with (you can also type nothing):\n");
+        System.out.println("Input an owner values you want to compare with (you can also type nothing):\n");
 
         String ownerName = stringValidator.get(getScanner(), true, "Enter owner's name: ");
         if (ownerName != null) {
             Float height = heightValidator.get(getScanner(), false, "Enter owner's height: ");
-            EyeColor eyeColor = eyeValidator.get(getScanner(), true, "Choose eye color: ");
-            HairColor hairColor = hairValidator.get(getScanner(), false, "Choose hair color: ");
-            Country country = countryValidator.get(getScanner(), false, "Choose nationality: ");
-            Location location = locationValidator.get(getScanner(), true, "Enter location: ");
-            return new Person(ownerName, height, eyeColor, hairColor, country, location).getFuncString();
+            return new Person(ownerName, height, EyeColor.GREEN, HairColor.BLACK, Country.USA, null).getFuncString();
         } else {
             return null;
         }

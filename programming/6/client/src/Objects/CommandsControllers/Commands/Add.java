@@ -67,8 +67,12 @@ public class Add extends Command {
 
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
-        Product product = (Product) pack.getObject();
-        return "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
+        Object object = pack.getObject();
+
+        if (object instanceof Product)
+            return "Element with name \"" + ((Product) object).getName() + "\" was succesfully added" + "\n";
+        else
+            return object.toString() + "\n";
     }
 
 }

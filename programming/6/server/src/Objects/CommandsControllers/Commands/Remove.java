@@ -23,8 +23,12 @@ public class Remove extends Command {
             long id = Long.parseLong(getArgument());
             p = getCollectionManager().deleteById(id);
 
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            if (!getIsCLIMode()) {
+                CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
+                getReceiver().addToAnswer(getCLient(), pkg);
+            } else {
+                getReceiver().addAnswerForCLI("Successfully removed " + p.getName());
+            }
 
         } catch (IndexOutOfBoundsException e) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
@@ -33,7 +37,7 @@ public class Remove extends Command {
         } catch (Exception e) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
             getReceiver().addToAnswer(getCLient(), pkg);
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         }
 
     }

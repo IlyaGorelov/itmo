@@ -31,8 +31,12 @@ public class Undo extends Command {
             for (String string : undos)
                 CommandBuffer.buffer.add(string);
         }
-        CustomPackage pkg = new CustomPackage(this.getName(), null, answer);
-        getReceiver().addToAnswer(getCLient(), pkg);
+        if (!getIsCLIMode()) {
+            CustomPackage pkg = new CustomPackage(this.getName(), null, answer);
+            getReceiver().addToAnswer(getCLient(), pkg);
+        } else {
+            getReceiver().addAnswerForCLI(answer);
+        }
 
     }
 
