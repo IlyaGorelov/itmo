@@ -19,6 +19,7 @@ def to_int_if_close(x):
     return int(rx)
 
 # returns матрицу R, индексы ведущих столбцов, таких что R - ступенчатая форма A
+# Reduced Row Echelon Form (RREF)
 def rref(A):
     A = A.copy().astype(float)
     n, m = A.shape
@@ -246,7 +247,7 @@ def jordan_chains_for_eigenvalue(A, value, mult):
     K = kernel_bases_of_powers(N, mult)
     K[mult + 1] = K[mult]
 
-    # верхние вектора для цепочек каждой длины
+    # нижние вектора для цепочек каждой длины
     vectors_by_length = {k: [] for k in range(1, mult + 1)}
 
     for k in range(mult, 0, -1):

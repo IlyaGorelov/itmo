@@ -173,8 +173,8 @@ def jordan_chains(A, eigenvalue, mult):
 
     for k in range(mult, 0, -1):
         used = independent_basis(K[k - 1] + image_of_space(N, K[k + 1]))
-        tops = basis_extension(used, K[k])
-        vectors_by_length[k] = tops
+        bottoms = basis_extension(used, K[k])
+        vectors_by_length[k] = bottoms
 
     chains = []
     for k in range(mult, 0, -1):
