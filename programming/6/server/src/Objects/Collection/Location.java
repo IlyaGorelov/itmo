@@ -1,9 +1,12 @@
 package Objects.Collection;
 
+import java.io.Serializable;
 import java.util.Locale;
 
-/** Class representing location of a person */
-public class Location implements Comparable<Location> {
+/**
+ * Class representing location of a person
+ */
+public class Location implements Comparable<Location>, Serializable {
     private Double x; // Поле не может быть null
     private Integer y; // Поле не может быть null
     private double z;
@@ -11,7 +14,7 @@ public class Location implements Comparable<Location> {
 
     /**
      * Constructor
-     * 
+     *
      * @param x    coordinate x
      * @param y    coordinate y
      * @param z    coordinate z
@@ -58,10 +61,10 @@ public class Location implements Comparable<Location> {
 
     /**
      * compares with other Location
-     * 
+     *
      * @param o other location
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Location o) {
@@ -80,7 +83,7 @@ public class Location implements Comparable<Location> {
 
     /**
      * Parse toString (@see toString of this class) into new Location
-     * 
+     *
      * @param input String represantation of this object that is got from toString
      * @return new Coordinates
      */

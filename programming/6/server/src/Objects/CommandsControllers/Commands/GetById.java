@@ -7,8 +7,8 @@ import Objects.Validators.*;
 
 /** Gets an element by id */
 public class GetById extends Command {
-    public GetById(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public GetById(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public GetById(CollectionManager collectionManager) {
@@ -26,27 +26,15 @@ public class GetById extends Command {
                 throw new IllegalArgumentException("Invalid value for id");
             var element = getCollectionManager().getById(id);
 
-            if (!getIsCLIMode()) {
                 CustomPackage pkg = new CustomPackage(this.getName(), null, element);
-                getReceiver().addToAnswer(getCLient(), pkg);
-            } else {
-                getReceiver().addAnswerForCLI(element.toString());
-            }
+            answer(pkg,element.toString());
 
         } catch (Exception e) {
-            if (!getIsCLIMode()) {
                 CustomPackage pkg = new CustomPackage(this.getName(), null, null);
-                getReceiver().addToAnswer(getCLient(), pkg);
-            } else {
-                getReceiver().addAnswerForCLI(e.getMessage());
-            }
+         answer(pkg,e.getMessage());
+
             throw new IllegalArgumentException(e.getMessage());
         }
-    }
-
-    @Override
-    public void executeFromScript(String complexArg) {
-        execute();
     }
 
     @Override
@@ -59,4 +47,11 @@ public class GetById extends Command {
         return "get element of collection by id";
     }
 
+    @Override
+    public void checkArgument() {
+        boolean actuallyHasArgument = getArgument() != null;
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if (actuallyHasArgument != getHasArgument() || actuallyHasComplexArgument != getHasComplexArgument())
+            throw new IllegalArgumentException(String.format("Invalid format, use:\n\t%s id",getName()));
+    }
 }

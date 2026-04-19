@@ -36,12 +36,6 @@ public class CLIManager {
         return null;
     }
 
-    public void write(String text) {
-        System.out.print(text);
-        System.out.flush();
-        ;
-    }
-
     public void writeLine(String text) {
         System.out.println(text);
         System.out.flush();

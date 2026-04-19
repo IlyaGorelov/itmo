@@ -9,8 +9,8 @@ import Objects.Managers.CommandManager;
 
 /** shows all available commands with description */
 public class Help extends Command {
-    public Help(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Help(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public Help(CollectionManager collectionManager) {
@@ -26,17 +26,13 @@ public class Help extends Command {
 
         StringBuilder answer = new StringBuilder();
         new TreeMap<String, Command>(commandManager.getCommandMap()).forEach((name, command) -> {
-            if (name != new Save(null).getName() && name != new GetById(null).getName())
                 answer.append(name).append(": ").append(command.getDescription()).append("\n");
         });
 
         String finalAnswer = answer.toString();
 
-        if (!getIsCLIMode()) {
             var pkg = new CustomPackage(this.getName(), null, finalAnswer);
-            getReceiver().addToAnswer(getCLient(), pkg);
-        } else
-            getReceiver().addAnswerForCLI(finalAnswer);
+        answer(pkg,finalAnswer);
     }
 
     @Override

@@ -1,9 +1,10 @@
 package Objects.Collection;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /** Class representing location of a person */
-public class Location implements Comparable<Location> {
+public class Location implements Comparable<Location>, Serializable {
     private Double x; // Поле не может быть null
     private Integer y; // Поле не может быть null
     private double z;

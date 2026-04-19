@@ -1,13 +1,10 @@
 package Objects.CommandsControllers.Commands;
 
-import org.openjdk.jol.info.GraphLayout;
-
 import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.Revertable;
 import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
@@ -18,9 +15,9 @@ import Objects.Managers.IdManager;
 import Objects.Validators.*;
 
 /** Adds an element to the collection */
-public class Add extends Command implements Revertable {
-    public Add(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+public class Add extends Command {
+    public Add(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArgument) {
+        super(collectionManager, hasArgument, hasComplexArgument);
     }
 
     public Add(CollectionManager collectionManager) {
@@ -30,62 +27,16 @@ public class Add extends Command implements Revertable {
     /** Asks for required fields then creates new element - Product */
     @Override
     public void execute() {
-        if (getIsCLIMode())
-            getReceiver().addAnswerForCLI("Write argument in one line style");
-        // checkArgument();
-        // System.out.println("Adding new element. Type new values.");
-        // var stringValidator = new StringValidator();
-        // CoordinatesValidator coordinatesValidator = new CoordinatesValidator();
-        // PriceValidator priceValidator = new PriceValidator();
-        // IntegerValidator integerValidator = new IntegerValidator();
-        // UnitValidator unitValidator = new UnitValidator();
-        // HeightValidator heightValidator = new HeightValidator();
-        // EyeValidator eyeValidator = new EyeValidator();
-        // HairValidator hairValidator = new HairValidator();
-        // CountryValidator countryValidator = new CountryValidator();
-        // LocationValidator locationValidator = new LocationValidator();
-
-        // String name = stringValidator.get(getReceiver(), false, "Enter product name:
-        // ");
-        // Coordinates coordinates = coordinatesValidator.get(getReceiver(), false,
-        // "Enter coordinates:");
-        // Double price = priceValidator.get(getReceiver(), true, "Enter price(double)
-        // or type nothing: ");
-        // Integer manufactureCost = integerValidator.get(getReceiver(), false, "Enter
-        // manufacture cost(integer): ");
-        // UnitOfMeasure unitOfMeasure = unitValidator.get(getReceiver(), true,
-        // "Choose unit of measure or type nothing: ");
-
-        // String ownerName = stringValidator.get(getReceiver(), true, "Enter owner's
-        // name or type nothing: ");
-        // if (ownerName != null) {
-        // Float height = heightValidator.get(getReceiver(), false, "Enter owner's
-        // height: ");
-        // EyeColor eyeColor = eyeValidator.get(getReceiver(), true, "Choose eye color
-        // or type nothing: ");
-        // HairColor hairColor = hairValidator.get(getReceiver(), false, "Choose hair
-        // color: ");
-        // Country country = countryValidator.get(getReceiver(), false, "Choose
-        // nationality: ");
-        // Location location = locationValidator.get(getReceiver(), true, "Enter
-        // location: ");
-        // getCollectionManager().addElement(name, coordinates, price, manufactureCost,
-        // unitOfMeasure,
-        // new Person(ownerName, height, eyeColor, hairColor, country, location));
-        // } else {
-        // getCollectionManager().addElement(name, coordinates, price, manufactureCost,
-        // unitOfMeasure,
-        // null);
-        // }
-        // System.out.println("Successfully added");
+        checkArgument();
     }
 
     @Override
-    public void executeFromScript(String complexArg) {
+    public void executeInline() {
         // add id input with spec sym $
+        checkArgument();
+        String complexArg = getComplexArgument();
         String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
         int tokenCounter = 0;
-        checkArgument();
 
         StringValidator stringValidator = new StringValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -227,22 +178,16 @@ public class Add extends Command implements Revertable {
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
 
-            if (!getIsCLIMode())
-                getReceiver()
-                        .addToAnswer(getCLient(), pkg);
-            else
-                getReceiver().addAnswerForCLI("Succesfully added " + name);
-        } catch (Exception e) {
+            answer(pkg,"Successfully added " + name);
+        } catch (IndexOutOfBoundsException e){
+                CustomPackage pkg = new CustomPackage(this.getName(), null, "Invalid number of arguments!");
+                answer(pkg,"Invalid number of arguments!");
+        }
+        catch (Exception e) {
             if (e.getMessage() != null) {
                 CustomPackage pkg = new CustomPackage(this.getName(), null, e);
-                if (!getIsCLIMode())
-                    getReceiver()
-                            .addToAnswer(getCLient(), pkg);
-                else
-                    getReceiver().addAnswerForCLI(e.getMessage());
-
+                answer(pkg,e.getMessage());
             }
-            // System.out.println("Skip\n");
         }
 
     }
@@ -258,9 +203,11 @@ public class Add extends Command implements Revertable {
     }
 
     @Override
-    public void Undo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'Undo'");
+    public  void checkArgument(){
+        boolean actuallyHasArgument = getArgument() != null;
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if (actuallyHasArgument != getHasArgument() || actuallyHasComplexArgument != getHasComplexArgument())
+            throw new IllegalArgumentException("Invalid format, use:\n\tadd {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}");
     }
 
 }

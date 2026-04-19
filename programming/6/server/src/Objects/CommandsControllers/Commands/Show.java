@@ -10,8 +10,8 @@ import Objects.Managers.CollectionManager;
 /*Show all elements of collection */
 public class Show extends Command {
 
-    public Show(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Show(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public Show(CollectionManager collectionManager) {
@@ -31,13 +31,8 @@ public class Show extends Command {
                 products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
                         GraphLayout.parseInstance(y).totalSize())).toArray());
 
-        if (!getIsCLIMode()) {
-            getReceiver()
-                    .addToAnswer(getCLient(), pkg);
-        } else {
-            for (Object p : productsSorted)
-                getReceiver().addAnswerForCLI(p.toString());
-        }
+        answer(pkg,products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                GraphLayout.parseInstance(y).totalSize())).toArray(Product[]::new));
 
     }
 

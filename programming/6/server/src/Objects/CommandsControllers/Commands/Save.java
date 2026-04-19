@@ -7,8 +7,8 @@ import Objects.Managers.CollectionManager;
 /*save collection in a file */
 public class Save extends Command {
 
-    public Save(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Save(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public Save(CollectionManager collectionManager) {
@@ -20,13 +20,9 @@ public class Save extends Command {
         checkArgument();
 
         getCollectionManager().setCollection();
-        // System.out.println("Successfully saved");
-        if (!getIsCLIMode()) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Successfully saved");
-            getReceiver().addToAnswer(getCLient(), pkg);
-        } else {
-            getReceiver().addAnswerForCLI("Successfully saved");
-        }
+            answer(pkg,"Saved");
+
 
     }
 

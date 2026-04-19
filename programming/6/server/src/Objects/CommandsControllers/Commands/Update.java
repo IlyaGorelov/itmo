@@ -15,8 +15,8 @@ import Objects.Validators.*;
 
 /** update an element */
 public class Update extends Command {
-    public Update(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Update(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public Update(CollectionManager collectionManager) {
@@ -89,7 +89,9 @@ public class Update extends Command {
     }
 
     @Override
-    public void executeFromScript(String complexArg) {
+    public void executeInline() {
+        checkArgument();
+        String complexArg = getComplexArgument();
         String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
         int tokenCounter = 0;
 
@@ -210,16 +212,12 @@ public class Update extends Command {
             }
             // System.out.println("Successfully updated " + name);
 
-            if (!getIsCLIMode()) {
                 CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), newProduct);
-                getReceiver().addToAnswer(getCLient(), pkg);
-            } else {
-                getReceiver().addAnswerForCLI("Successfully updated " + name);
-            }
+            answer(pkg,"Successfully updated " + name);
 
         } catch (Exception e) {
             if (e.getMessage() != null)
-                System.out.println(e.getMessage());
+                answer(null,e.getMessage());
             // System.out.println("Skip\n");
         }
     }
@@ -234,4 +232,11 @@ public class Update extends Command {
         return "update an element";
     }
 
+    @Override
+    public  void checkArgument(){
+        boolean actuallyHasArgument = getArgument() != null;
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if (actuallyHasArgument != getHasArgument() || actuallyHasComplexArgument != getHasComplexArgument())
+            throw new IllegalArgumentException("Invalid format, use:\n\tupdate {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}");
+    }
 }

@@ -10,8 +10,8 @@ import Objects.Managers.CommandManager;
 /** show information about collection */
 public class Redo extends Command {
 
-    public Redo(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Redo(CollectionManager collectionManager, boolean hasArgument, boolean hasCOmplexArg) {
+        super(collectionManager, hasArgument,hasCOmplexArg);
     }
 
     public Redo(CollectionManager collectionManager) {
@@ -25,22 +25,15 @@ public class Redo extends Command {
         String[] redos = History.getLastUndo();
         if (redos.length == 0) {
             // System.out.println("Nothing to redo");
-            if (!getIsCLIMode()) {
                 CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
-                getReceiver().addToAnswer(getCLient(), pkg);
-            } else {
-                getReceiver().addAnswerForCLI("Nothing to redo");
-            }
-        } else if (redos.length > 0) {
+          answer(pkg,"Nothing to redo");
+
+        } else {
             CommandManager.addUnrecordedCommands(redos.length);
             for (String string : redos) {
                 CommandBuffer.buffer.add(string);
-                if (!getIsCLIMode()) {
                     CustomPackage pkg = new CustomPackage(this.getName(), null, "");
-                    getReceiver().addToAnswer(getCLient(), pkg);
-                } else {
-                    getReceiver().addAnswerForCLI("");
-                }
+                answer(pkg,"");
             }
         }
 

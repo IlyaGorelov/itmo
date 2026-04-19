@@ -6,8 +6,8 @@ import Objects.Managers.CollectionManager;
 
 /** show any element where unit of measure is minimal */
 public class MinByUnit extends Command {
-    public MinByUnit(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public MinByUnit(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public MinByUnit(CollectionManager collectionManager) {
@@ -18,20 +18,18 @@ public class MinByUnit extends Command {
     public void execute() {
         checkArgument();
         try {
-            // System.out.println("Any element with min unit of measure:\n");
-            System.out.println(getCollectionManager().getMinByUnitOfMeasure());
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getMinByUnitOfMeasure());
-            getReceiver().addToAnswer(getCLient(), pkg);
+            answer(pkg,getCollectionManager().getMinByUnitOfMeasure());
         } catch (Exception e) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, e);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            answer(pkg,e.getMessage());
         }
     }
 
     @Override
     public String getName() {
-        return "min_by_unit_of_measure";
+        return "min_by_unit";
     }
 
     @Override

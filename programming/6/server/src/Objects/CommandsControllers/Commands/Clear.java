@@ -6,8 +6,8 @@ import Objects.Managers.CollectionManager;
 
 /** removes all elements from the collection */
 public class Clear extends Command {
-    public Clear(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Clear(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument, hasComplexArg);
     }
 
     public Clear(CollectionManager collectionManager) {
@@ -19,12 +19,8 @@ public class Clear extends Command {
         checkArgument();
         getCollectionManager().clear();
 
-        if (!getIsCLIMode()) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, null);
-            getReceiver().addToAnswer(getCLient(), pkg);
-        } else {
-            getReceiver().addAnswerForCLI("Collection successfully cleared");
-        }
+        answer(pkg,"Collection successfully cleared");
     }
 
     @Override
@@ -35,11 +31,6 @@ public class Clear extends Command {
     @Override
     public String getDescription() {
         return "remove all elements from the collection";
-    }
-
-    @Override
-    public void executeFromScript(String complexArg) {
-        execute();
     }
 
 }

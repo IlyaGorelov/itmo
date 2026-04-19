@@ -7,8 +7,8 @@ import Objects.Managers.CollectionManager;
 /** show information about collection */
 public class Info extends Command {
 
-    public Info(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Info(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public Info(CollectionManager collectionManager) {
@@ -17,13 +17,10 @@ public class Info extends Command {
 
     @Override
     public void execute() {
-        if (!getIsCLIMode()) {
             checkArgument();
             CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getCollectionInfo());
-            getReceiver().addToAnswer(getCLient(), pkg);
-        } else {
-            getReceiver().addAnswerForCLI(getCollectionManager().getCollectionInfo());
-        }
+        answer(pkg,getCollectionManager().getCollectionInfo());
+
     }
 
     @Override

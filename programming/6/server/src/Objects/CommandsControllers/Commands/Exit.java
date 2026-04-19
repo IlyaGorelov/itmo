@@ -8,8 +8,8 @@ import Objects.Managers.CollectionManager;
 /** stop program */
 public class Exit extends Command {
 
-    public Exit(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public Exit(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument, hasComplexArg);
     }
 
     public Exit(CollectionManager collectionManager) {
@@ -34,20 +34,11 @@ public class Exit extends Command {
         save.setClient(getCLient());
         save.execute();
 
-        if (!getIsCLIMode()) {
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
-            getReceiver().addToAnswer(getCLient(), pkg);
-        } else {
-            getReceiver().addAnswerForCLI("Program successfully stopped");
-        }
+        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
+        answer(pkg,"Program successfully stopped");
 
         CommandExecutor.waitForNextCommand = false;
 
-    }
-
-    @Override
-    public void executeFromScript(String complexArg) {
-        execute();
     }
 
 }

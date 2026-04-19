@@ -1,6 +1,7 @@
 package Objects.Managers;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /** Controls id */
 public class IdManager {
@@ -13,7 +14,7 @@ public class IdManager {
      * @return unique id
      */
     public static long getId() {
-        Long start = 1L;
+        Long start = ids.stream().max(Comparator.naturalOrder()).orElse(1L);
         while (ids.contains(start)) {
             start++;
         }

@@ -10,6 +10,7 @@ public abstract class Command implements Serializable {
     private static final long serialVersionUID = 2L;
     /** An argument of a command presented in one line format */
     private String argument;
+    private String complexArgument;
     /** Boolean indicates this command requires argument or not */
     private boolean hasArgument = false;
     private boolean hasComplexArgument = false;
@@ -52,6 +53,14 @@ public abstract class Command implements Serializable {
 
     public void setArgument(String argument) {
         this.argument = argument;
+    }
+
+    public String getComplexArgument() {
+        return complexArgument;
+    }
+
+    public void setComplexArgument(String argument) {
+        this.complexArgument = argument;
     }
 
     /**

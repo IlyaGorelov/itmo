@@ -29,10 +29,6 @@ public class GreaterThanOwner extends Command {
         checkArgument();
         StringValidator stringValidator = new StringValidator();
         HeightValidator heightValidator = new HeightValidator();
-        EyeValidator eyeValidator = new EyeValidator();
-        HairValidator hairValidator = new HairValidator();
-        CountryValidator countryValidator = new CountryValidator();
-        LocationValidator locationValidator = new LocationValidator();
 
         checkArgument();
 

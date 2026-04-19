@@ -27,8 +27,8 @@ import Objects.Validators.UnitValidator;
 
 /** Adds element to a collection if this element gonna be max */
 public class AddIfMax extends Command {
-    public AddIfMax(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public AddIfMax(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument, hasComplexArg);
     }
 
     public AddIfMax(CollectionManager collectionManager) {
@@ -41,51 +41,6 @@ public class AddIfMax extends Command {
      */
     @Override
     public void execute() {
-        // checkArgument();
-        // System.out.println("Adding new element. Type new values.");
-        // var stringValidator = new StringValidator();
-        // CoordinatesValidator coordinatesValidator = new CoordinatesValidator();
-        // PriceValidator priceValidator = new PriceValidator();
-        // IntegerValidator integerValidator = new IntegerValidator();
-        // UnitValidator unitValidator = new UnitValidator();
-        // HeightValidator heightValidator = new HeightValidator();
-        // EyeValidator eyeValidator = new EyeValidator();
-        // HairValidator hairValidator = new HairValidator();
-        // CountryValidator countryValidator = new CountryValidator();
-        // LocationValidator locationValidator = new LocationValidator();
-
-        // String name = stringValidator.get(getReceiver(), false, "Enter product name:
-        // ");
-        // System.out.println(name);
-        // Coordinates coordinates = coordinatesValidator.get(getReceiver(), false,
-        // "Enter coordinates:");
-        // Double price = priceValidator.get(getReceiver(), true, "Enter price(double)
-        // or type nothing: ");
-        // Integer manufactureCost = integerValidator.get(getReceiver(), false, "Enter
-        // manufacture cost(integer): ");
-        // UnitOfMeasure unitOfMeasure = unitValidator.get(getReceiver(), true,
-        // "Choose unit of measure or type nothing: ");
-
-        // String ownerName = stringValidator.get(getReceiver(), true, "Enter owner's
-        // name or type nothing: ");
-        // if (ownerName != null) {
-        // Float height = heightValidator.get(getReceiver(), false, "Enter owner's
-        // height: ");
-        // EyeColor eyeColor = eyeValidator.get(getReceiver(), true, "Choose eye color
-        // or type nothing: ");
-        // HairColor hairColor = hairValidator.get(getReceiver(), false, "Choose hair
-        // color: ");
-        // Country country = countryValidator.get(getReceiver(), false, "Choose
-        // nationality: ");
-        // Location location = locationValidator.get(getReceiver(), true, "Enter
-        // location: ");
-        // addIfMax(ownerName, coordinates, price, manufactureCost, unitOfMeasure,
-        // new Person(ownerName, height, eyeColor, hairColor, country, location));
-        // } else {
-        // addIfMax(ownerName, coordinates, price, manufactureCost, unitOfMeasure,
-        // new Person(ownerName));
-        // }
-
     }
 
     private void addIfMax(String name, Coordinates coordinates, Double price, Integer manufactureCost,
@@ -94,20 +49,20 @@ public class AddIfMax extends Command {
         if (getCollectionManager().isMax(name, coordinates, price, manufactureCost, unitOfMeasure, person)) {
             newProduct = getCollectionManager().addElement(name, coordinates, price, manufactureCost, unitOfMeasure,
                     person);
-            System.out.println("Successfully added");
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            answer(pkg,"Successfully added");
         } else {
             // System.out.println("Not added because not Max");
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
-            getReceiver().addToAnswer(getCLient(), pkg);
+            answer(pkg,"Not added");
         }
     }
 
     @Override
-    public void executeFromScript(String complexArg) {
+    public void executeInline() {
+        var complexArg = getComplexArgument();
         String[] tokens = complexArg.replace("{", "").replace("}", "").replace(";", " ; ").split(";");
 
         StringValidator stringValidator = new StringValidator();
@@ -222,9 +177,16 @@ public class AddIfMax extends Command {
         } catch (Exception e) {
             if (e.getMessage() != null)
                 System.out.println(e.getMessage());
-            // System.out.println("Skip\n");
         }
 
+    }
+
+    @Override
+    public  void checkArgument(){
+        boolean actuallyHasArgument = getArgument() != null;
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if (actuallyHasArgument != getHasArgument() || actuallyHasComplexArgument != getHasComplexArgument())
+            throw new IllegalArgumentException("Invalid format, use:\n\tadd_if_max {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}");
     }
 
     @Override

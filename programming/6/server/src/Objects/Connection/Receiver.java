@@ -49,6 +49,16 @@ public class Receiver {
     }
 
     public void connect() {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutdown detected. Saving data and stopping server...");
+
+            commandExecutor.stop();
+
+            logger.info("Server stopped safely.");
+        }));
+
+
         try {
 
             selector = Selector.open();
@@ -82,15 +92,14 @@ public class Receiver {
                         closeClient((SocketChannel) key.channel());
                     } catch (IOException e) {
                         logger.error("IOException for client, closing: ", key.channel());
-                        e.printStackTrace();
                         closeClient((SocketChannel) key.channel());
                     } catch (ClassNotFoundException e) {
                         logger.error("Received unknown object from client, skipping");
-                        e.printStackTrace();
                     }
                 }
 
-                processCLI();
+                    processCLI();
+
             }
 
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {

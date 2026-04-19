@@ -6,10 +6,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +19,6 @@ public class CommandManager {
     /** map of command kind of name - Command */
     private HashMap<String, Command> commandMap = new HashMap<>();
 
-    /**
-     * used for detecting then undo|redo cycle is over. While it>0 commands aren't
-     * saved in the History
-     */
-    private static int countOfUnrecordingCommands = 0;
 
     /**
      * Constructor that fill command map with available commands
@@ -68,51 +60,23 @@ public class CommandManager {
     /** Executes commands and handles exceptions */
     public CustomPackage getRelevantPackage(String commandName) {
         try {
-            String[] commandWithAStrings = parseCommand(commandName);
+            String[] commandWithArg = parseCommand(commandName);
             Object relevantObject = null;
-            Command command = null;
-            String argument = null;
-            switch (commandWithAStrings.length) {
-                case 1:
-                    if (commandMap.containsKey(commandWithAStrings[0])) {
-                        command = commandMap.get(commandWithAStrings[0]);
-                        if (command.getHasComplexArgument()) {
-                            relevantObject = command.getRelevantObject();
-                        }
-                        if (command.getHasArgument())
-                            throw new IllegalArgumentException("Invalid number of arguments!");
 
-                    } else
-                        throw new IllegalArgumentException("There is no such command!");
-                    break;
-                case 2:
-                    command = commandMap.get(commandWithAStrings[0]);
-                    if (command == null)
-                        throw new IllegalArgumentException("There is no such command!");
-                    else {
-                        command.setArgument(commandWithAStrings[1]);
-                        argument = commandWithAStrings[1];
-                    }
-                    relevantObject = command.getRelevantObject();
-                    break;
-                case 3:
-                    if (commandMap.containsKey(commandWithAStrings[0])) {
-                        command = commandMap.get(commandWithAStrings[0]);
-                        if (command.getHasComplexArgument()) {
-                            relevantObject = command.getRelevantObject();
-                            argument = commandWithAStrings[1];
-                        }
+            var command = commandMap.get(commandWithArg[0]);
+            var realArgs = Arrays.stream(commandWithArg).skip(1).toArray(String[]::new);
 
-                    } else
-                        throw new IllegalArgumentException("There is no such command!");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid number of arguments!");
-            }
-            return new CustomPackage(command.getName(), argument, relevantObject);
+            String simpleArg = Arrays.stream(realArgs).filter(x->!isComplexArg(x)).findFirst().orElse(null);
+
+            command.setArgument(simpleArg);
+            relevantObject = command.getRelevantObject();
+            return new CustomPackage(command.getName(), simpleArg, relevantObject);
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Unknown command");
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new IllegalArgumentException("Something went wrong while parsing command!");
         }
     }
@@ -129,6 +93,10 @@ public class CommandManager {
         }
 
         return parts.toArray(new String[0]);
+    }
+
+    private  boolean isComplexArg(String arg){
+        return arg.startsWith("{") && arg.endsWith("}");
     }
 
     public String getRelevantAnswer(Object[] answer) {

@@ -9,8 +9,8 @@ import Objects.Validators.UnitValidator;
 
 /* remove all elements with the same unit of measure*/
 public class RemoveByUnitOfMeasure extends Command {
-    public RemoveByUnitOfMeasure(CollectionManager collectionManager, boolean hasArgument) {
-        super(collectionManager, hasArgument);
+    public RemoveByUnitOfMeasure(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
     }
 
     public RemoveByUnitOfMeasure(CollectionManager collectionManager) {
@@ -26,24 +26,25 @@ public class RemoveByUnitOfMeasure extends Command {
             if (unitValidator.isValid(getArgument(), true)) {
                 // System.out.println("Removing all products with this unit of measure\n");
 
-                UnitOfMeasure unit = getArgument() != null ? UnitOfMeasure.valueOf(getArgument().toUpperCase()) : null;
+                UnitOfMeasure unit = getArgument() != null ? UnitOfMeasure.valueOf(getArgument().toUpperCase())
+                        : null;
                 result = getCollectionManager().removeByUnitOfMeasure(unit);
 
                 CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), result);
-                getReceiver().addToAnswer(getCLient(), pkg);
+               answer(pkg,"Removed all elements with "+unit);
 
             } else
                 throw new IllegalArgumentException("Unknown unit of measure");
         } catch (IllegalArgumentException e) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
-            getReceiver().addToAnswer(getCLient(), pkg);
+           answer(pkg,e.getMessage());
             throw new IllegalArgumentException();
         }
     }
 
     @Override
     public String getName() {
-        return "remove_all_by_unit_of_measure";
+        return "remove_all_by_unit";
     }
 
     @Override
@@ -52,13 +53,14 @@ public class RemoveByUnitOfMeasure extends Command {
     }
 
     @Override
-    public void checkArgument() {
-        return;
-    }
-
-    @Override
     public boolean getHasArgument() {
         return false;
     }
 
+    @Override
+    public  void checkArgument(){
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if ( actuallyHasComplexArgument != getHasComplexArgument())
+            throw new IllegalArgumentException("Invalid format, use:\n\tremove_all_by_unit UNIT");
+    }
 }

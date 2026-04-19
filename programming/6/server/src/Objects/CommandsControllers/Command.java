@@ -3,6 +3,8 @@ package Objects.CommandsControllers;
 import java.io.Serializable;
 import java.nio.channels.SocketChannel;
 
+import Objects.Collection.Product;
+import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
 
@@ -16,8 +18,10 @@ public abstract class Command {
     private SocketChannel client;
     /** An argument of a command presented in one line format */
     private String argument;
+    private String complexArgument;
     /** Boolean indicates this command requires argument or not */
     private boolean hasArgument = false;
+    private boolean hasComplexArgument = false;
     private boolean isCLIMode = false;
 
     /**
@@ -26,9 +30,10 @@ public abstract class Command {
      * @param collectionManager to set and to control collection
      * @param hasArgument       to set if this command requires an argument
      */
-    public Command(CollectionManager collectionManager, boolean hasArgument) {
+    public Command(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArgument) {
         this.collectionManager = collectionManager;
         this.hasArgument = hasArgument;
+        this.hasComplexArgument = hasComplexArgument;
     }
 
     /**
@@ -49,6 +54,7 @@ public abstract class Command {
     public boolean getHasArgument() {
         return hasArgument;
     }
+    public  boolean getHasComplexArgument(){return hasComplexArgument;}
 
     public abstract String getName();
 
@@ -56,7 +62,7 @@ public abstract class Command {
 
     public abstract void execute();
 
-    public void executeFromScript(String complexArg) {
+    public void executeInline() {
         execute();
     };
 
@@ -95,18 +101,46 @@ public abstract class Command {
         this.argument = argument;
     }
 
+    public String getComplexArgument() {
+        return complexArgument;
+    }
+
+    public void setComplexArgument(String argument) {
+        this.complexArgument = argument;
+    }
+
     /**
      * Checks if there is an argument when you don't need it or there is to much
      * arguments or there is no required argument
      */
     public void checkArgument() {
         boolean actuallyHasArgument = getArgument() != null;
-        if (actuallyHasArgument != hasArgument)
-            throw new IllegalArgumentException("Invalid number of arguments!");
+        boolean actuallyHasComplexArgument = getComplexArgument() != null;
+        if (actuallyHasArgument != hasArgument || actuallyHasComplexArgument != hasComplexArgument)
+            throw new IllegalArgumentException(String.format("Invalid format, use:\n\t%s",getName()));
     }
 
     public CollectionManager getCollectionManager() {
         return collectionManager;
+    }
+
+    public  void answer(CustomPackage toClient, String toCLI){
+        if (!getIsCLIMode())
+            getReceiver()
+                    .addToAnswer(getCLient(), toClient);
+        else
+            getReceiver().addAnswerForCLI(toCLI);
+    }
+
+    public  void answer(CustomPackage toClient, Product... toCLI){
+        if (!getIsCLIMode())
+            getReceiver()
+                    .addToAnswer(getCLient(), toClient);
+        else {
+            for (var p: toCLI) {
+            getReceiver().addAnswerForCLI(p.toString());
+            }
+        }
     }
 
 }
