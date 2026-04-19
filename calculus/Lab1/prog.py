@@ -348,11 +348,11 @@ def demo(A, title=""):
     reconstructed = clean_matrix(reconstructed)
 
     result+="Проверка A = P J P^(-1):"+ "OK" if matrices_equal(A, reconstructed) else "FAIL"
-    open("prog.txt", "a", encoding="utf-8").write(result + "\n\n")
+    open("prog_out.txt", "a", encoding="utf-8").write(result + "\n\n")
 
 
 if __name__ == "__main__":
-    open("prog.txt", "w", encoding="utf-8").write("")
+    open("prog_out.txt", "w", encoding="utf-8").write("")
     tests = [
         (
             [[1, 1, 0, -1],

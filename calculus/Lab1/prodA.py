@@ -77,11 +77,7 @@ def nullspace_basis(A):
 
     return basis
 
-def cols_to_matrix(vectors, n=None):
-    if len(vectors) == 0:
-        if n is None:
-            raise ValueError("Для пустого списка векторов нужно указать n")
-        return sp.Matrix.zeros(n, 0)
+def cols_to_matrix(vectors):
     return sp.Matrix.hstack(*vectors)
 
 def independent_basis(vectors):
@@ -93,7 +89,7 @@ def independent_basis(vectors):
     current_rank = 0
 
     for v in vectors:
-        M = cols_to_matrix(basis + [v], n)
+        M = cols_to_matrix(basis + [v])
         new_rank = rank(M)
         if new_rank > current_rank:
             basis.append(v)
@@ -105,13 +101,12 @@ def basis_extension(base_basis, ambient_basis):
     if len(ambient_basis) == 0:
         return []
 
-    n = ambient_basis[0].rows
     basis = independent_basis(base_basis)
-    current_rank = rank(cols_to_matrix(basis, n)) if len(basis) > 0 else 0
+    current_rank = rank(cols_to_matrix(basis)) if len(basis) > 0 else 0
 
     added = []
     for v in ambient_basis:
-        M = cols_to_matrix(basis + [v], n)
+        M = cols_to_matrix(basis + [v])
         new_rank = rank(M)
         if new_rank > current_rank:
             basis.append(v)
@@ -203,10 +198,7 @@ def jordan_decomposition(A):
             jordan_basis.extend(chain)
             blocks.append((eigenvalue, len(chain)))
 
-    P = simplify_matrix(cols_to_matrix(jordan_basis, n))
-
-    if rank(P) != n:
-        raise ValueError("Матрица перехода P вырождена")
+    P = simplify_matrix(cols_to_matrix(jordan_basis))
 
     J = sp.Matrix.zeros(n, n)
     pos = 0
@@ -249,8 +241,8 @@ def jordan_blocks_from_J(J):
 
     return blocks
 
-def random_unimodular_matrix(n, steps=12, value_range=(-3, 3), seed=None):
-    rng = random.Random(seed)
+def random_unimodular_matrix(n, steps=12, value_range=(-3, 3)):
+    rng = random.Random()
     P = sp.eye(n)
 
     for _ in range(steps):
@@ -306,10 +298,10 @@ def make_jordan_matrix(n, eigen_min=-5, eigen_max=5):
         pos += size
     return simplify_matrix(J)
 
-def generate_test_matrix(seed=None):
+def generate_test_matrix():
     size = random.randint(4, 10)
     J = make_jordan_matrix(size,-2,2)
-    P = random_unimodular_matrix(J.rows, steps=max(10, 3 * J.rows), seed=seed)
+    P = random_unimodular_matrix(J.rows)
     A = simplify_matrix(P * J * P.inv())
     return A, J, P
 
@@ -332,10 +324,10 @@ def write_case_result(f, A, title, J_src, P_src):
 
 
 def demo(output_file="pro.txt"):
-    A_gen, J_src, P_src = generate_test_matrix(seed=42)
+    A_gen, J_src, P_src = generate_test_matrix()
     case=(
         A_gen,
-        "Сгенерированный тест A = P J P^(-1) для целой матрицы"
+        "Тест"
     )
 
     with open(output_file, "w", encoding="utf-8") as f:
@@ -343,4 +335,4 @@ def demo(output_file="pro.txt"):
 
 
 if __name__ == "__main__":
-    demo("prod.txt")
+    demo("prod_out.txt")
