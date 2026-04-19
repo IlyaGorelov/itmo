@@ -53,7 +53,7 @@ def rref(A):
 
     return A, pivots
 
-def rank_exact(A):
+def rank(A):
     _, pivots = rref(A)
     return len(pivots)
 
@@ -94,7 +94,7 @@ def independent_basis(vectors):
 
     for v in vectors:
         M = cols_to_matrix(basis + [v], n)
-        new_rank = rank_exact(M)
+        new_rank = rank(M)
         if new_rank > current_rank:
             basis.append(v)
             current_rank = new_rank
@@ -107,12 +107,12 @@ def basis_extension(base_basis, ambient_basis):
 
     n = ambient_basis[0].rows
     basis = independent_basis(base_basis)
-    current_rank = rank_exact(cols_to_matrix(basis, n)) if len(basis) > 0 else 0
+    current_rank = rank(cols_to_matrix(basis, n)) if len(basis) > 0 else 0
 
     added = []
     for v in ambient_basis:
         M = cols_to_matrix(basis + [v], n)
-        new_rank = rank_exact(M)
+        new_rank = rank(M)
         if new_rank > current_rank:
             basis.append(v)
             added.append(v)
@@ -205,7 +205,7 @@ def jordan_decomposition(A):
 
     P = simplify_matrix(cols_to_matrix(jordan_basis, n))
 
-    if rank_exact(P) != n:
+    if rank(P) != n:
         raise ValueError("Матрица перехода P вырождена")
 
     J = sp.Matrix.zeros(n, n)
