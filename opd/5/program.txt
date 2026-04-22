@@ -1,50 +1,26 @@
-org 0x2d4
-start: 
-cla
-st R
-ld X
-push
-call $function
-pop
-add R
-st R
-ld Y
-dec
-push
-call 0x65b
-pop
-add R
-st R
-ld Z
-push
-call 0x65b
-pop 
-inc
-sub R
-st R
+org 0x455
+first_sym: word 0x551; адрес первого символа слова
+
+start:
+;=======получим длину========
+spin1: in 7; получить статус ВУ
+and #0x40; and с битом 6
+beq spin1; если AC=0 - спин-луп
+in 6; ввод
+st 0x550
+
+;=======получим слово========
+spin2: in 7; получить статус ВУ
+and #0x40; and с битом 6
+beq spin2; если AC=0 - спин-луп
+in 6; ввод
+st (first_sym)+
+loop 0x550
+jump spin2
 hlt
 
-Z: word -4
-Y: word 978
-X: word 654
-R: word 0xFD50
 
-org 0x65b
-function:
-ld &1
-bmi T1
-beq T1
-cmp A
-bge T1
-asl
-asl
-sub &1
-add B
-jump T2
-T1: ld A
-T2: st &1
-ret
-
-A: word 0x2b1
-B: word 0x80
+org 0x550; длина + строка
+len: word ?; 
+;тут идут символы в КОИ-8
 
