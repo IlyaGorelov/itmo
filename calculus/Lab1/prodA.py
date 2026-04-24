@@ -1,3 +1,4 @@
+from math import isqrt
 import random
 import sympy as sp
 
@@ -130,22 +131,70 @@ def characteristic_polynomial(A):
     poly_expr = sp.expand((x * sp.eye(n) - A).det())
     return sp.Poly(poly_expr, x)
 
-def getEigen(A):
+def getEigen(A, eps=1e-20):
     poly = characteristic_polynomial(A)
-    raw_roots = poly.all_roots(multiple=True)
+    degree = poly.degree()
+
+    exact_roots = sp.roots(poly)
 
     result = []
-    for root in raw_roots:
-        placed = False
-        for item in result:
-            if is_zero(item[0] - root):
-                item[1] += 1
-                placed = True
-                break
-        if not placed:
-            result.append([root, 1])
 
-    return [(value, mult) for value, mult in result]
+    for root, mult in exact_roots.items():
+        result.append((sp.simplify(root), int(mult)))
+
+    exact_count = sum(exact_roots.values())
+
+    #  получили точные вещественные корни
+    if exact_count == degree:
+        result.sort(key=lambda item: sp.default_sort_key(item[0]))
+        return result
+    # если их оказалось мало - ищем на комплексной плоскости
+    print("Корней оказалось недостаточно, ищем на комплексной плоскости")
+    numeric_roots = sp.nroots(poly)
+
+    used = [False] * len(numeric_roots)
+
+    for exact_root, exact_mult in exact_roots.items():
+        matched = 0
+
+        for i, num_root in enumerate(numeric_roots):
+            if used[i]:
+                continue
+
+            diff = sp.N(num_root - exact_root)
+
+            if abs(complex(diff)) < eps:
+                used[i] = True
+                matched += 1
+
+                if matched == exact_mult:
+                    break
+
+    for i, root in enumerate(numeric_roots):
+        if used[i]:
+            continue
+
+        mult = 1
+        used[i] = True
+
+        for j in range(i + 1, len(numeric_roots)):
+            if used[j]:
+                continue
+
+            if abs(complex(root - numeric_roots[j])) < eps:
+                used[j] = True
+                mult += 1
+
+        result.append((sp.N(root, 20), mult))
+
+    result.sort(
+        key=lambda item: (
+            float(sp.re(item[0])),
+            float(sp.im(item[0]))
+        )
+    )
+
+    return result
 
 def kernel_bases_of_powers(N, max_power):
     bases = {0: []}
@@ -218,29 +267,13 @@ def expr_to_str(x):
 def matrix_to_str(name, A):
     lines = [f"{name} ="]
     for i in range(A.rows):
-        row_items = [f"{expr_to_str(A[i, j]):>2}" for j in range(A.cols)]
+        row_items = [f"{expr_to_str(A[i, j]):>4}" for j in range(A.cols)]
         lines.append("  [" + ", ".join(row_items) + "]")
     lines.append("")
     return "\n".join(lines)
 
-def blocks_to_str(blocks):
-    return ", ".join(f"(λ={expr_to_str(lam)}, size={size})" for lam, size in blocks)
 
-def jordan_blocks_from_J(J):
-    n = J.rows
-    blocks = []
-    i = 0
-
-    while i < n:
-        lam = J[i, i]
-        size = 1
-        while i + size < n and is_zero(J[i + size, i + size] - lam) and is_zero(J[i + size - 1, i + size] - 1):
-            size += 1
-        blocks.append((lam, size))
-        i += size
-
-    return blocks
-
+#=====Генератор тестов=====
 def random_unimodular_matrix(n, steps=12, value_range=(-3, 3)):
     rng = random.Random()
     P = sp.eye(n)
@@ -266,10 +299,41 @@ def random_unimodular_matrix(n, steps=12, value_range=(-3, 3)):
 
     det = sp.expand(P.det())
     if det not in (1, -1):
-        raise ValueError(f"Сгенерирована неунитмодулярная матрица, det={det}")
+        raise ValueError(f"Сгенерирована неунимодулярная матрица, det={det}")
     return simplify_matrix(P)
 
-def random_blocks(n, eigen_min=-5, eigen_max=5):
+def is_square_number(n):
+    r = isqrt(n)
+    return r * r == n
+
+def random_nonsquare(min_d=2, max_d=30):
+    while True:
+        d = random.randint(min_d, max_d)
+        if not is_square_number(d):
+            return sp.Integer(d)
+        
+def random_sympy_number():
+    kind = random.choice(["integer", "rational", "irrational"])
+
+    if kind == "integer":
+        return sp.Integer(random.randint(-5, 5))
+
+    if kind == "rational":
+        numerator = random.randint(-10, 10)
+        denominator = random.randint(1, 10)
+        return sp.Rational(numerator, denominator)
+
+    if kind == "irrational":
+        b = 0
+        while b == 0:
+            b = random.randint(-5, 5)
+
+        b = sp.Integer(b)
+        d = random_nonsquare(2, 30)
+
+        return sp.simplify(b * sp.sqrt(d))
+
+def random_blocks(n):
     if n <= 0:
         raise ValueError("n должно быть положительным")
 
@@ -278,15 +342,15 @@ def random_blocks(n, eigen_min=-5, eigen_max=5):
 
     while remaining > 0:
         size = random.randint(1, remaining)
-        eigenvalue = sp.Integer(random.randint(eigen_min, eigen_max))
+        eigenvalue = random_sympy_number()
         blocks.append((eigenvalue, size))
         remaining -= size
 
     random.shuffle(blocks)
     return blocks
 
-def make_jordan_matrix(n, eigen_min=-5, eigen_max=5):
-    blocks = random_blocks(n, eigen_min, eigen_max)
+def make_jordan_matrix(n):
+    blocks = random_blocks(n)
     blocks.sort(key=lambda x: (sp.default_sort_key(x[0]), -x[1]))
     J = sp.Matrix.zeros(n, n)
     pos = 0
@@ -299,8 +363,8 @@ def make_jordan_matrix(n, eigen_min=-5, eigen_max=5):
     return simplify_matrix(J)
 
 def generate_test_matrix():
-    size = random.randint(4, 10)
-    J = make_jordan_matrix(size,-2,2)
+    size = random.randint(3, 6)
+    J = make_jordan_matrix(size)
     P = random_unimodular_matrix(J.rows)
     A = simplify_matrix(P * J * P.inv())
     return A, J, P
@@ -323,7 +387,8 @@ def write_case_result(f, A, title, J_src, P_src):
 
 
 
-def demo(output_file="pro.txt"):
+def demo(output_file):
+    # переписать чтобы были алгебр значения
     A_gen, J_src, P_src = generate_test_matrix()
     case=(
         A_gen,
