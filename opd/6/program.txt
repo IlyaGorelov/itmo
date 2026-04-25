@@ -1,26 +1,101 @@
-org 0x455
-first_sym: word 0x551; адрес первого символа слова
+org 0
+v0: word $default, 0x180
+v1: word $default, 0x180
+v2: word $int1, 0x180
+v3: word $int2, 0x180
+v4: word $default, 0x180
+v5: word $default, 0x180
+v6: word $default, 0x180
+v7: word $default, 0x180
 
-start:
-;=======получим длину========
-spin1: in 7; получить статус ВУ
-and #0x40; and с битом 6
-beq spin1; если AC=0 - спин-луп
-in 6; ввод
-st 0x550
+org 0x38
+x: word 0x37; ссылка на x
+max: word 0x1b
+min: word 0xffe9
 
-;=======получим слово========
-spin2: in 7; получить статус ВУ
-and #0x40; and с битом 6
-beq spin2; если AC=0 - спин-луп
-in 6; ввод
-st (first_sym)+
-loop 0x550
-jump spin2
+default: iret; по дефолту ничего не делаем
+
+start: di
+cla
+out 0x1
+out 0x3
+out 0xB
+out 0xE
+out 0x12
+out 0x16
+out 0x1A
+out 0x1E
+ld #0xA; разрешить прерывания для ВУ2
+out 0x5
+ld #0xB; разрешить прерывания для ВУ3
+out 0x7
+jump prog
+
+prog: di ; запрещаю прерывания, чтобы из x точно вычлось 2
+ld (x)
+dec
+dec
+push
+call $check_x
+pop
+st (x)
+ei
+jump prog
+
+int1:
+di
+in 0x4
+and (x)
+nop
+push
+call $check_x
+pop
+st (x)
+nop
+ei
+iret
+
+int2:
+di
+ld (x)
 hlt
+push
+call func
+pop
+push
+call $check_x
+pop
+hlt
+out 0x6
+st (x)
+ei
+iret
 
+func:
+ld #5
+st counter
+cla
+cycle: add &1
+loop counter
+jump cycle
+sub #10
+st &1
+ret
+counter: word ? ; счетчик для умножения
 
-org 0x550; длина + строка
-len: word ?; 
-;тут идут символы в КОИ-8
-
+check_x:
+ld &1
+cmp $min
+bge next; если ок - продолжаем проверку
+ld $max
+st &1
+ret
+next:
+ld &1
+cmp $max
+blt ok; если меньше - ret x
+ld $max
+st &1
+ret
+ok:
+ret
