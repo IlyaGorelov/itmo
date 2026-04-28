@@ -1,4 +1,3 @@
 id,name,x,y,creationDate,price,manufactureCost,unitOfMeasure,ownerName,height,eyeColor,hairColor,nationality,locX,locY,locZ,locName
-2,Temp,12,12.0,Sun Apr 19 10:47:22 MSK 2026,,12,,Me,45.0,GREEN,BLACK,USA,34.0,34,34.0,New York
-4,Carrot,34,34.0,Sun Apr 19 14:12:01 MSK 2026,,34,,,,,,,,,
-3,45,45,45.0,Sun Apr 19 14:09:31 MSK 2026,,45,,,,,,,,,
+3,34,34,34.0,Tue Apr 28 17:01:58 MSK 2026,34.0,34,,,,,,,,,
+5,56,56,56.0,Tue Apr 28 17:02:21 MSK 2026,56.0,56,,,,,,,,,

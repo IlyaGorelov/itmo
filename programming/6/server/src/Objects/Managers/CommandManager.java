@@ -45,25 +45,24 @@ public class CommandManager {
         this.client = client;
         ArrayList<Command> commands = new ArrayList<>();
 
+        commands.add(new Add(collectionManager, false, true));
+        commands.add(new AddIfMax(collectionManager, false, true));
+        commands.add(new AddIfMin(collectionManager, false, true));
+        commands.add(new Clear(collectionManager));
+        commands.add(new Exit(collectionManager));
+        commands.add(new ExecuteScript(collectionManager, true, false));
+        commands.add(new GetById(collectionManager, true, false));
+        commands.add(new GreaterThanOwner(collectionManager, false, true));
         commands.add(new Help(collectionManager));
         commands.add(new Info(collectionManager));
-        commands.add(new Show(collectionManager));
-        commands.add(new Add(collectionManager, false, true));
-        commands.add(new Update(collectionManager, true, true));
-        commands.add(new Remove(collectionManager, true, false));
-        commands.add(new Clear(collectionManager));
-        // commands.add(new Save(collectionManager));
-        commands.add(new ExecuteScript(collectionManager, true, false));
-        commands.add(new Exit(collectionManager));
-        commands.add(new AddIfMax(collectionManager));
-        commands.add(new AddIfMin(collectionManager));
-        commands.add(new RemoveGreater(collectionManager));
-        commands.add(new RemoveByUnitOfMeasure(collectionManager, true, false));
         commands.add(new MinByUnit(collectionManager));
-        commands.add(new GreaterThanOwner(collectionManager));
+        commands.add(new Show(collectionManager));
+        commands.add(new Remove(collectionManager, true, false));
+        commands.add(new RemoveGreater(collectionManager, false, true));
+        commands.add(new RemoveByUnitOfMeasure(collectionManager, true, false));
         commands.add(new Undo(collectionManager));
         commands.add(new Redo(collectionManager));
-        commands.add(new GetById(collectionManager, true, false));
+        commands.add(new Update(collectionManager, true, true));
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -85,6 +84,7 @@ public class CommandManager {
         commands.add(new AddIfMin(collectionManager, false, true));
         commands.add(new Clear(collectionManager));
         commands.add(new Exit(collectionManager));
+        commands.add(new ExecuteScript(collectionManager, true, false));
         if (isCLIMode)
             commands.add(new GetById(collectionManager, true, false));
         commands.add(new GreaterThanOwner(collectionManager, false, true));

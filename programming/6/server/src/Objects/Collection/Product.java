@@ -1,25 +1,27 @@
 package Objects.Collection;
 
+import Objects.Enums.UnitOfMeasure;
+
 import java.io.Serializable;
 import java.util.Locale;
 
-import Objects.Enums.UnitOfMeasure;
-
-/** Class representing a Product - element of the collection */
+/**
+ * Class representing a Product - element of the collection
+ */
 public class Product implements Comparable<Product>, Serializable {
     private long id; // Значение поля должно быть больше 0, Значение этого поля должно быть
-                     // уникальным, Значение этого поля должно генерироваться автоматически
+    // уникальным, Значение этого поля должно генерироваться автоматически
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; // Поле не может быть null
     private java.util.Date creationDate; // Поле не может быть null, Значение этого поля должно генерироваться
-                                         // автоматически
+    // автоматически
     private Double price; // Поле может быть null, Значение поля должно быть больше 0
     private Integer manufactureCost; // Поле не может быть null
     private UnitOfMeasure unitOfMeasure; // Поле может быть null
     private Person owner; // Поле может быть null
 
     public Product(long id, String name, Coordinates coordinates, java.util.Date creationDate,
-            Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) {
+                   Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -96,13 +98,15 @@ public class Product implements Comparable<Product>, Serializable {
 
     /**
      * compares with other Coordinates
-     * 
+     *
      * @param o other coordinates
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Product o) {
+        if (o == null) return 1;
+
         int result = Double.compare(price == null ? 0 : price, o.price == null ? 0 : o.price);
         if (result == 0)
             result = Integer.compare(manufactureCost, o.manufactureCost);
@@ -117,12 +121,12 @@ public class Product implements Comparable<Product>, Serializable {
             return String.format(
                     "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner));
+                    unitOfMeasure, owner);
         else
             return String.format(
                     "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner));
+                    unitOfMeasure, owner);
     }
 
     public String getFuncString(boolean askForId) {

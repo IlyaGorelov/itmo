@@ -56,7 +56,6 @@ public class ExecuteScript extends Command {
         } catch (Exception e) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
             answer(pkg, e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
@@ -69,7 +68,6 @@ public class ExecuteScript extends Command {
     public String getDescription() {
         return """
                 execute commands from file line by line
-                
                 Write commands with pattern below. Type "" to set null value:
                 \tadd {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}
                 \tadd_if_min {same as for add}

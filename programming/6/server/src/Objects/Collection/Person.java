@@ -1,13 +1,15 @@
 package Objects.Collection;
 
-import java.io.Serializable;
-import java.util.Locale;
-
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
 
-/** Class representing Person */
+import java.io.Serializable;
+import java.util.Locale;
+
+/**
+ * Class representing Person
+ */
 public class Person implements Comparable<Person>, Serializable {
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Float height; // Поле не может быть null, Значение поля должно быть больше 0
@@ -17,7 +19,7 @@ public class Person implements Comparable<Person>, Serializable {
     private Location location; // Поле может быть null
 
     public Person(String name, Float height, EyeColor eyeColor, HairColor hairColor, Country nationality,
-            Location location) {
+                  Location location) {
         this.name = name;
         this.height = height;
         this.eyeColor = eyeColor;
@@ -84,14 +86,16 @@ public class Person implements Comparable<Person>, Serializable {
     }
 
     /**
-     * compares with other Coordinates
-     * 
-     * @param o other coordinates
+     * compares with other Person
+     *
+     * @param o other person
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Person o) {
+        if (o == null) return 1;
+
         int result = Integer.compare(name != null ? name.length() : 0, o.getName() != null ? o.getName().length() : 0);
         if (result == 0)
             result = height.compareTo(o.height);
@@ -103,13 +107,13 @@ public class Person implements Comparable<Person>, Serializable {
     public String toString() {
         return String.format(
                 "\tName: %s\n\tHeight: %.2f\n\tEye Color: %s\n\tHair Color: %s\n\tNationality: %s\n\tLocation: %s",
-                name, height, eyeColor, hairColor, nationality, String.valueOf(location));
+                name, height, eyeColor, hairColor, nationality, location);
     }
 
     public String getFuncString() {
         return String.format(Locale.US, "%s;%f;%s;%s;%s;%s", name, height,
                 eyeColor == null ? "" : String.valueOf(eyeColor),
-                String.valueOf(hairColor), String.valueOf(nationality),
+                hairColor, nationality,
                 location == null ? "" : location.getFuncString());
     }
 }

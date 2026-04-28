@@ -57,7 +57,6 @@ public class CommandManager {
         return commandMap;
     }
 
-    /** Executes commands and handles exceptions */
     public CustomPackage getRelevantPackage(String commandName) {
         try {
             String[] commandWithArg = parseCommand(commandName);
@@ -70,7 +69,7 @@ public class CommandManager {
 
             command.setArgument(simpleArg);
             relevantObject = command.getRelevantObject();
-            return new CustomPackage(command.getName(), simpleArg, relevantObject);
+            return new CustomPackage(command.getName(), command.getArgument(), relevantObject);
         } catch (NullPointerException e) {
             throw new NullPointerException("Unknown command");
         } catch (IllegalArgumentException e) {

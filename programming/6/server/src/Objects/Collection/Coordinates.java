@@ -2,14 +2,16 @@ package Objects.Collection;
 
 import java.io.Serializable;
 
-/** Class representing coordinates */
+/**
+ * Class representing coordinates
+ */
 public class Coordinates implements Comparable<Coordinates>, Serializable {
     private Integer x; // Поле не может быть null
     private double y; // Значение поля должно быть больше -990
 
     /**
      * Constructor for class
-     * 
+     *
      * @param x first coordinate
      * @param y second coordinate
      */
@@ -39,13 +41,15 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
 
     /**
      * compares with other Coordinates
-     * 
+     *
      * @param o other coordinates
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Coordinates o) {
+        if (o == null) return 1;
+
         int result = Integer.compare(x, o.x);
         if (result == 0)
             result = y > o.y ? (y == o.y ? 0 : 1) : -1;
@@ -60,7 +64,7 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
 
     /**
      * Parse toString (@see toString of this class) into new Coordinates
-     * 
+     *
      * @param input String represantation of this object that is got from toString
      * @return new Coordinates
      */
