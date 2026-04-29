@@ -121,7 +121,7 @@ public class CommandManager {
         try {
             String[] commandWithArg = parseCommand(commandName);
 
-            var command = commandMap.get(commandWithArg[0]);
+            Command command = commandMap.get(commandWithArg[0]);
             var realArgs = Arrays.stream(commandWithArg).skip(1).toArray(String[]::new);
 
             String simpleArg = Arrays.stream(realArgs).filter(x -> !isComplexArg(x)).findFirst().orElse(null);

@@ -435,7 +435,8 @@ public class CollectionManager {
         Product newProduct = createProduct(name, coordinates, getCurrentDate(), price, manufactureCost, unitOfMeasure,
                 person);
         var maxProduct = products.stream()
-                .max(new ProductsComparator()).orElse(null);
+                .max(new ProductsComparator())
+                .orElse(null);
 
         return newProduct.compareTo(maxProduct) == 1;
     }
@@ -473,7 +474,7 @@ public class CollectionManager {
                 null,
                 null);
 
-        String command = new RemoveGreater(null).getName() + " {" + newProduct.getFuncString(true) + "}";
+        String command = new RemoveGreater(null).getName() + " {" + newProduct.getFuncString(false) + "}";
         StringBuilder antiCommand = new StringBuilder();
 
         Product[] productsToRemove = products.stream()
@@ -486,8 +487,9 @@ public class CollectionManager {
                     IdManager.removeId(p.getId());
                     antiCommand.append(new Add(null).getName())
                             .append(" {")
-                            .append(p.getFuncString(true))
-                            .append("}");
+                            .append(p.getFuncString(false))
+                            .append("}")
+                            .append("\n");
                     if (CommandManager.getCountOfUnrecorded() == 0)
                         History.clearUndoHistory();
                     CommandManager.minusUnrecordedCommand();
