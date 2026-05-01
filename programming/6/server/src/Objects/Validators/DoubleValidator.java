@@ -10,7 +10,7 @@ public class DoubleValidator extends Validator<Double> {
             Double.parseDouble(value.trim());
             return true;
         } catch (Exception e) {
-            if (value.isBlank() | value.trim() == "null") {
+            if (value.isBlank() | value.trim().equals("null")) {
                 if (canBeNull)
                     return true;
                 else {

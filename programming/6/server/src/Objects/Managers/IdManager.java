@@ -3,14 +3,18 @@ package Objects.Managers;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-/** Controls id */
+/**
+ * Controls id
+ */
 public class IdManager {
-    /** list of all ids */
+    /**
+     * list of all ids
+     */
     static ArrayList<Long> ids = new ArrayList<>();
 
     /**
      * get unique id
-     * 
+     *
      * @return unique id
      */
     public static long getId() {

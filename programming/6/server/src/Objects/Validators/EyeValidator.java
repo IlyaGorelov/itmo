@@ -1,19 +1,19 @@
 package Objects.Validators;
 
-import java.util.Scanner;
-
 import Objects.Enums.EyeColor;
+
+import java.util.Scanner;
 
 public class EyeValidator extends Validator<EyeColor> {
 
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            if (enumContains(value.toUpperCase()) == false)
+            if (!enumContains(value.toUpperCase()))
                 throw new IllegalArgumentException("No such eye color");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value == "null") {
+            if (value.isBlank() || value.equals("null")) {
                 if (canBeNull)
                     return true;
                 else {

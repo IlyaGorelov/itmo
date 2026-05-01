@@ -1,19 +1,19 @@
 package Objects.Validators;
 
-import java.util.Scanner;
-
 import Objects.Enums.Country;
+
+import java.util.Scanner;
 
 public class CountryValidator extends Validator<Country> {
 
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            if (enumContains(value.toUpperCase()) == false)
+            if (!enumContains(value.toUpperCase()))
                 throw new IllegalArgumentException("No such country");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value == "null") {
+            if (value.isBlank() || value.equals("null")) {
                 if (canBeNull)
                     return true;
                 else {

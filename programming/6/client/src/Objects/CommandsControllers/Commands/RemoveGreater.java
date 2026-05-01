@@ -8,15 +8,17 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
+import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
 import Objects.Enums.UnitOfMeasure;
+import Objects.Parsers.ProductParser;
 import Objects.Validators.*;
 
 /*remove elements greater than input */
-public class RemoveGreater extends Command {
+public class RemoveGreater extends Command implements CommandWithComplexArg {
     public RemoveGreater(boolean hasArgument, boolean hasComplexArgument) {
         super(hasArgument, hasComplexArgument);
     }
@@ -33,6 +35,12 @@ public class RemoveGreater extends Command {
     @Override
     public Object getRelevantObject() {
         checkArgument();
+
+        Object complexArg = tryGetObjectViaComplexArg();
+        if(complexArg!=null) {
+            return complexArg;
+        }
+
         System.out.println("Type values to compare with.");
         PriceValidator priceValidator = new PriceValidator();
         IntegerValidator integerValidator = new IntegerValidator();
@@ -40,9 +48,8 @@ public class RemoveGreater extends Command {
         Double price = priceValidator.get(getScanner(), true, "Enter price(double): ");
         Integer manufactureCost = integerValidator.get(getScanner(), false, "Enter manufacture cost(integer): ");
 
-        Product p = new Product(0, "", new Coordinates(0, 0), new Date(), price, manufactureCost, null,
+        return new Product(0, "", new Coordinates(0, 0), new Date(), price, manufactureCost, null,
                 null);
-        return p;
     }
 
     @Override
@@ -56,6 +63,18 @@ public class RemoveGreater extends Command {
             relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
         }
         return relevant;
+    }
+
+    @Override
+    public Object tryGetObjectViaComplexArg() {
+        ProductParser productParser = new ProductParser();
+        try {
+            if (getComplexArgument() != null)
+                return productParser.parse(getComplexArgument());
+        }catch (Exception e){
+            throw new IllegalArgumentException("Invalid command format, use:\n\tadd {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}");
+        }
+        return null;
     }
 
 }

@@ -1,17 +1,18 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.History;
+import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
-import Objects.Managers.CommandManager;
 
-/** show information about collection */
+/**
+ * show information about collection
+ */
 public class Redo extends Command {
 
     public Redo(CollectionManager collectionManager, boolean hasArgument, boolean hasCOmplexArg) {
-        super(collectionManager, hasArgument,hasCOmplexArg);
+        super(collectionManager, hasArgument, hasCOmplexArg);
     }
 
     public Redo(CollectionManager collectionManager) {
@@ -22,19 +23,18 @@ public class Redo extends Command {
     public void execute() {
         checkArgument();
 
-        String[] redos = History.getLastUndo();
-        if (redos.length == 0) {
+        if (History.isAtEnd()) {
             // System.out.println("Nothing to redo");
-                CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
-          answer(pkg,"Nothing to redo");
+            CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
+            answer(pkg, "Nothing to redo");
 
         } else {
-            CommandManager.addUnrecordedCommands(redos.length);
-            for (String string : redos) {
-                CommandBuffer.buffer.add(string);
-                    CustomPackage pkg = new CustomPackage(this.getName(), null, "");
-                answer(pkg,"");
-            }
+            History.moveForward();
+            RevertableCommand command = History.getCommand();
+
+            command.setArgument(History.getArg());
+            command.setComplexArgument(History.getComplexArg());
+            command.execute();
         }
 
     }

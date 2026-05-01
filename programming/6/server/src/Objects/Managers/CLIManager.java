@@ -20,10 +20,6 @@ public class CLIManager {
                 return line;
             }
 
-            if (ch == '\r') {
-                continue;
-            }
-
             if (ch == '\n') {
                 String line = currentLine.toString();
                 currentLine.setLength(0);

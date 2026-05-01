@@ -1,6 +1,5 @@
 package Objects.Connection;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -13,27 +12,51 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import Objects.CommandsControllers.Commands.ExecuteScript;
 import Objects.CommandsControllers.Commands.Exit;
 import Objects.Managers.CommandManager;
 
 public class Client {
-
     private Socket socket = null;
 
     private static final int MAX_RETRY = 5;
     private static final int CONNECT_TIMEOUT = 5000;
 
-    public void connect(String host, int port) {
+    InputStream in;
+    OutputStream out;
 
+    DataInputStream dis;
+    DataOutputStream dos;
+    ByteArrayOutputStream baos;
+    ObjectOutputStream oos;
+
+    Scanner scanner;
+
+    CommandManager commandManager;
+
+    private void initializeIO(Socket socket) throws IOException {
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
+
+        dis = new DataInputStream(in);
+        dos = new DataOutputStream(out);
+        baos = new ByteArrayOutputStream();
+        oos = new ObjectOutputStream(baos);
+
+        scanner = new Scanner(System.in);
+    }
+
+    public void connect(String host, int port) {
         while (true) {
             try {
                 socket = getSocketWithRetry(host, port);
                 if (socket == null)
                     break;
+
+                initializeIO(socket);
 
                 work();
                 break;
@@ -52,6 +75,7 @@ public class Client {
             throws IOException, InterruptedException {
         int retry = 0;
         int delay = 1000;
+
         while (retry < MAX_RETRY) {
             try {
                 Socket socket = new Socket();
@@ -71,90 +95,108 @@ public class Client {
 
     private void work() {
         try {
-            Scanner reader = new Scanner(System.in);
-            InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
+            commandManager = new CommandManager(scanner, in, out);
 
             System.out.println("Client connected to server.");
             System.out.println();
             System.out.println("Type \"help\" to see all available commands.");
-            CommandManager commandManager = new CommandManager(reader, in, out);
 
             while (!socket.isOutputShutdown()) {
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                CustomPackage customPackage = getCustomPackage();
 
-                String clientCommand = reader.nextLine();
-                CustomPackage realCommand = null;
-                try {
-                    realCommand = commandManager.getRelevantPackage(clientCommand);
-                } catch (Exception e) {
-                    if (e.getMessage() != null)
-                        System.out.println(e.getMessage());
-                    continue;
-                }
+                if (customPackage == null) continue;
 
-                oos.writeObject(realCommand);
-
-                oos.flush();
-                byte[] objectBytes = baos.toByteArray();
-
-                dos.writeInt(objectBytes.length);
-                dos.write(objectBytes);
-                dos.flush();
-
-                // System.out.println("Client sent message \"" + realCommand + "\" to server.");
-
-                if (realCommand.getCommand().equals(new Exit().getName())) {
-
-                    System.out.println("Client kills connections");
-
-                    System.out.println();
-                    int answerLength = dis.readInt();
-                    byte[] answerBytes = new byte[answerLength];
-                    dis.readFully(answerBytes);
-
-                    ByteArrayInputStream bais = new ByteArrayInputStream(answerBytes);
-                    ObjectInputStream ois = new ObjectInputStream(bais);
-
-                    Object[] answer = (Object[]) ois.readObject();
-                    String realAnswer = commandManager.getRelevantAnswer(answer);
-                    System.out.println(realAnswer);
-
+                if (isExitCommand(customPackage)) {
                     break;
                 }
 
+                if (isExecuteScriptCommand(customPackage)) {
+                    continue;
+                }
+
+                sendRequest(customPackage);
+
                 System.out.println();
-                int answerLength = dis.readInt();
-                byte[] answerBytes = new byte[answerLength];
-                dis.readFully(answerBytes);
-
-                ByteArrayInputStream bais = new ByteArrayInputStream(answerBytes);
-                ObjectInputStream ois = new ObjectInputStream(bais);
-
-                Object[] answer = (Object[]) ois.readObject();
-                String realAnswer = commandManager.getRelevantAnswer(answer);
-                System.out.println(realAnswer);
-
+                System.out.println(getAnswer());
             }
             socket.close();
             System.out.println("Closing connections & channels on clentSide - DONE.");
 
-        } catch (UnknownHostException e) {
-            System.out.println(e.getMessage());
         } catch (ConnectException e) {
             System.out.println("Server doesn't listen on this port or server is not started yet.");
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             System.out.println("User input is not detected, but all data was saved");
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } // catch (ClassNotFoundException e) {
-          // System.out.println(e.getMessage());
-          // }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private CustomPackage getCustomPackage() {
+        String clientCommand = scanner.nextLine();
+        CustomPackage customPackage = null;
+
+        try {
+            customPackage = CommandManager.getRelevantPackage(clientCommand);
+            return customPackage;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+    }
+
+    private void sendRequest(CustomPackage customPackage) throws IOException {
+        baos = new ByteArrayOutputStream();
+        oos = new ObjectOutputStream(baos);
+
+        oos.writeObject(customPackage);
+        oos.flush();
+
+        byte[] objectBytes = baos.toByteArray();
+
+        dos.writeInt(objectBytes.length);
+        dos.write(objectBytes);
+        dos.flush();
+    }
+
+    private String getAnswer() throws IOException, ClassNotFoundException {
+        int answerLength = dis.readInt();
+        byte[] answerBytes = new byte[answerLength];
+
+        dis.readFully(answerBytes);
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(answerBytes);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+
+        Object[] answer = (Object[]) ois.readObject();
+        return commandManager.getRelevantAnswer(answer);
+    }
+
+    private boolean isExitCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
+        if (pkg.getCommand().equals(new Exit().getName())) {
+            System.out.println("Client kills connections");
+            System.out.println();
+
+            sendRequest(pkg);
+
+            System.out.println(getAnswer());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isExecuteScriptCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
+        if (pkg.getCommand().equals(new ExecuteScript().getName())) {
+            Object[] pkgs = (Object[]) pkg.getObject();
+
+            for (Object pkgObject : pkgs) {
+                CustomPackage singlePkg = (CustomPackage) pkgObject;
+
+                sendRequest(singlePkg);
+                System.out.println(getAnswer());
+            }
+            return true;
+        }
+        return false;
     }
 }

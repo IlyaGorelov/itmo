@@ -1,7 +1,8 @@
 package Objects.Validators;
 
-import java.util.Scanner;
 import Objects.Managers.IdManager;
+
+import java.util.Scanner;
 
 public class IdValidator extends Validator<Long> {
 
@@ -11,6 +12,8 @@ public class IdValidator extends Validator<Long> {
             Long x = Long.parseLong(value);
             if (!IdManager.isIdIn(x))
                 throw new IllegalArgumentException("There is no such id");
+            if (x < 0)
+                throw new IllegalArgumentException("Id must be >0");
 
             return true;
         } catch (Exception e) {

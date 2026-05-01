@@ -12,7 +12,7 @@ public class PriceValidator extends Validator<Double> {
                 throw new IllegalArgumentException("Price must be greater than 0");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value.trim() == "null") {
+            if (value.isBlank() || value.trim().equals("null")) {
                 if (canBeNull)
                     return true;
                 else {

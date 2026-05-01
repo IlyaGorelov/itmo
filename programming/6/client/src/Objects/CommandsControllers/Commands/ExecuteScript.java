@@ -1,12 +1,13 @@
 package Objects.CommandsControllers.Commands;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.CommandBuffer;
 import Objects.Connection.CustomPackage;
+import Objects.Managers.CommandManager;
 
 /** execute commands from the script file */
 public class ExecuteScript extends Command {
@@ -25,17 +26,26 @@ public class ExecuteScript extends Command {
     }
 
     @Override
-    public String getRelevantObject() {
+    public Object getRelevantObject() {
         checkArgument();
-        File script = new File(getArgument());
-        setArgument(script.getAbsolutePath());
-        return null;
+        try {
+            File script = new File(getArgument());
+            Scanner scanner = new Scanner(script);
+            ArrayList<CustomPackage> pkgs = new ArrayList<>();
+
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                pkgs.add(CommandManager.getRelevantPackage(line));
+            }
+            return pkgs.toArray(new CustomPackage[1]);
+        }catch (FileNotFoundException e) {
+            throw new IllegalArgumentException("File not found");
+        }
     }
 
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = (Object) pack.getObject();
-
         return object.toString() + "\n";
     }
 

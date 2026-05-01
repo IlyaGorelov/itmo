@@ -1,17 +1,19 @@
 package Objects.CommandsControllers;
 
-import java.nio.channels.SocketChannel;
-import java.util.NoSuchElementException;
-
 import Objects.CommandsControllers.Commands.Save;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
 
-/** Class executes command from sysin or from buffer */
+import java.nio.channels.SocketChannel;
+import java.util.NoSuchElementException;
+
+/**
+ * Class executes command from sysin or from buffer
+ */
 public class CommandExecutor {
-    private CollectionManager collectionManager;
+    private final CollectionManager collectionManager;
     public static boolean waitForNextCommand = true;
     public static boolean waitForNextCommandForCLI = false;
     private CommandManager commandManager;
@@ -20,84 +22,69 @@ public class CommandExecutor {
         this.collectionManager = collectionManager;
     }
 
-    /** read command from sysin or buffer, then put command in commandManager */
+    /**
+     * read command from sysin or buffer, then put command in commandManager
+     */
     public void execute(Receiver receiver, SocketChannel client) {
         commandManager = new CommandManager(collectionManager, receiver, client);
         waitForNextCommand = true;
 
-        while (waitForNextCommand) {
-            try {
-                if (CommandBuffer.buffer.size() > 0) {
-                    commandManager.executeCommand(CommandBuffer.buffer.get(0));
+        try {
+            while (waitForNextCommand) {
+
+                if (!CommandBuffer.isEmpty()) {
+                    commandManager.executeCommand(
+                            CommandBuffer.getCommand(),
+                            CommandBuffer.getArg(),
+                            CommandBuffer.getComplexArg()
+                    );
                     continue;
                 }
-                // // receiver.write(null);
                 CustomPackage pack = receiver.getPackage(client);
                 if (pack != null) {
-                    CommandBuffer.buffer.add(pack.toString());
+                    CommandBuffer.addInBuffer(pack.getCommand(), pack.getArgument() != null ? pack.getArgument().toString() : null, pack.getObject());
                     System.out.println();
                 } else {
                     break;
                 }
-
-                // commandManager.executeCommand(CommandBuffer.buffer.get(0));
-            } catch (IndexOutOfBoundsException | NoSuchElementException e) {
-                System.out.println("User input is not detected");
-                break;
-            } catch (Exception e) {
-                System.out.println(e);
-                break;
             }
-
+        } catch (IndexOutOfBoundsException | NoSuchElementException e) {
+            System.out.println("User input is not detected");
+        } catch (Exception e) {
+            System.out.println(e);
         }
-
-        // try {
-        // commandManager
-        // .executeCommand(new
-        // Exit(collectionManager).setClient(client).setReceiver(receiver).getName());
-        // } catch (Exception e) {
-        // System.out.println("ERROR ERROR ERROR");
-        // }
-
     }
 
     public void executeFromCLI(Receiver receiver) {
         commandManager = new CommandManager(collectionManager, receiver, true);
         waitForNextCommandForCLI = true;
 
-        while (waitForNextCommandForCLI) {
-            try {
-                if (CommandBuffer.buffer.size() > 0) {
-                    commandManager.executeCommand(CommandBuffer.buffer.get(0));
+        try {
+            while (waitForNextCommandForCLI) {
+                if (!CommandBuffer.isEmpty()) {
+                    commandManager.executeCommand(
+                            CommandBuffer.getCommand(),
+                            CommandBuffer.getArg(),
+                            CommandBuffer.getComplexArg()
+                    );
                     continue;
                 }
+
                 String command = receiver.getCLICommand();
                 if (command != null) {
-                    CommandBuffer.buffer.add(command);
+                    CommandBuffer.addInBuffer(command, null, null);
                     System.out.println();
                 } else {
                     break;
                 }
 
-                // commandManager.executeCommand(CommandBuffer.buffer.get(0));
-            } catch (IndexOutOfBoundsException | NoSuchElementException e) {
-                System.out.println("User input is not detected");
-                break;
-            } catch (Exception e) {
-                System.out.println(e);
-                break;
+
             }
-
+        } catch (IndexOutOfBoundsException | NoSuchElementException e) {
+            System.out.println("User input is not detected");
+        } catch (Exception e) {
+            System.out.println(e);
         }
-
-        // try {
-        // commandManager
-        // .executeCommand(new
-        // Exit(collectionManager).setClient(client).setReceiver(receiver).getName());
-        // } catch (Exception e) {
-        // System.out.println("ERROR ERROR ERROR");
-        // }
-
     }
 
     public void stop() {

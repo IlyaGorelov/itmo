@@ -3,10 +3,11 @@ package Objects.Collection;
 import java.io.Serializable;
 import java.util.Locale;
 
+import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Enums.UnitOfMeasure;
 
 /** Class representing a Product - element of the collection */
-public class Product implements Comparable<Product>, Serializable {
+public class Product implements Comparable<Product>, Serializable,Cloneable {
     private long id; // Значение поля должно быть больше 0, Значение этого поля должно быть
                      // уникальным, Значение этого поля должно генерироваться автоматически
     private String name; // Поле не может быть null, Строка не может быть пустой
@@ -30,7 +31,11 @@ public class Product implements Comparable<Product>, Serializable {
         this.owner = owner;
     }
 
-    public long getId() {
+    public static int getCountOfEditableFields(){
+        return 4 + Coordinates.getCountOfEditableFields()+Person.getCountOfEditableFields();
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -138,5 +143,15 @@ public class Product implements Comparable<Product>, Serializable {
                     price == null ? "" : price, manufactureCost,
                     unitOfMeasure == null ? "" : String.valueOf(unitOfMeasure),
                     owner == null ? "" : owner.getFuncString());
+    }
+
+    @Override
+    public Product clone() {
+        try {
+            Product clone = (Product) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

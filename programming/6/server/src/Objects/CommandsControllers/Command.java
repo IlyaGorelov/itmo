@@ -1,32 +1,27 @@
 package Objects.CommandsControllers;
 
-import java.io.Serializable;
-import java.nio.channels.SocketChannel;
-
 import Objects.Collection.Product;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
 
-/** Abstract class representing a command */
+import java.nio.channels.SocketChannel;
+
 public abstract class Command {
-    /** Collection manager so we can control a collection */
     private CollectionManager collectionManager;
-    /** Receiver to send answers */
     private Receiver receiver;
-    /** Socket channel to send answers */
     private SocketChannel client;
-    /** An argument of a command presented in one line format */
+
     private String argument;
-    private String complexArgument;
-    /** Boolean indicates this command requires argument or not */
+    private Object complexArgument;
+
     private boolean hasArgument = false;
     private boolean hasComplexArgument = false;
     private boolean isCLIMode = false;
 
     /**
      * Constructor with 2 parameters
-     * 
+     *
      * @param collectionManager to set and to control collection
      * @param hasArgument       to set if this command requires an argument
      */
@@ -39,7 +34,7 @@ public abstract class Command {
     /**
      * Constructor with 1 parameter
      * hasArgument is set at false by default
-     * 
+     *
      * @param collectionManager to set and to control collection
      */
     public Command(CollectionManager collectionManager) {
@@ -54,7 +49,10 @@ public abstract class Command {
     public boolean getHasArgument() {
         return hasArgument;
     }
-    public  boolean getHasComplexArgument(){return hasComplexArgument;}
+
+    public boolean getHasComplexArgument() {
+        return hasComplexArgument;
+    }
 
     public abstract String getName();
 
@@ -62,9 +60,6 @@ public abstract class Command {
 
     public abstract void execute();
 
-    public void executeInline() {
-        execute();
-    };
 
     public Command setReceiver(Receiver receiver) {
         this.receiver = receiver;
@@ -101,30 +96,30 @@ public abstract class Command {
         this.argument = argument;
     }
 
-    public String getComplexArgument() {
+    public Object getComplexArgument() {
         return complexArgument;
     }
 
-    public void setComplexArgument(String argument) {
+    public void setComplexArgument(Object argument) {
         this.complexArgument = argument;
     }
 
     /**
-     * Checks if there is an argument when you don't need it or there is to much
+     * Checks if there is an argument when you don't need it or there are too many
      * arguments or there is no required argument
      */
     public void checkArgument() {
         boolean actuallyHasArgument = getArgument() != null;
         boolean actuallyHasComplexArgument = getComplexArgument() != null;
         if (actuallyHasArgument != hasArgument || actuallyHasComplexArgument != hasComplexArgument)
-            throw new IllegalArgumentException(String.format("Invalid format, use:\n\t%s",getName()));
+            throw new IllegalArgumentException(String.format("Invalid format, use:\n\t%s", getName()));
     }
 
     public CollectionManager getCollectionManager() {
         return collectionManager;
     }
 
-    public  void answer(CustomPackage toClient, String toCLI){
+    public void answer(CustomPackage toClient, String toCLI) {
         if (!getIsCLIMode())
             getReceiver()
                     .addToAnswer(getCLient(), toClient);
@@ -132,13 +127,13 @@ public abstract class Command {
             getReceiver().addAnswerForCLI(toCLI);
     }
 
-    public  void answer(CustomPackage toClient, Product... toCLI){
+    public void answer(CustomPackage toClient, Product... toCLI) {
         if (!getIsCLIMode())
             getReceiver()
                     .addToAnswer(getCLient(), toClient);
         else {
-            for (var p: toCLI) {
-            getReceiver().addAnswerForCLI(p.toString());
+            for (var p : toCLI) {
+                getReceiver().addAnswerForCLI(p.toString());
             }
         }
     }

@@ -10,7 +10,7 @@ public class IntegerValidator extends Validator<Integer> {
             Integer.parseInt(value.trim());
             return true;
         } catch (NumberFormatException e) {
-            if (value.isBlank() || value.trim() == "null") {
+            if (value.isBlank() || value.trim().equals("null")) {
                 if (canBeNull)
                     return true;
                 else {

@@ -1,22 +1,22 @@
 package Objects.Validators;
 
-import java.util.Scanner;
-
 import Objects.Enums.UnitOfMeasure;
+
+import java.util.Scanner;
 
 public class UnitValidator extends Validator<UnitOfMeasure> {
 
     @Override
     public boolean isValid(String value, boolean canBeNull) {
         try {
-            if (enumContains(value.toUpperCase()) == false)
+            if (!enumContains(value.toUpperCase()))
                 throw new IllegalArgumentException("No such unit of measure");
             return true;
         } catch (Exception e) {
             if (value == null || value.isBlank() || value == "null") {
-                if (canBeNull)
+                if (canBeNull) {
                     return true;
-                else {
+                } else {
                     System.out.println(e.getMessage());
                     return false;
                 }

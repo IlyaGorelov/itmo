@@ -5,24 +5,23 @@ import java.util.Scanner;
 
 import Objects.Connection.CustomPackage;
 
-/** Abstract class representing a command */
+/**
+ * Abstract class representing a command
+ */
 public abstract class Command implements Serializable {
-    private static final long serialVersionUID = 2L;
-    /** An argument of a command presented in one line format */
+    /**
+     * An argument of a command presented in one line format
+     */
     private String argument;
     private String complexArgument;
-    /** Boolean indicates this command requires argument or not */
+    /**
+     * Boolean indicates this command requires argument or not
+     */
     private boolean hasArgument = false;
     private boolean hasComplexArgument = false;
 
     private transient Scanner scanner;
 
-    /**
-     * Constructor with 2 parameters
-     * 
-     * @param collectionManager to set and to control collection
-     * @param hasArgument       to set if this command requires an argument
-     */
     public Command(boolean hasArgument, boolean hasComplexArgument) {
         this.hasArgument = hasArgument;
         this.hasComplexArgument = hasComplexArgument;
@@ -63,10 +62,6 @@ public abstract class Command implements Serializable {
         this.complexArgument = argument;
     }
 
-    /**
-     * Checks if there is an argument when you don't need it or there is to much
-     * arguments or there is no required argument
-     */
     public void checkArgument() {
         boolean actuallyHasArgument = getArgument() != null;
         if (actuallyHasArgument != hasArgument)

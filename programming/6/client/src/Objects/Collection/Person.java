@@ -8,7 +8,7 @@ import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
 
 /** Class representing Person */
-public class Person implements Comparable<Person>, Serializable {
+public class Person implements Comparable<Person>, Serializable,Cloneable {
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Float height; // Поле не может быть null, Значение поля должно быть больше 0
     private EyeColor eyeColor; // Поле может быть null
@@ -24,6 +24,10 @@ public class Person implements Comparable<Person>, Serializable {
         this.hairColor = hairColor;
         this.nationality = nationality;
         this.location = location;
+    }
+
+    public static int getCountOfEditableFields(){
+        return 5 + Location.getCountOfEditableFields();
     }
 
     public Person(String name) {
@@ -111,5 +115,14 @@ public class Person implements Comparable<Person>, Serializable {
                 eyeColor == null ? "" : String.valueOf(eyeColor),
                 String.valueOf(hairColor), String.valueOf(nationality),
                 location == null ? "" : location.getFuncString());
+    }
+
+    @Override
+    public Person clone() {
+        try {
+            return (Person) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

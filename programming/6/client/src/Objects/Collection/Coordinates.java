@@ -3,7 +3,7 @@ package Objects.Collection;
 import java.io.Serializable;
 
 /** Class representing coordinates */
-public class Coordinates implements Comparable<Coordinates>, Serializable {
+public class Coordinates implements Comparable<Coordinates>, Serializable ,Cloneable{
     private Integer x; // Поле не может быть null
     private double y; // Значение поля должно быть больше -990
 
@@ -16,6 +16,10 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
     public Coordinates(Integer x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public static int getCountOfEditableFields(){
+        return 2;
     }
 
     public Integer getX() {
@@ -73,4 +77,13 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
 
     }
 
+    @Override
+    public Coordinates clone() {
+        try {
+            Coordinates clone = (Coordinates) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

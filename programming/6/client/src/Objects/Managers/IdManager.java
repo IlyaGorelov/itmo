@@ -25,14 +25,17 @@ public class IdManager {
             DataOutputStream dos = new DataOutputStream(out);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
+
             oos.writeObject(new CustomPackage(new GetById().getName(), id, null));
             oos.flush();
+
             byte[] objectBytes = baos.toByteArray();
             dos.writeInt(objectBytes.length);
             dos.write(objectBytes);
             dos.flush();
 
             DataInputStream dis = new DataInputStream(in);
+
             int answerLength = dis.readInt();
             byte[] answerBytes = new byte[answerLength];
             dis.readFully(answerBytes);

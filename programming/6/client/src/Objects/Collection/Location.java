@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /** Class representing location of a person */
-public class Location implements Comparable<Location>, Serializable {
+public class Location implements Comparable<Location>, Serializable,Cloneable {
     private Double x; // Поле не может быть null
     private Integer y; // Поле не может быть null
     private double z;
@@ -23,6 +23,10 @@ public class Location implements Comparable<Location>, Serializable {
         this.y = y;
         this.z = z;
         this.name = name;
+    }
+
+    public static int getCountOfEditableFields(){
+        return 4;
     }
 
     public Double getX() {
@@ -98,5 +102,15 @@ public class Location implements Comparable<Location>, Serializable {
 
     public String getFuncString() {
         return String.format(Locale.US, "%f;%d;%f;%s", x, y, z, name);
+    }
+
+    @Override
+    public Location clone() {
+        try {
+            Location clone = (Location) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -21,8 +21,7 @@ public class GetById extends Command {
 
     @Override
     public Object getRelevantObject() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRelevantObject'");
+       return  null;
     }
 
     @Override

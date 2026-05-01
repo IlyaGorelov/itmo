@@ -3,7 +3,9 @@ package Objects.CommandsControllers.Commands;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 
-/** show information about collection */
+/**
+ * show information about collection
+ */
 public class Info extends Command {
 
     public Info(boolean hasArgument) {
@@ -23,7 +25,6 @@ public class Info extends Command {
     public String getRelevantObject() {
         checkArgument();
         return null;
-
     }
 
     @Override

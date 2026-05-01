@@ -13,7 +13,7 @@ public class Clear extends Command {
     @Override
     public String getRelevantObject() {
         checkArgument();
-        return getName();
+        return null;
     }
 
     @Override

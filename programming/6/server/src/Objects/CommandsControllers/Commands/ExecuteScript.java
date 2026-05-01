@@ -25,38 +25,7 @@ public class ExecuteScript extends Command {
     @Override
     public void execute() throws IllegalArgumentException {
         checkArgument();
-        String answer = "";
-        try {
-            answer += ("Scanning script from: " + getArgument()) + "\n";
-            File script = new File(getArgument());
-            Scanner scanner = new Scanner(new FileReader(script));
-            while (scanner.hasNextLine()) {
-                String newCommand = scanner.nextLine();
-                if (newCommand.isBlank())
-                    continue;
-                if (newCommand.contains(getName())) {
-                    String path = newCommand.split(" ")[1];
-                    if (new File(path).equals(script))
-                        answer += ("Skip command " + newCommand + " because it refers to the same file") + "\n";
-                    else {
-                        answer += ("Add new command in queue: " + newCommand) + "\n";
-                        CommandBuffer.buffer.add(newCommand);
-                    }
-                } else {
-                    answer += ("Add new command in queue: " + newCommand) + "\n";
-                    CommandBuffer.buffer.add(newCommand);
-                }
-            }
-            scanner.close();
-            answer += ("Executing") + "\n";
-
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), answer);
-            answer(pkg, answer);
-
-        } catch (Exception e) {
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
-            answer(pkg, e.getMessage());
-        }
+        return;
     }
 
     @Override

@@ -1,15 +1,14 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.History;
+import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
-import Objects.Managers.CommandManager;
 
-import java.util.Arrays;
-
-/** show information about collection */
+/**
+ * show information about collection
+ */
 public class Undo extends Command {
 
     public Undo(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
@@ -25,15 +24,18 @@ public class Undo extends Command {
         checkArgument();
         String answer = "";
 
-        String[] undos = History.getLastCommand();
-        if (undos.length == 0) {
+        if (History.isAtStart()) {
             answer += ("Nothing to undo");
         } else {
-            CommandManager.addUnrecordedCommands(undos.length);
-            CommandBuffer.buffer.addAll(Arrays.asList(undos));
+            History.moveBack();
+            RevertableCommand command = History.getCommand();
+
+            command.setArgument(History.getArg());
+            command.setComplexArgument(History.getComplexArg());
+            command.undo();
         }
-            CustomPackage pkg = new CustomPackage(this.getName(), null, answer);
-       answer(pkg,answer);
+        CustomPackage pkg = new CustomPackage(this.getName(), null, answer);
+        answer(pkg, answer);
 
 
     }

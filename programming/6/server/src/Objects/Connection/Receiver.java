@@ -1,10 +1,11 @@
 package Objects.Connection;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import Objects.CommandsControllers.CommandExecutor;
+import Objects.Managers.CLIManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
@@ -12,36 +13,26 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import Objects.CommandsControllers.CommandExecutor;
-import Objects.Managers.CLIManager;
+import java.util.*;
 
 public class Receiver {
     private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
     private final CLIManager cliManager = new CLIManager();
 
-    private int port;
+    private final int port;
+
     private Selector selector;
     private ServerSocketChannel serverChannel;
 
-    private List<String> answersForCLI = new ArrayList<>();
-    private Queue<String> requestsForCLI = new LinkedList<>();
+    private final List<String> answersForCLI = new ArrayList<>();
+    private final Queue<String> requestsForCLI = new LinkedList<>();
 
-    private HashMap<SocketChannel, ByteBuffer> buffers = new HashMap<>();
-    private HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
-    private HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
-    private HashMap<SocketChannel, ByteBuffer> pendingWrites = new HashMap<>();
+    private final HashMap<SocketChannel, ByteBuffer> buffers = new HashMap<>();
+    private final HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
+    private final HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
+    private final HashMap<SocketChannel, ByteBuffer> pendingWrites = new HashMap<>();
 
-    private CommandExecutor commandExecutor;
+    private final CommandExecutor commandExecutor;
 
     public Receiver(int port, CommandExecutor commandExecutor) {
         this.port = port;
@@ -49,18 +40,13 @@ public class Receiver {
     }
 
     public void connect() {
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutdown detected. Saving data and stopping server...");
-
             commandExecutor.stop();
-
             logger.info("Server stopped safely.");
         }));
 
-
         try {
-
             selector = Selector.open();
             serverChannel = ServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(port));
@@ -69,45 +55,48 @@ public class Receiver {
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             logger.info("Server started on port {}", port);
 
-            while (true) {
-                selector.select(50);
-                var keys = selector.selectedKeys().iterator();
-
-                while (keys.hasNext()) {
-                    SelectionKey key = keys.next();
-                    keys.remove();
-
-                    if (!key.isValid())
-                        continue;
-                    try {
-                        if (key.isAcceptable()) {
-                            accept(key);
-                        } else if (key.isReadable()) {
-                            read(key);
-                        } else if (key.isWritable()) {
-                            write(key);
-                        }
-                    } catch (SocketException e) {
-                        logger.error("SocketException for client, closing: {}", key.channel());
-                        closeClient((SocketChannel) key.channel());
-                    } catch (IOException e) {
-                        logger.error("IOException for client, closing: ", key.channel());
-                        closeClient((SocketChannel) key.channel());
-                    } catch (ClassNotFoundException e) {
-                        logger.error("Received unknown object from client, skipping");
-                    }
-                }
-
-                    processCLI();
-
-            }
-
+            selectKeys();
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             logger.error("User input is not detected");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } finally {
             commandExecutor.stop();
+        }
+    }
+
+    private void selectKeys() throws IOException {
+        while (true) {
+            selector.select(50);
+            var keys = selector.selectedKeys().iterator();
+
+            while (keys.hasNext()) {
+                SelectionKey key = keys.next();
+                keys.remove();
+
+                if (!key.isValid())
+                    continue;
+                try {
+                    if (key.isAcceptable()) {
+                        accept(key);
+                    } else if (key.isReadable()) {
+                        read(key);
+                    } else if (key.isWritable()) {
+                        write(key);
+                    }
+                } catch (SocketException e) {
+                    logger.error("SocketException for client, closing: {}", key.channel());
+                    closeClient((SocketChannel) key.channel());
+                } catch (IOException e) {
+                    logger.error("IOException for client, closing: {}", key.channel());
+                    closeClient((SocketChannel) key.channel());
+                } catch (ClassNotFoundException e) {
+                    logger.error("Received unknown object from client, skipping");
+                }
+            }
+
+            processCLI();
+
         }
     }
 
@@ -121,8 +110,6 @@ public class Receiver {
         answers.put(clientChannel, new LinkedList<>());
         requests.put(clientChannel, new LinkedList<>());
         pendingWrites.put(clientChannel, null);
-
-        // commandExecutor.execute(this, clientChannel);
 
         logger.info("Client connected: {}", clientChannel.getRemoteAddress());
     }
@@ -168,7 +155,6 @@ public class Receiver {
             commandExecutor.execute(this, clientChannel);
             key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         }
-
         buffer.compact();
     }
 
@@ -204,7 +190,7 @@ public class Receiver {
         while (buffer.hasRemaining()) {
             clientCannel.write(buffer);
         }
-        logger.info("Sended an answer: {}", pkg);
+        logger.info("Sent an answer: {}", pkg);
 
         key.interestOps(SelectionKey.OP_READ);
     }
@@ -224,7 +210,7 @@ public class Receiver {
             logger.info("Closed connection with client: {}", client.getRemoteAddress());
             client.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -245,12 +231,6 @@ public class Receiver {
             requestsForCLI.add(line);
 
             logger.info("CLI command: {}", line);
-
-            if ("exit".equalsIgnoreCase(line)) {
-                cliManager.writeLine("Stopping server...");
-                commandExecutor.stop();
-                System.exit(0);
-            }
 
             commandExecutor.executeFromCLI(this);
             for (String a : answersForCLI)

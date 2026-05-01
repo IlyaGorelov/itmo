@@ -1,21 +1,22 @@
 package Objects.Managers;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class CSVManager {
 
-    /** Headers for .csv file */
+    /**
+     * Headers for .csv file
+     */
     public enum Headers {
         id, name, x, y, creationDate, price, manufactureCost, unitOfMeasure, ownerName, height, eyeColor, hairColor,
         nationality, locX, locY, locZ, locName
@@ -23,7 +24,7 @@ public class CSVManager {
 
     /**
      * Reads .csv
-     * 
+     *
      * @param path path to the file
      * @return ArrayList<CSVRecord> list of csv records
      */
@@ -32,7 +33,10 @@ public class CSVManager {
         try {
             String file = fileToString(path);
             CSVParser csvParser = CSVParser.parse(file,
-                    CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setNullString("")
+                    CSVFormat.DEFAULT.builder()
+                            .setHeader()
+                            .setSkipHeaderRecord(true)
+                            .setNullString("")
                             .get());
 
             for (CSVRecord i : csvParser) {
@@ -48,9 +52,9 @@ public class CSVManager {
 
     /**
      * Reads file with Scanner
-     * 
+     *
      * @param path path to the file
-     * @return String represenation of file
+     * @return String representation of file
      */
     private String fileToString(String path) throws IllegalArgumentException {
         String content = "";
@@ -62,6 +66,7 @@ public class CSVManager {
             while (reader.hasNextLine()) {
                 content += reader.nextLine() + "\n";
             }
+
             reader.close();
             return content;
         } catch (IOException | IllegalArgumentException e) {
@@ -71,16 +76,19 @@ public class CSVManager {
 
     /**
      * writes array of strings as .csv file
-     * 
+     *
      * @param path    path to the new file
      * @param records array of strings ready to transform into CSVRecord
      */
-    public void write(String path, ArrayList<ArrayList<Object>> records) {
+    public void write(String path,
+                      ArrayList<ArrayList<Object>> records) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path));
 
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter,
-                    CSVFormat.DEFAULT.builder().setHeader(Headers.class).setNullString("")
+                    CSVFormat.DEFAULT.builder()
+                            .setHeader(Headers.class)
+                            .setNullString("")
                             .get());
 
             for (var i : records) {

@@ -1,10 +1,6 @@
 package Objects.Managers;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -14,16 +10,20 @@ import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.Commands.*;
 import Objects.Connection.CustomPackage;
 
-/** controls command */
+/**
+ * controls command
+ */
 public class CommandManager {
-    /** map of command kind of name - Command */
-    private HashMap<String, Command> commandMap = new HashMap<>();
 
+    /**
+     * map of command kind of name - Command
+     */
+    private static final HashMap<String, Command> commandMap = new HashMap<>();
 
     /**
      * Constructor that fill command map with available commands
-     * 
-     * @param receiver to get input
+     *
+     * @param reader to get input
      */
     public CommandManager(Scanner reader, InputStream in, OutputStream out) {
         ArrayList<Command> commands = new ArrayList<>();
@@ -57,7 +57,7 @@ public class CommandManager {
         return commandMap;
     }
 
-    public CustomPackage getRelevantPackage(String commandName) {
+    public static CustomPackage getRelevantPackage(String commandName) {
         try {
             String[] commandWithArg = parseCommand(commandName);
             Object relevantObject = null;
@@ -65,18 +65,16 @@ public class CommandManager {
             var command = commandMap.get(commandWithArg[0]);
             var realArgs = Arrays.stream(commandWithArg).skip(1).toArray(String[]::new);
 
-            String simpleArg = Arrays.stream(realArgs).filter(x->!isComplexArg(x)).findFirst().orElse(null);
+            String simpleArg = Arrays.stream(realArgs).filter(x -> !isComplexArg(x)).findFirst().orElse(null);
+            String complexArg = Arrays.stream(realArgs).filter(CommandManager::isComplexArg).findFirst().orElse(null);
 
             command.setArgument(simpleArg);
+            command.setComplexArgument(complexArg);
+
             relevantObject = command.getRelevantObject();
             return new CustomPackage(command.getName(), command.getArgument(), relevantObject);
         } catch (NullPointerException e) {
             throw new NullPointerException("Unknown command");
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException("Something went wrong while parsing command!");
         }
     }
 
@@ -94,25 +92,27 @@ public class CommandManager {
         return parts.toArray(new String[0]);
     }
 
-    private  boolean isComplexArg(String arg){
+    private static boolean isComplexArg(String arg) {
         return arg.startsWith("{") && arg.endsWith("}");
     }
 
     public String getRelevantAnswer(Object[] answer) {
         try {
             String relevant = "";
+
             for (Object single : answer) {
                 CustomPackage pack = (CustomPackage) single;
+
                 var command = commandMap.get(pack.getCommand());
+
                 if (command == null) {
-                    relevant += (String) pack.getObject() + "\n";
+                    relevant += pack.getObject() + "\n";
                     continue;
                 }
                 relevant += command.getRelevantAnswer(pack);
             }
+
             return relevant;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException("Something went wrong while parsing command!");
         }

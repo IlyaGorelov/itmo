@@ -1,59 +1,50 @@
 package Objects.CommandsControllers;
 
-import java.util.ArrayDeque;
-
-import Objects.Managers.CommandManager;
+import java.util.ArrayList;
 
 public class History {
-    private static ArrayDeque<String> commandsHistory = new ArrayDeque<>();
-    private static ArrayDeque<String> antiCommandsHistory = new ArrayDeque<>();
-    private static ArrayDeque<String> undoHistory = new ArrayDeque<>();
-    private static ArrayDeque<String> antiUndoHistory = new ArrayDeque<>();
+    private static final ArrayList<RevertableCommand> commandsHistory = new ArrayList<>();
+    private static final ArrayList<String> argumentsHistory = new ArrayList<>();
+    private static final ArrayList<Object> complexArgHistory = new ArrayList<>();
 
-    public static void add(String command, String antiCommand) {
-        if (commandsHistory.isEmpty() || !command.equals(undoHistory.peekLast())
-                && !antiCommand.equals(antiUndoHistory.peekLast())) {
-            {
-                if (CommandManager.getCountOfUnrecorded() == 0) {
-                    commandsHistory.add(command);
-                    antiCommandsHistory.add(antiCommand);
-                }
-            }
+    private static int currentStep = 0;
+
+    public static boolean isAtStart() {
+        return currentStep == 0;
+    }
+
+    public static boolean isAtEnd() {
+        return currentStep == commandsHistory.size();
+    }
+
+    public static void add(RevertableCommand command, String arg, Object complexArg) {
+        commandsHistory.add(currentStep, command);
+        argumentsHistory.add(currentStep, arg);
+        complexArgHistory.add(currentStep, complexArg);
+        currentStep++;
+    }
+
+    public static void moveBack() {
+        if (--currentStep < 0) {
+            currentStep = 0;
         }
     }
 
-    public static String[] getLastCommand() {
-        try {
-            undoHistory.add(antiCommandsHistory.getLast());
-            antiUndoHistory.add(commandsHistory.getLast());
-
-            commandsHistory.removeLast();
-            String lastAntiCommand = antiCommandsHistory.getLast();
-            antiCommandsHistory.removeLast();
-            return lastAntiCommand.split("\n");
-        } catch (Exception e) {
-            String[] empty = {};
-            return empty;
+    public static void moveForward() {
+        if (++currentStep == commandsHistory.size()) {
+            currentStep--;
         }
     }
 
-    public static String[] getLastUndo() {
-        try {
-            commandsHistory.add(antiUndoHistory.getLast());
-            antiCommandsHistory.add(undoHistory.getLast());
-
-            undoHistory.removeLast();
-            String lastCommand = antiUndoHistory.getLast();
-            antiUndoHistory.removeLast();
-            return lastCommand.split("\n");
-        } catch (Exception e) {
-            String[] empty = {};
-            return empty;
-        }
+    public static RevertableCommand getCommand() {
+        return commandsHistory.get(currentStep);
     }
 
-    public static void clearUndoHistory() {
-        undoHistory.clear();
-        antiUndoHistory.clear();
+    public static String getArg() {
+        return argumentsHistory.get(currentStep);
+    }
+
+    public static Object getComplexArg() {
+        return complexArgHistory.get(currentStep);
     }
 }
