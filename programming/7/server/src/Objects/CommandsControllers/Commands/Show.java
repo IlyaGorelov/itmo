@@ -1,0 +1,49 @@
+package Objects.CommandsControllers.Commands;
+
+import org.openjdk.jol.info.GraphLayout;
+
+import Objects.Collection.Product;
+import Objects.CommandsControllers.Command;
+import Objects.Connection.CustomPackage;
+import Objects.Managers.CollectionManager;
+
+/*Show all elements of collection */
+public class Show extends Command {
+
+    public Show(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
+        super(collectionManager, hasArgument,hasComplexArg);
+    }
+
+    public Show(CollectionManager collectionManager) {
+        super(collectionManager);
+    }
+
+    @Override
+    public void execute() {
+        checkArgument();
+        var products = getCollectionManager().getElements();
+        String answer = "";
+
+        var productsSorted = products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                GraphLayout.parseInstance(y).totalSize())).toArray();
+
+        CustomPackage pkg = new CustomPackage(this.getName(), null,
+                products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                        GraphLayout.parseInstance(y).totalSize())).toArray());
+
+        answer(pkg,products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+                GraphLayout.parseInstance(y).totalSize())).toArray(Product[]::new));
+
+    }
+
+    @Override
+    public String getName() {
+        return "show";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Show all elements of collection";
+    }
+
+}
