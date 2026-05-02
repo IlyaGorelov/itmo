@@ -40,11 +40,11 @@ public class Receiver {
     }
 
     public void connect() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Shutdown detected. Saving data and stopping server...");
-            commandExecutor.stop();
-            logger.info("Server stopped safely.");
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            logger.info("Shutdown detected. Saving data and stopping server...");
+//            commandExecutor.stop();
+//            logger.info("Server stopped safely.");
+//        }));
 
         try {
             selector = Selector.open();
@@ -60,9 +60,10 @@ public class Receiver {
             logger.error("User input is not detected");
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } finally {
-            commandExecutor.stop();
         }
+//        finally {
+//            commandExecutor.stop();
+//        }
     }
 
     private void selectKeys() throws IOException {

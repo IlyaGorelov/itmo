@@ -204,7 +204,7 @@ public class CollectionManager {
                 .orElse(null);
 
         if (product == null)
-            throw new IndexOutOfBoundsException("There is no element with such id!");
+            throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
 
         products.remove(product);
         IdManager.removeId(existingId);

@@ -50,7 +50,7 @@ public class PersonParser extends Parser<Person> {
             person = new Person(
                     ownerName,
                     Float.parseFloat(height),
-                    !eyeColor.isBlank() ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
+                    eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                     HairColor.valueOf(hairColor.toUpperCase()),
                     Country.valueOf(nationality.toUpperCase()),
                     location);

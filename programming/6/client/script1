@@ -1,0 +1,8 @@
+remove 1
+remove 2
+remove 3
+remove 4
+undo
+undo
+undo
+redo

@@ -63,7 +63,7 @@ public class RemoveGreater extends RevertableCommand {
 
     @Override
     public void undo() {
-        Product[] restoring = TrashBin.poll();
+        Product[] restoring = TrashBin.pop();
 
         for (Product product : restoring) {
             Product added = getCollectionManager().addElement(product.getId(), product);

@@ -29,12 +29,13 @@ public class Redo extends Command {
             answer(pkg, "Nothing to redo");
 
         } else {
-            History.moveForward();
             RevertableCommand command = History.getCommand();
 
             command.setArgument(History.getArg());
             command.setComplexArgument(History.getComplexArg());
             command.execute();
+
+            History.moveForward();
         }
 
     }

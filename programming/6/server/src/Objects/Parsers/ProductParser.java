@@ -64,9 +64,9 @@ public class ProductParser extends Parser<Product> {
                 name,
                 coordinates,
                 creationDate,
-                !price.isBlank() ? Double.parseDouble(price) : null,
+                price != null ? Double.parseDouble(price) : null,
                 Integer.parseInt(manufactureCost),
-                !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
                 person);
 
         IdManager.addId(Long.parseLong(id));

@@ -1,9 +1,10 @@
 package Objects.CommandsControllers;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class History {
-    private static final ArrayList<RevertableCommand> commandsHistory = new ArrayList<>();
+    private static final LinkedList<RevertableCommand> commandsHistory = new LinkedList<>();
     private static final ArrayList<String> argumentsHistory = new ArrayList<>();
     private static final ArrayList<Object> complexArgHistory = new ArrayList<>();
 
@@ -18,10 +19,18 @@ public class History {
     }
 
     public static void add(RevertableCommand command, String arg, Object complexArg) {
-        commandsHistory.add(currentStep, command);
-        argumentsHistory.add(currentStep, arg);
-        complexArgHistory.add(currentStep, complexArg);
-        currentStep++;
+        if (!commandsHistory.contains(command)) {
+            commandsHistory.add(currentStep, command);
+            commandsHistory.removeIf(p -> commandsHistory.indexOf(p) > currentStep);
+
+            argumentsHistory.add(currentStep, arg);
+            argumentsHistory.removeIf(a -> argumentsHistory.indexOf(a) > currentStep);
+
+            complexArgHistory.add(currentStep, complexArg);
+            complexArgHistory.removeIf(p -> complexArgHistory.indexOf(p) > currentStep);
+
+            currentStep++;
+        }
     }
 
     public static void moveBack() {
@@ -31,8 +40,8 @@ public class History {
     }
 
     public static void moveForward() {
-        if (++currentStep == commandsHistory.size()) {
-            currentStep--;
+        if (currentStep + 1 != commandsHistory.size()) {
+            currentStep++;
         }
     }
 

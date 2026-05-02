@@ -2,11 +2,11 @@ package Objects.CommandsControllers;
 
 import Objects.Collection.Product;
 
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class TrashBin {
-    private static final Queue<Product[]> removedInSingleCommand = new LinkedList<>();
+    private static final Deque<Product[]> removedInSingleCommand = new LinkedList<>();
 
     public static void add(Product... adding) {
         if (adding.length > 0) {
@@ -14,7 +14,7 @@ public class TrashBin {
         }
     }
 
-    public static Product[] poll() {
-        return removedInSingleCommand.poll();
+    public static Product[] pop() {
+        return removedInSingleCommand.pollLast();
     }
 }

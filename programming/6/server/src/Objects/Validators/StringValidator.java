@@ -9,11 +9,10 @@ public class StringValidator extends Validator<String> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if (value.isBlank()) {
-                if (canBeNull)
+                if (canBeNull) {
                     return true;
-                else {
-                    throw new IllegalArgumentException("It can't be null");
                 }
+                throw new IllegalArgumentException("It can't be null");
             }
             return true;
         } catch (Exception e) {

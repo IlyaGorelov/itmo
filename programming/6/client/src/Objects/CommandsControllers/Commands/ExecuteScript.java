@@ -9,7 +9,9 @@ import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CommandManager;
 
-/** execute commands from the script file */
+/**
+ * execute commands from the script file
+ */
 public class ExecuteScript extends Command {
 
     public ExecuteScript(boolean hasArgument) {
@@ -33,13 +35,47 @@ public class ExecuteScript extends Command {
             Scanner scanner = new Scanner(script);
             ArrayList<CustomPackage> pkgs = new ArrayList<>();
 
+            System.out.println("Reading script: " + script.getPath());
+
             while (scanner.hasNext()) {
                 String line = scanner.nextLine();
-                pkgs.add(CommandManager.getRelevantPackage(line));
+                if (isLineCorrect(line)) {
+                    CustomPackage pkg = CommandManager.getRelevantPackage(line);
+
+                    addPkgToPkgs(pkg,pkgs);
+                }
             }
             return pkgs.toArray(new CustomPackage[1]);
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new IllegalArgumentException("File not found");
+        }
+    }
+
+    private boolean isLineCorrect(String line) {
+
+        if (line.startsWith(new ExecuteScript().getName())) {
+            File script = new File(getArgument());
+
+            String pathToSubScript = line.split(" ")[1];
+
+            File subScript = new File(pathToSubScript);
+
+            System.out.println("Recursive reference detected: " + line.trim() + "\nSkipping line\n");
+            return !script.equals(subScript);
+        }
+        System.out.println("Adding new command: " + line.trim());
+        return true;
+    }
+
+    private void addPkgToPkgs(CustomPackage pkg, ArrayList<CustomPackage> pkgs) {
+        if (pkg.getCommand().equals(new ExecuteScript().getName())) {
+            Object[] pkgsOfExecuteScript = (Object[]) pkg.getObject();
+
+            for (Object pkgObject : pkgsOfExecuteScript) {
+                pkgs.add((CustomPackage) pkgObject);
+            }
+        } else {
+            pkgs.add(pkg);
         }
     }
 

@@ -55,7 +55,7 @@ public class Update extends RevertableCommand {
 
     @Override
     public void undo() {
-        Product[] restoring = TrashBin.poll();
+        Product[] restoring = TrashBin.pop();
 
         for (Product product : restoring) {
             Product previous = getCollectionManager().updateElement(product.getId(), product);
