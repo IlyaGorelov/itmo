@@ -31,8 +31,9 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
         this.owner = owner;
     }
 
-    public static int getCountOfEditableFields(){
-        return 4 + Coordinates.getCountOfEditableFields()+Person.getCountOfEditableFields();
+    public static int getCountOfEditableFields(boolean includeCreationDate) {
+        int primitives = includeCreationDate ? 5 : 4;
+        return primitives + Coordinates.getCountOfEditableFields() + Person.getCountOfEditableFields();
     }
 
     public Long getId() {

@@ -23,7 +23,7 @@ public class ProductParser extends Parser<Product> {
                 .replace(";", " ; ")
                 .split(";");
 
-        int countOfEditableFields = Product.getCountOfEditableFields();
+        int countOfEditableFields = Product.getCountOfEditableFields(false);
 
         if (rawTokens.length < countOfEditableFields) {
             tokens = Arrays.copyOf(rawTokens, countOfEditableFields);

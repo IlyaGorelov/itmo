@@ -30,8 +30,6 @@ public class Client {
 
     DataInputStream dis;
     DataOutputStream dos;
-    ByteArrayOutputStream baos;
-    ObjectOutputStream oos;
 
     Scanner scanner;
 
@@ -43,8 +41,6 @@ public class Client {
 
         dis = new DataInputStream(in);
         dos = new DataOutputStream(out);
-        baos = new ByteArrayOutputStream();
-        oos = new ObjectOutputStream(baos);
 
         scanner = new Scanner(System.in);
     }
@@ -146,8 +142,8 @@ public class Client {
     }
 
     private void sendRequest(CustomPackage customPackage) throws IOException {
-        baos = new ByteArrayOutputStream();
-        oos = new ObjectOutputStream(baos);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
 
         oos.writeObject(customPackage);
         oos.flush();
@@ -186,7 +182,10 @@ public class Client {
     }
 
     private boolean isExecuteScriptCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
-        if (pkg.getCommand().equals(new ExecuteScript().getName())) {
+        String commandName = pkg.getCommand();
+        boolean isExecuteScript = commandName.equals(new ExecuteScript().getName());
+
+        if (isExecuteScript) {
             Object[] pkgs = (Object[]) pkg.getObject();
 
             for (Object pkgObject : pkgs) {

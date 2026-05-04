@@ -8,6 +8,7 @@
       <root url="jar://$PROJECT_DIR$/lib/jol-core-0.17.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/logback-core-1.5.32.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/slf4j-api-2.0.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/postgresql-42.7.11.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -1,52 +1,80 @@
 package Objects.Parsers;
 
 import Objects.Collection.Location;
-import Objects.Managers.CSVManager;
+import Objects.Managers.DBManager;
 import Objects.Validators.DoubleValidator;
 import Objects.Validators.IntegerValidator;
 import Objects.Validators.LocationValidator;
 import Objects.Validators.StringValidator;
-import org.apache.commons.csv.CSVRecord;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LocationParser extends Parser<Location> {
-    StringValidator stringValidator = new StringValidator();
-    IntegerValidator integerValidator = new IntegerValidator();
-    DoubleValidator doubleValidator = new DoubleValidator();
-    LocationValidator locationValidator = new LocationValidator();
+    private final StringValidator stringValidator = new StringValidator();
+    private final IntegerValidator integerValidator = new IntegerValidator();
+    private final DoubleValidator doubleValidator = new DoubleValidator();
+    private final LocationValidator locationValidator = new LocationValidator();
 
-    public Location parse(CSVRecord record) {
+    @Override
+    public Location parse(ResultSet resultSet) throws SQLException {
         Location location = null;
 
-        String locX = record.get(CSVManager.Headers.locX);
-        String locY = record.get(CSVManager.Headers.locY);
-        String locZ = record.get(CSVManager.Headers.locZ);
-        String locName = record.get(CSVManager.Headers.locName);
+        int row = resultSet.getRow();
+
+        String locX = resultSet.getString(DBManager.Headers.locX.toString());
+        String locY = resultSet.getString(DBManager.Headers.locY.toString());
+        String locZ = resultSet.getString(DBManager.Headers.locZ.toString());
+        String locName = resultSet.getString(DBManager.Headers.locName.toString());
+
         if (locX != null) {
-            if (!doubleValidator.isValid(locX, false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.locX, record.getRecordNumber()));
+            if (!doubleValidator.isValid(locX, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.locX,
+                        row
+                ));
+            }
 
-            if (!integerValidator.isValid(String.valueOf(locY), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.locY, record.getRecordNumber()));
+            if (!integerValidator.isValid(locY, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.locY,
+                        row
+                ));
+            }
 
-            if (!doubleValidator.isValid(String.valueOf(locZ), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.locZ, record.getRecordNumber()));
+            if (!doubleValidator.isValid(locZ, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.locZ,
+                        row
+                ));
+            }
 
-            if (!stringValidator.isValid(String.valueOf(locName), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.locName, record.getRecordNumber()));
+            if (!stringValidator.isValid(locName, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.locName,
+                        row
+                ));
+            }
 
-            location = new Location(Double.parseDouble(locX),
+            location = new Location(
+                    Double.parseDouble(locX),
                     Integer.parseInt(locY),
                     Double.parseDouble(locZ),
-                    locName);
+                    locName
+            );
 
-            if (!locationValidator.isValid(String.valueOf(location), false))
-                throw new IllegalArgumentException(String.format("Invalid value for location in row %d",
-                        record.getRecordNumber()));
+            if (!locationValidator.isValid(String.valueOf(location), false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for location in row %d",
+                        row
+                ));
+            }
         }
+
         return location;
     }
 }

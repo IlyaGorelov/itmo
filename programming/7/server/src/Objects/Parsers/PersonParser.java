@@ -5,47 +5,68 @@ import Objects.Collection.Person;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
-import Objects.Managers.CSVManager;
+import Objects.Managers.DBManager;
 import Objects.Validators.CountryValidator;
 import Objects.Validators.EyeValidator;
 import Objects.Validators.HairValidator;
 import Objects.Validators.HeightValidator;
-import org.apache.commons.csv.CSVRecord;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PersonParser extends Parser<Person> {
-    HeightValidator heightValidator = new HeightValidator();
-    EyeValidator eyeValidator = new EyeValidator();
-    HairValidator hairValidator = new HairValidator();
-    CountryValidator countryValidator = new CountryValidator();
+    private final HeightValidator heightValidator = new HeightValidator();
+    private final EyeValidator eyeValidator = new EyeValidator();
+    private final HairValidator hairValidator = new HairValidator();
+    private final CountryValidator countryValidator = new CountryValidator();
 
-    public Person parse(CSVRecord record) {
+    @Override
+    public Person parse(ResultSet resultSet) throws SQLException {
         Person person = null;
 
-        String ownerName = record.get(CSVManager.Headers.ownerName);
+        int row = resultSet.getRow();
+
+        String ownerName = resultSet.getString(DBManager.Headers.ownerName.toString());
 
         if (ownerName != null) {
-            String height = record.get(CSVManager.Headers.height);
-            if (!heightValidator.isValid(String.valueOf(height), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.height, record.getRecordNumber()));
+            String height = resultSet.getString(DBManager.Headers.height.toString());
+            if (!heightValidator.isValid(height, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.height,
+                        row
+                ));
+            }
 
-            String eyeColor = record.get(CSVManager.Headers.eyeColor);
-            if (!eyeValidator.isValid(String.valueOf(eyeColor), true))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.eyeColor, record.getRecordNumber()));
+            String eyeColor = resultSet.getString(DBManager.Headers.eyeColor.toString());
+            if (!eyeValidator.isValid(eyeColor, true)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.eyeColor,
+                        row
+                ));
+            }
 
-            String hairColor = record.get(CSVManager.Headers.hairColor);
-            if (!hairValidator.isValid(String.valueOf(hairColor), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.hairColor, record.getRecordNumber()));
+            String hairColor = resultSet.getString(DBManager.Headers.hairColor.toString());
+            if (!hairValidator.isValid(hairColor, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.hairColor,
+                        row
+                ));
+            }
 
-            String nationality = record.get(CSVManager.Headers.nationality);
-            if (!countryValidator.isValid(String.valueOf(nationality), false))
-                throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                        CSVManager.Headers.nationality, record.getRecordNumber()));
+            String nationality = resultSet.getString(DBManager.Headers.nationality.toString());
+            if (!countryValidator.isValid(nationality, false)) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid value for %s in row %d",
+                        DBManager.Headers.nationality,
+                        row
+                ));
+            }
 
             LocationParser locationParser = new LocationParser();
-            Location location = locationParser.parse(record);
+            Location location = locationParser.parse(resultSet);
 
             person = new Person(
                     ownerName,
@@ -53,8 +74,10 @@ public class PersonParser extends Parser<Person> {
                     eyeColor != null ? EyeColor.valueOf(eyeColor.toUpperCase()) : null,
                     HairColor.valueOf(hairColor.toUpperCase()),
                     Country.valueOf(nationality.toUpperCase()),
-                    location);
+                    location
+            );
         }
+
         return person;
     }
 }

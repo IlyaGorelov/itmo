@@ -3,6 +3,7 @@ package Objects.CommandsControllers;
 import Objects.CommandsControllers.Commands.Save;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
+import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
 
@@ -14,19 +15,22 @@ import java.util.NoSuchElementException;
  */
 public class CommandExecutor {
     private final CollectionManager collectionManager;
+    private final AuthManager authManager;
+
     public static boolean waitForNextCommand = true;
     public static boolean waitForNextCommandForCLI = false;
     private CommandManager commandManager;
 
-    public CommandExecutor(CollectionManager collectionManager) {
+    public CommandExecutor(CollectionManager collectionManager, AuthManager authManager) {
         this.collectionManager = collectionManager;
+        this.authManager = authManager;
     }
 
     /**
      * read command from sysin or buffer, then put command in commandManager
      */
     public void execute(Receiver receiver, SocketChannel client) {
-        commandManager = new CommandManager(collectionManager, receiver, client);
+        commandManager = new CommandManager(collectionManager, authManager, receiver, client);
         waitForNextCommand = true;
 
         try {

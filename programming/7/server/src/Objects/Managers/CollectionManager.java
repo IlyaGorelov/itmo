@@ -4,9 +4,13 @@ import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.Collection.ProductsComparator;
+import Objects.DAOs.ProductDAO;
 import Objects.Enums.UnitOfMeasure;
-import Objects.Parsers.ProductParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,42 +18,23 @@ import java.util.stream.Collectors;
  * class that controls collection
  */
 public class CollectionManager {
-    private final HashSet<Product> products = new HashSet<>();
+    private final static Logger logger = LoggerFactory.getLogger(CollectionManager.class);
+
+    private final HashSet<Product> products;
+    private final ProductDAO productDAO;
     /**
      * date of creating of the collection
      */
     private final Date initialDate = getCurrentDate();
-    /**
-     * path to the file
-     */
-    private String path;
-    /**
-     * csv manager that controls reading and writing in .csv
-     */
-    CSVManager csvManager = new CSVManager();
 
-    /**
-     * load collection from env variable, then creates products and fill the
-     * collection
-     *
-     * @param envKey name of env variable with path to the .csv file
-     */
-    public void loadCollection(String envKey) {
-        ProductParser productParser = new ProductParser();
+    private final String urlToDb;
 
-        this.path = System.getenv(envKey);
-        var CSVRecords = csvManager.read(path);
+    public CollectionManager(String envKeyToDbUrl, String envKeyToPropsPath) {
+        this.urlToDb = System.getenv(envKeyToDbUrl);
+        String pathToProps = System.getenv(envKeyToPropsPath);
 
-        for (var record : CSVRecords) {
-            try {
-                Product newProduct = productParser.parse(record);
-                products.add(newProduct);
-            } catch (Exception e) {
-                if (e.getMessage() != null)
-                    System.out.println(e.getMessage());
-                System.out.println("Skip row\n");
-            }
-        }
+        productDAO = new ProductDAO(new DBManager(urlToDb, pathToProps));
+        products = productDAO.loadProducts();
     }
 
     /**
@@ -73,7 +58,7 @@ public class CollectionManager {
             addProductFieldsToRecord(p, record);
             records.add(record);
         }
-        csvManager.write(path, records);
+        //     dbManager.write(urlToDb, records);
     }
 
     private void addProductFieldsToRecord(Product p, ArrayList<Object> record) {
@@ -140,10 +125,7 @@ public class CollectionManager {
      * @throws IndexOutOfBoundsException if id isn't in collection
      */
     public Product getById(long id) throws IndexOutOfBoundsException {
-        return products.stream()
-                .filter(x -> x.getId() == id)
-                .findFirst()
-                .orElse(null);
+        return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
     }
 
     public HashSet<Product> getElements() {
@@ -155,42 +137,61 @@ public class CollectionManager {
      */
     public Product addElement(Product newProduct) {
         Product product = createProduct(newProduct);
-        products.add(product);
-        return newProduct;
+        try {
+            productDAO.insertProduct(product);
+            products.add(product);
+
+            return newProduct;
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            IdManager.removeId(product.getId());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
      * add element to collection with id
      */
     public Product addElement(Long id, Product rawProduct) {
-        Product p = createProduct(id, rawProduct);
-        products.add(p);
-        return p;
+        try {
+            Product product = createProduct(id, rawProduct);
+
+            productDAO.insertProductWithId(id, product);
+            products.add(product);
+
+            return rawProduct;
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            IdManager.removeId(id);
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
      * update element of the collection, find element by id
      */
-    public Product updateElement(
-            long existingId,
-            Product rawProduct) throws IndexOutOfBoundsException {
+    public Product updateElement(long existingId, Product rawProduct) throws IndexOutOfBoundsException {
         Product product = null;
-        product = products.stream()
-                .filter(p -> p.getId() == existingId)
-                .findFirst()
-                .orElse(null);
+        product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
 
-        if (product == null)
-            throw new IndexOutOfBoundsException("There is no element with such id!");
+        if (product == null) throw new IndexOutOfBoundsException("There is no element with such id!");
 
-        product.setName(rawProduct.getName());
-        product.setCoordinates(rawProduct.getCoordinates());
-        product.setPrice(rawProduct.getPrice());
-        product.setManufactureCost(rawProduct.getManufactureCost());
-        product.setUnitOfMeasure(rawProduct.getUnitOfMeasure());
-        product.setOwner(rawProduct.getOwner());
+        try {
+            productDAO.updateProduct(existingId, rawProduct);
 
-        return product;
+
+            product.setName(rawProduct.getName());
+            product.setCoordinates(rawProduct.getCoordinates());
+            product.setPrice(rawProduct.getPrice());
+            product.setManufactureCost(rawProduct.getManufactureCost());
+            product.setUnitOfMeasure(rawProduct.getUnitOfMeasure());
+            product.setOwner(rawProduct.getOwner());
+
+            return product;
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
@@ -198,26 +199,35 @@ public class CollectionManager {
      * @throws IndexOutOfBoundsException if id isn't in collection
      */
     public Product deleteById(long existingId) throws IndexOutOfBoundsException {
-        Product product = products.stream()
-                .filter(p -> p.getId() == existingId)
-                .findFirst()
-                .orElse(null);
+        Product product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
 
-        if (product == null)
-            throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
+        if (product == null) throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
 
-        products.remove(product);
-        IdManager.removeId(existingId);
+        try {
+            productDAO.deleteProductById(existingId);
 
-        return product;
+            products.remove(product);
+            IdManager.removeId(existingId);
+
+            return product;
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
      * clear all collection
      */
     public void clear() {
-        products.clear();
-        IdManager.clear();
+        try {
+            productDAO.deleteAllProducts();
+            products.clear();
+            IdManager.clear();
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**
@@ -225,9 +235,7 @@ public class CollectionManager {
      */
     public boolean isMax(Product rawProduct) {
         Product newProduct = createProduct(rawProduct);
-        var maxProduct = products.stream()
-                .max(new ProductsComparator())
-                .orElse(null);
+        var maxProduct = products.stream().max(new ProductsComparator()).orElse(null);
 
         return newProduct.compareTo(maxProduct) == 1;
     }
@@ -239,9 +247,7 @@ public class CollectionManager {
      */
     public boolean isMin(Product rawProduct) {
         Product newProduct = createProduct(rawProduct);
-        var minProduct = products.stream()
-                .min(new ProductsComparator())
-                .orElse(null);
+        var minProduct = products.stream().min(new ProductsComparator()).orElse(null);
 
         return newProduct.compareTo(minProduct) == -1;
     }
@@ -252,15 +258,11 @@ public class CollectionManager {
      * @return ArrayList of ids
      */
     public Product[] removeGreater(Product product) {
-        Product[] productsToRemove = products.stream()
-                .filter(p -> p.compareTo(product) == 1)
-                .toArray(Product[]::new);
+        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1).toArray(Product[]::new);
 
-        Arrays.stream(productsToRemove)
-                .forEach(p -> {
-                    products.remove(p);
-                    IdManager.removeId(p.getId());
-                });
+        Arrays.stream(productsToRemove).forEach(p -> {
+            deleteById(p.getId());
+        });
 
         return productsToRemove;
     }
@@ -269,13 +271,10 @@ public class CollectionManager {
      * @return Array of deleted Products
      */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
-        Product[] productsToDelete = products.stream()
-                .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing))
-                .toArray(Product[]::new);
+        Product[] productsToDelete = products.stream().filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing)).toArray(Product[]::new);
 
         Arrays.stream(productsToDelete).forEach(p -> {
-            products.remove(p);
-            IdManager.removeId(p.getId());
+            deleteById(p.getId());
         });
 
         return productsToDelete;
@@ -289,10 +288,7 @@ public class CollectionManager {
     public Product getMinByUnitOfMeasure() {
         UnitOfMeasure minUnit = getMinUnitOfMeasure();
 
-        Product wanted = products.stream()
-                .filter(p -> p.getUnitOfMeasure() == minUnit)
-                .findFirst()
-                .orElse(null);
+        Product wanted = products.stream().filter(p -> p.getUnitOfMeasure() == minUnit).findFirst().orElse(null);
 
         return wanted;
     }
@@ -317,16 +313,13 @@ public class CollectionManager {
      * @return ArrayList of ids
      */
     public ArrayList<Long> getIdsGreaterThanOwner(Person owner) {
-        var ids = products.stream()
-                .filter(p -> {
-                    if (owner == null) {
-                        return p.getOwner() != null;
-                    } else {
-                        return p.getOwner().compareTo(owner) == 1;
-                    }
-                })
-                .map(Product::getId)
-                .collect(Collectors.toCollection(ArrayList<Long>::new));
+        var ids = products.stream().filter(p -> {
+            if (owner == null) {
+                return p.getOwner() != null;
+            } else {
+                return p.getOwner().compareTo(owner) == 1;
+            }
+        }).map(Product::getId).collect(Collectors.toCollection(ArrayList<Long>::new));
 
         return ids;
     }
@@ -344,10 +337,7 @@ public class CollectionManager {
     /**
      * create product with given id
      */
-    private Product createProduct(
-            long id,
-            Product product
-    ) {
+    private Product createProduct(long id, Product product) {
         IdManager.addId(id);
         product.setId(id);
         return product;

@@ -1,7 +1,8 @@
 package Objects.Parsers;
 
-import org.apache.commons.csv.CSVRecord;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public abstract class Parser<T> {
-    public abstract T parse(CSVRecord record);
+    public abstract T parse(ResultSet resultSet) throws SQLException;
 }

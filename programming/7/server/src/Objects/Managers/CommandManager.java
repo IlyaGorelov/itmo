@@ -30,12 +30,13 @@ public class CommandManager {
      * @param collectionManager controls collection
      * @param receiver          to get input
      */
-    public CommandManager(CollectionManager collectionManager, Receiver receiver, SocketChannel client) {
+    public CommandManager(CollectionManager collectionManager, AuthManager authManager, Receiver receiver, SocketChannel client) {
         this.receiver = receiver;
         this.client = client;
         ArrayList<Command> commands = new ArrayList<>();
 
-        addAllClientCommandsInList(collectionManager, commands);
+        addAllAuthCommandsInList(authManager, commands);
+        addAllCollectionCommandsInList(collectionManager, commands);
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -53,7 +54,7 @@ public class CommandManager {
         ArrayList<Command> commands = new ArrayList<>();
 
         if (!isCLIMode)
-            addAllClientCommandsInList(collectionManager, commands);
+            addAllCollectionCommandsInList(collectionManager, commands);
         else
             commands.add(new Save(collectionManager));
 
@@ -69,7 +70,13 @@ public class CommandManager {
         }
     }
 
-    private void addAllClientCommandsInList(CollectionManager collectionManager, ArrayList<Command> commands) {
+    private void addAllAuthCommandsInList(AuthManager authManager, ArrayList<Command> commands) {
+        commands.add(new Register(authManager));
+    }
+
+    private void addAllCollectionCommandsInList(CollectionManager collectionManager, ArrayList<Command> commands) {
+
+
         commands.add(new Add(collectionManager, false, true));
         commands.add(new AddIfMax(collectionManager, false, true));
         commands.add(new AddIfMin(collectionManager, false, true));

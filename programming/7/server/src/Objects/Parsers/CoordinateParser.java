@@ -1,37 +1,52 @@
 package Objects.Parsers;
 
 import Objects.Collection.Coordinates;
-import Objects.Managers.CSVManager;
+import Objects.Managers.DBManager;
 import Objects.Validators.CoordinatesValidator;
 import Objects.Validators.DoubleValidator;
 import Objects.Validators.IntegerValidator;
-import org.apache.commons.csv.CSVRecord;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class CoordinateParser extends Parser<Coordinates> {
-    IntegerValidator integerValidator = new IntegerValidator();
-    DoubleValidator doubleValidator = new DoubleValidator();
-    CoordinatesValidator coordinatesValidator = new CoordinatesValidator();
+    private final IntegerValidator integerValidator = new IntegerValidator();
+    private final DoubleValidator doubleValidator = new DoubleValidator();
+    private final CoordinatesValidator coordinatesValidator = new CoordinatesValidator();
 
+    @Override
+    public Coordinates parse(ResultSet resultSet) throws SQLException {
+        int row = resultSet.getRow();
 
-    public Coordinates parse(CSVRecord record) {
-        Coordinates coordinates = null;
+        String x = resultSet.getString(DBManager.Headers.x.toString());
+        if (!integerValidator.isValid(x, false)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid value for %s in row %d",
+                    DBManager.Headers.x,
+                    row
+            ));
+        }
 
-        String x = record.get(CSVManager.Headers.x);
-        if (!integerValidator.isValid(String.valueOf(x), false))
-            throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                    CSVManager.Headers.x, record.getRecordNumber()));
+        String y = resultSet.getString(DBManager.Headers.y.toString());
+        if (!doubleValidator.isValid(y, false)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid value for %s in row %d",
+                    DBManager.Headers.y,
+                    row
+            ));
+        }
 
-        String y = record.get(CSVManager.Headers.y);
-        if (!doubleValidator.isValid(String.valueOf(y), false))
-            throw new IllegalArgumentException(String.format("Invalid value for %s in row %d",
-                    CSVManager.Headers.y, record.getRecordNumber()));
+        Coordinates coordinates = new Coordinates(
+                Integer.parseInt(x),
+                Double.parseDouble(y)
+        );
 
-        coordinates = new Coordinates(Integer.parseInt(x),
-                Double.parseDouble(y));
-        if (!coordinatesValidator.isValid(String.valueOf(coordinates), false))
-            throw new IllegalArgumentException(
-                    String.format("Invalid value for coordinates in row %d",
-                            record.getRecordNumber()));
+        if (!coordinatesValidator.isValid(String.valueOf(coordinates), false)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid value for coordinates in row %d",
+                    row
+            ));
+        }
 
         return coordinates;
     }
