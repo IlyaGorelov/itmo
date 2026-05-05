@@ -5,15 +5,13 @@ import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
+import Objects.Managers.HistoryManager;
+import Objects.UserData.User;
 
 /**
  * show information about collection
  */
 public class Redo extends Command {
-
-    public Redo(CollectionManager collectionManager, boolean hasArgument, boolean hasCOmplexArg) {
-        super(collectionManager, hasArgument, hasCOmplexArg);
-    }
 
     public Redo(CollectionManager collectionManager) {
         super(collectionManager);
@@ -23,19 +21,23 @@ public class Redo extends Command {
     public void execute() {
         checkArgument();
 
-        if (History.isAtEnd()) {
-            // System.out.println("Nothing to redo");
+        User currentUser = getCollectionManager().getCurrentUser();
+
+        if (HistoryManager.isAtEnd(currentUser)) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
             answer(pkg, "Nothing to redo");
 
         } else {
-            RevertableCommand command = History.getCommand();
+            History.HistoryObject historyObject = HistoryManager.getHistoryObject(currentUser);
 
-            command.setArgument(History.getArg());
-            command.setComplexArgument(History.getComplexArg());
+
+            RevertableCommand command = historyObject.command();
+
+            command.setArgument(historyObject.simpleArg());
+            command.setComplexArgument(historyObject.complexArg());
             command.execute();
 
-            History.moveForward();
+            HistoryManager.moveForward(currentUser);
         }
 
     }

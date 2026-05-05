@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
 import Objects.Connection.CustomPackage;
@@ -28,7 +27,7 @@ public class Remove extends RevertableCommand {
             p = getCollectionManager().deleteById(id);
             TrashBin.add(p);
 
-            History.add(this, getArgument(), getComplexArgument());
+            addToHistory();
 
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
             answer(pkg, "Successfully removed " + p.getName());

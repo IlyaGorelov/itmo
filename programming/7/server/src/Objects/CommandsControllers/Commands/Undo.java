@@ -5,6 +5,8 @@ import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
+import Objects.Managers.HistoryManager;
+import Objects.UserData.User;
 
 /**
  * show information about collection
@@ -20,15 +22,21 @@ public class Undo extends Command {
         checkArgument();
         String answer = "";
 
-        if (History.isAtStart()) {
+        User currentUser = getCollectionManager().getCurrentUser();
+
+        if (HistoryManager.isAtStart(currentUser)) {
             answer += ("Nothing to undo");
         } else {
-            History.moveBack();
-            RevertableCommand command = History.getCommand();
+            HistoryManager.moveBack(currentUser);
 
-            command.setArgument(History.getArg());
-            command.setComplexArgument(History.getComplexArg());
+            History.HistoryObject historyObject = HistoryManager.getHistoryObject(currentUser);
+
+            RevertableCommand command = historyObject.command();
+
+            command.setArgument(historyObject.simpleArg());
+            command.setComplexArgument(historyObject.complexArg());
             command.undo();
+
         }
         CustomPackage pkg = new CustomPackage(this.getName(), null, answer);
         answer(pkg, answer);

@@ -127,7 +127,7 @@ public class CollectionManager {
         if (product == null)
             throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
 
-        if (product.getAuthor() != currentUser)
+        if (!product.getAuthor().equals(currentUser))
             throw new IllegalArgumentException("It's not your product");
 
         try {
@@ -146,7 +146,7 @@ public class CollectionManager {
     public Product[] clear() {
         try {
             Product[] productsToDelete = products.stream()
-                    .filter(p -> p.getAuthor() == currentUser)
+                    .filter(p -> p.getAuthor().equals(currentUser))
                     .toArray(Product[]::new);
 
             for (Product p : productsToDelete) {
@@ -189,7 +189,7 @@ public class CollectionManager {
      * @return ArrayList of ids
      */
     public Product[] removeGreater(Product product) {
-        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor() == currentUser).toArray(Product[]::new);
+        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser)).toArray(Product[]::new);
 
         Arrays.stream(productsToRemove).forEach(p -> {
             deleteById(p.getId());
@@ -203,7 +203,7 @@ public class CollectionManager {
      */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
         Product[] productsToDelete = products.stream()
-                .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor() == currentUser)
+                .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor().equals(currentUser))
                 .toArray(Product[]::new);
 
         Arrays.stream(productsToDelete).forEach(p -> {

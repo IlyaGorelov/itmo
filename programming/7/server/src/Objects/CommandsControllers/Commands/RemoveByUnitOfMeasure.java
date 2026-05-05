@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
 import Objects.Connection.CustomPackage;
@@ -32,7 +31,7 @@ public class RemoveByUnitOfMeasure extends RevertableCommand {
                 result = getCollectionManager().removeByUnitOfMeasure(unit);
 
                 TrashBin.add(result);
-                History.add(this, getArgument(), getComplexArgument());
+                addToHistory();
 
                 CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), result);
                 answer(pkg, "Removed all elements with " + unit);

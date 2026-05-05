@@ -76,7 +76,7 @@ public class ProductDAO {
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
         statement.setLong(1, id);
-        fillStatementWithProduct(statement, product, false);
+        fillStatementWithProduct(statement, product, true);
 
         statement.executeUpdate();
     }
@@ -91,9 +91,8 @@ public class ProductDAO {
         Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
-        product.setId(id);
-
-        fillStatementWithProduct(statement, product, true);
+        fillStatementWithProduct(statement, product, false);
+        statement.setLong(18, id);
 
         statement.executeUpdate();
     }
@@ -125,7 +124,7 @@ public class ProductDAO {
             Product product,
             boolean fillId
     ) throws SQLException {
-        int index = 1;
+        int index = fillId ? 2 : 1;
 
         statement.setString(index++, product.getName());
 
@@ -191,7 +190,5 @@ public class ProductDAO {
         }
         statement.setLong(index++, product.getAuthor().getId());
 
-        if (fillId)
-            statement.setLong(index, product.getId());
     }
 }

@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
@@ -29,7 +28,7 @@ public class AddIfMax extends RevertableCommand {
         if (getCollectionManager().isMax(newProduct)) {
             newProduct = getCollectionManager().addElement(newProduct);
 
-            History.add(this, getArgument(), getComplexArgument());
+            addToHistory();
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
             answer(pkg, "Successfully added");

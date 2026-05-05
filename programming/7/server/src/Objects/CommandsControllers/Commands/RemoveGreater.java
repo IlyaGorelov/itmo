@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
 import Objects.Connection.CustomPackage;
@@ -25,7 +24,7 @@ public class RemoveGreater extends RevertableCommand {
             Product[] greaters = getCollectionManager().removeGreater((Product) getComplexArgument());
 
             TrashBin.add(greaters);
-            History.add(this, getArgument(), getComplexArgument());
+            addToHistory();
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, greaters);
             answer(pkg, "Removed");

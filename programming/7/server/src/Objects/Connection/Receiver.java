@@ -2,6 +2,7 @@ package Objects.Connection;
 
 import Objects.CommandsControllers.CommandExecutor;
 import Objects.Managers.CLIManager;
+import Objects.Managers.HistoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,6 +152,8 @@ public class Receiver {
                 CustomPackage pkg = (CustomPackage) ois.readObject();
                 requests.get(clientChannel).add(pkg);
                 logger.info("Received a request: {}", pkg.getCommand());
+
+                HistoryManager.registerNewHistory(pkg.getAuthor());
             }
 
             commandExecutor.execute(this, clientChannel);

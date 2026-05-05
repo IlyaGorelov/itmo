@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
 import Objects.Connection.CustomPackage;
@@ -26,8 +25,7 @@ public class Clear extends RevertableCommand {
         Product[] deleted = getCollectionManager().clear();
         TrashBin.add(deleted);
 
-
-        History.add(this, null, null);
+        addToHistory();
 
         CustomPackage pkg = new CustomPackage(this.getName(), null, deleted);
         answer(pkg, "Collection successfully cleared");

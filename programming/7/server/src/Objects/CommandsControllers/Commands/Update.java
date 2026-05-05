@@ -1,7 +1,6 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
-import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
 import Objects.Connection.CustomPackage;
@@ -28,7 +27,8 @@ public class Update extends RevertableCommand {
         Product updatedElement = getCollectionManager().updateElement(Long.parseLong(getArgument()), newProduct);
 
         TrashBin.add(prevElement);
-        History.add(this, getArgument(), getComplexArgument());
+
+        addToHistory();
 
         CustomPackage pkg = new CustomPackage(getName(), getArgument(), updatedElement);
         answer(pkg, "Updated an element with id " + pkg.getArgument());
