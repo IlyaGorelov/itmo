@@ -4,6 +4,7 @@ import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.Commands.*;
 import Objects.Connection.Receiver;
+import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class CommandManager {
     private SocketChannel client;
     private boolean isCLIMode = false;
 
+    private CollectionManager collectionManager;
+
     /**
      * Constructor that fill command map with available commands
      *
@@ -33,10 +36,12 @@ public class CommandManager {
     public CommandManager(CollectionManager collectionManager, AuthManager authManager, Receiver receiver, SocketChannel client) {
         this.receiver = receiver;
         this.client = client;
+        this.collectionManager = collectionManager;
+
         ArrayList<Command> commands = new ArrayList<>();
 
         addAllAuthCommandsInList(authManager, commands);
-        addAllCollectionCommandsInList(collectionManager, commands);
+        addAllCollectionCommandsInList(commands);
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -54,9 +59,7 @@ public class CommandManager {
         ArrayList<Command> commands = new ArrayList<>();
 
         if (!isCLIMode)
-            addAllCollectionCommandsInList(collectionManager, commands);
-        else
-            commands.add(new Save(collectionManager));
+            addAllCollectionCommandsInList(commands);
 
         for (Command command : commands) {
             if (isCLIMode)
@@ -71,12 +74,11 @@ public class CommandManager {
     }
 
     private void addAllAuthCommandsInList(AuthManager authManager, ArrayList<Command> commands) {
-        commands.add(new Register(authManager));
+        commands.add(new Register(authManager, false, true));
+        commands.add(new Login(authManager, false, true));
     }
 
-    private void addAllCollectionCommandsInList(CollectionManager collectionManager, ArrayList<Command> commands) {
-
-
+    private void addAllCollectionCommandsInList(ArrayList<Command> commands) {
         commands.add(new Add(collectionManager, false, true));
         commands.add(new AddIfMax(collectionManager, false, true));
         commands.add(new AddIfMin(collectionManager, false, true));
@@ -128,5 +130,13 @@ public class CommandManager {
         } finally {
             CommandBuffer.removeLast();
         }
+    }
+
+    public void setCollectionUser(User user) {
+        collectionManager.setCurrentUser(user);
+    }
+
+    public User getCommandUser() {
+        return collectionManager.getCurrentUser();
     }
 }

@@ -32,7 +32,7 @@ public class StringValidator extends Validator<String> {
         if (name.isBlank())
             return null;
 
-        return name;
+        return name.trim();
     }
 
 }

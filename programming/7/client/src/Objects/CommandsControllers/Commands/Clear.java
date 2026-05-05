@@ -1,10 +1,12 @@
 package Objects.CommandsControllers.Commands;
 
+import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 
 /** removes all elements from the collection */
-public class Clear extends Command {
+public class Clear extends Command implements AuthChecker {
 
     public Clear() {
         super();
@@ -13,6 +15,7 @@ public class Clear extends Command {
     @Override
     public String getRelevantObject() {
         checkArgument();
+        checkAuth();
         return null;
     }
 
@@ -22,13 +25,20 @@ public class Clear extends Command {
     }
 
     @Override
+    public String getDescription() {
+        return "remove all your elements from the collection";
+    }
+
+    @Override
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = pack.getObject();
 
         if (object instanceof Exception)
             return "Collection wasn't cleared as " + object.toString() + "\n";
-        else
-            return "Collection was succesfully cleared" + "\n";
+
+        Object[] productObjects = (Object[]) object;
+
+        return "Deleted "+productObjects.length+" elements";
     }
 
 }

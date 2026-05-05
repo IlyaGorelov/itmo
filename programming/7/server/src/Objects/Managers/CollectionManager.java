@@ -1,11 +1,11 @@
 package Objects.Managers;
 
-import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.Collection.ProductsComparator;
 import Objects.DAOs.ProductDAO;
 import Objects.Enums.UnitOfMeasure;
+import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +29,8 @@ public class CollectionManager {
 
     private final String urlToDb;
 
+    private User currentUser;
+
     public CollectionManager(String envKeyToDbUrl, String envKeyToPropsPath) {
         this.urlToDb = System.getenv(envKeyToDbUrl);
         String pathToProps = System.getenv(envKeyToPropsPath);
@@ -37,77 +39,13 @@ public class CollectionManager {
         products = productDAO.loadProducts();
     }
 
-    /**
-     * returns current date
-     *
-     * @return Date current date
-     */
+
     private Date getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getTime();
     }
 
-    /**
-     * transform collection into ArrayList to save it in CSVManager
-     */
-    public void setCollection() {
-        ArrayList<ArrayList<Object>> records = new ArrayList<>();
 
-        for (Product p : products) {
-            var record = new ArrayList<Object>();
-            addProductFieldsToRecord(p, record);
-            records.add(record);
-        }
-        //     dbManager.write(urlToDb, records);
-    }
-
-    private void addProductFieldsToRecord(Product p, ArrayList<Object> record) {
-        record.add(p.getId());
-        record.add(p.getName());
-        record.add(p.getCoordinates().getX());
-        record.add(p.getCoordinates().getY());
-        record.add(p.getCreationDate());
-        record.add(p.getPrice());
-        record.add(p.getManufactureCost());
-        record.add(p.getUnitOfMeasure());
-
-        addPersonFieldsToRecord(p.getOwner(), record);
-    }
-
-    private void addPersonFieldsToRecord(Person p, ArrayList<Object> record) {
-        if (p == null) {
-            for (int index = 0; index < 8; index++) {
-                record.add(null);
-            }
-        } else {
-            record.add(p.getName());
-            record.add(p.getHeight());
-            record.add(p.getEyeColor());
-            record.add(p.getHairColor());
-            record.add(p.getNationality());
-
-            addLocationFieldsToRecord(p.getLocation(), record);
-        }
-    }
-
-    private void addLocationFieldsToRecord(Location loc, ArrayList<Object> record) {
-        if (loc == null) {
-            for (int index = 0; index < 4; index++) {
-                record.add(null);
-            }
-        } else {
-            record.add(loc.getX());
-            record.add(loc.getY());
-            record.add(loc.getZ());
-            record.add(loc.getName());
-        }
-    }
-
-    /**
-     * Get info about collection
-     *
-     * @return info as string like collection type, inital date, size
-     */
     public String getCollectionInfo() {
         String info = "";
         String collectionType = products.getClass().toString();
@@ -117,13 +55,7 @@ public class CollectionManager {
         return info;
     }
 
-    /**
-     * gets info about product by its id
-     *
-     * @param id id of a product
-     * @return info about product
-     * @throws IndexOutOfBoundsException if id isn't in collection
-     */
+
     public Product getById(long id) throws IndexOutOfBoundsException {
         return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
     }
@@ -132,9 +64,6 @@ public class CollectionManager {
         return products;
     }
 
-    /**
-     * add element to collection
-     */
     public Product addElement(Product newProduct) {
         Product product = createProduct(newProduct);
         try {
@@ -149,9 +78,6 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * add element to collection with id
-     */
     public Product addElement(Long id, Product rawProduct) {
         try {
             Product product = createProduct(id, rawProduct);
@@ -167,9 +93,6 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * update element of the collection, find element by id
-     */
     public Product updateElement(long existingId, Product rawProduct) throws IndexOutOfBoundsException {
         Product product = null;
         product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
@@ -201,7 +124,11 @@ public class CollectionManager {
     public Product deleteById(long existingId) throws IndexOutOfBoundsException {
         Product product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
 
-        if (product == null) throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
+        if (product == null)
+            throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
+
+        if (product.getAuthor() != currentUser)
+            throw new IllegalArgumentException("It's not your product");
 
         try {
             productDAO.deleteProductById(existingId);
@@ -216,14 +143,18 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * clear all collection
-     */
-    public void clear() {
+    public Product[] clear() {
         try {
-            productDAO.deleteAllProducts();
-            products.clear();
-            IdManager.clear();
+            Product[] productsToDelete = products.stream()
+                    .filter(p -> p.getAuthor() == currentUser)
+                    .toArray(Product[]::new);
+
+            for (Product p : productsToDelete) {
+                productDAO.deleteProductById(p.getId());
+                products.remove(p);
+                IdManager.removeId(p.getId());
+            }
+            return productsToDelete;
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -258,7 +189,7 @@ public class CollectionManager {
      * @return ArrayList of ids
      */
     public Product[] removeGreater(Product product) {
-        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1).toArray(Product[]::new);
+        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor() == currentUser).toArray(Product[]::new);
 
         Arrays.stream(productsToRemove).forEach(p -> {
             deleteById(p.getId());
@@ -271,7 +202,9 @@ public class CollectionManager {
      * @return Array of deleted Products
      */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
-        Product[] productsToDelete = products.stream().filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing)).toArray(Product[]::new);
+        Product[] productsToDelete = products.stream()
+                .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor() == currentUser)
+                .toArray(Product[]::new);
 
         Arrays.stream(productsToDelete).forEach(p -> {
             deleteById(p.getId());
@@ -288,7 +221,10 @@ public class CollectionManager {
     public Product getMinByUnitOfMeasure() {
         UnitOfMeasure minUnit = getMinUnitOfMeasure();
 
-        Product wanted = products.stream().filter(p -> p.getUnitOfMeasure() == minUnit).findFirst().orElse(null);
+        Product wanted = products.stream()
+                .filter(p -> p.getUnitOfMeasure() == minUnit)
+                .findFirst()
+                .orElse(null);
 
         return wanted;
     }
@@ -341,5 +277,13 @@ public class CollectionManager {
         IdManager.addId(id);
         product.setId(id);
         return product;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

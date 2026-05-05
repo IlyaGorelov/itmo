@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Enums.UnitOfMeasure;
+import Objects.UserData.User;
 
 /** Class representing a Product - element of the collection */
 public class Product implements Comparable<Product>, Serializable,Cloneable {
@@ -18,9 +19,10 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
     private Integer manufactureCost; // Поле не может быть null
     private UnitOfMeasure unitOfMeasure; // Поле может быть null
     private Person owner; // Поле может быть null
+    private final User author;
 
     public Product(long id, String name, Coordinates coordinates, java.util.Date creationDate,
-            Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) {
+            Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, User author) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -29,10 +31,11 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
         this.manufactureCost = manufactureCost;
         this.unitOfMeasure = unitOfMeasure;
         this.owner = owner;
+        this.author=author;
     }
 
     public static int getCountOfEditableFields(boolean includeCreationDate) {
-        int primitives = includeCreationDate ? 5 : 4;
+        int primitives = includeCreationDate ? 6 : 5;
         return primitives + Coordinates.getCountOfEditableFields() + Person.getCountOfEditableFields();
     }
 
@@ -100,6 +103,10 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
         this.owner = owner;
     }
 
+    public User getAuthor(){
+        return author;
+    }
+
     /**
      * compares with other Coordinates
      * 
@@ -121,14 +128,14 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
     public String toString() {
         if (owner != null)
             return String.format(
-                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s",
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s\nAuthor: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner));
+                    String.valueOf(unitOfMeasure), String.valueOf(owner),author.getLogin());
         else
             return String.format(
-                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s",
+                    "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s\nAuthor: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner));
+                    String.valueOf(unitOfMeasure), String.valueOf(owner),author.getLogin());
     }
 
     public String getFuncString(boolean askForId) {
@@ -149,8 +156,7 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
     @Override
     public Product clone() {
         try {
-            Product clone = (Product) super.clone();
-            return clone;
+            return (Product) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

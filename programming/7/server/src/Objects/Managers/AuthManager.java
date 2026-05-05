@@ -14,7 +14,6 @@ import java.sql.SQLException;
 public class AuthManager {
     private final static Logger logger = LoggerFactory.getLogger(AuthManager.class);
 
-    private User user;
     private final UserDAO userDAO;
 
     private final String urlToDb;
@@ -29,9 +28,15 @@ public class AuthManager {
     /**
      * transform collection into ArrayList to save it in CSVManager
      */
-    public void register(User newUser) {
+    public User register(User newUser) throws SQLException, IOException {
+        User registered = userDAO.register(newUser);
+        return registered;
+    }
+
+    public User login(User user) {
         try {
-            user = userDAO.register(newUser);
+            User logged = userDAO.login(user);
+            return logged;
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());

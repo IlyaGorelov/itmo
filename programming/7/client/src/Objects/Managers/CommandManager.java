@@ -14,11 +14,12 @@ import Objects.Connection.CustomPackage;
  * controls command
  */
 public class CommandManager {
-
     /**
      * map of command kind of name - Command
      */
     private static final HashMap<String, Command> commandMap = new HashMap<>();
+
+    private static Scanner reader;
 
     /**
      * Constructor that fill command map with available commands
@@ -26,26 +27,15 @@ public class CommandManager {
      * @param reader to get input
      */
     public CommandManager(Scanner reader, InputStream in, OutputStream out) {
+        CommandManager.reader = reader;
+
         ArrayList<Command> commands = new ArrayList<>();
         IdManager.setIO(in, out);
 
+        commands.add(new Register(false));
+        commands.add(new Login(false));
         commands.add(new Help());
-        commands.add(new Info());
-        commands.add(new Show());
-        commands.add(new Add(false, true));
-        commands.add(new AddIfMax(false, true));
-        commands.add(new AddIfMin(false, true));
-        commands.add(new Update(true, true));
-        commands.add(new Remove(true));
-        commands.add(new Clear());
-        commands.add(new ExecuteScript(true));
         commands.add(new Exit());
-        commands.add(new RemoveGreater(false, true));
-        commands.add(new RemoveByUnitOfMeasure(true));
-        commands.add(new MinByUnit());
-        commands.add(new GreaterThanOwner(false, true));
-        commands.add(new Undo());
-        commands.add(new Redo());
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -53,7 +43,34 @@ public class CommandManager {
         }
     }
 
-    public HashMap<String, Command> getCommandMap() {
+    public static void allowCommandsForAuthenticatedUsers() {
+        ArrayList<Command> commands = new ArrayList<>();
+        commands.add(new Info());
+        commands.add(new Show());
+        commands.add(new Add(false));
+        commands.add(new AddIfMax(false));
+        commands.add(new AddIfMin(false));
+        commands.add(new Update(true));
+        commands.add(new Remove(true));
+        commands.add(new Clear());
+        commands.add(new ExecuteScript(true));
+        commands.add(new RemoveGreater(false));
+        commands.add(new RemoveByUnitOfMeasure(true));
+        commands.add(new MinByUnit());
+        commands.add(new GreaterThanOwner(false));
+        commands.add(new Undo());
+        commands.add(new Redo());
+
+        for (Command command : commands) {
+            commandMap.put(command.getName(), command);
+            command.setScanner(reader);
+        }
+
+        commandMap.remove(new Register(false).getName());
+        commandMap.remove(new Login(false).getName());
+    }
+
+    public static HashMap<String, Command> getCommandMap() {
         return commandMap;
     }
 
@@ -72,7 +89,7 @@ public class CommandManager {
             command.setComplexArgument(complexArg);
 
             relevantObject = command.getRelevantObject();
-            return new CustomPackage(command.getName(), command.getArgument(), relevantObject);
+            return new CustomPackage(command.getName(), command.getArgument(), relevantObject, AuthManager.getInstance().getUser());
         } catch (NullPointerException e) {
             throw new NullPointerException("Unknown command");
         }
@@ -98,7 +115,7 @@ public class CommandManager {
 
     public String getRelevantAnswer(Object[] answer) {
         try {
-            String relevant = "";
+            StringBuilder relevant = new StringBuilder();
 
             for (Object single : answer) {
                 CustomPackage pack = (CustomPackage) single;
@@ -106,13 +123,13 @@ public class CommandManager {
                 var command = commandMap.get(pack.getCommand());
 
                 if (command == null) {
-                    relevant += pack.getObject() + "\n";
+                    relevant.append(pack.getObject()).append("\n");
                     continue;
                 }
-                relevant += command.getRelevantAnswer(pack);
+                relevant.append(command.getRelevantAnswer(pack));
             }
 
-            return relevant;
+            return relevant.toString();
         } catch (Exception e) {
             throw new IllegalArgumentException("Something went wrong while parsing command!");
         }

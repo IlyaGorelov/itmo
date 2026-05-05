@@ -16,10 +16,6 @@ public class GreaterThanOwner extends Command {
         super(collectionManager, hasArgument, hasComplexArgument);
     }
 
-    public GreaterThanOwner(CollectionManager collectionManager) {
-        super(collectionManager);
-    }
-
     @Override
     public void execute() {
         Person owner = (Person) getComplexArgument();
@@ -52,7 +48,6 @@ public class GreaterThanOwner extends Command {
     @Override
     public void checkArgument() {
         boolean actuallyHasArgument = getArgument() != null;
-        // boolean actuallyHasComplexArgument = getComplexArgument() != null;
         if (actuallyHasArgument != getHasArgument())
             throw new IllegalArgumentException(String.format("Invalid format, use:\n\t%s {name(String);height(float>0)}", getName()));
     }

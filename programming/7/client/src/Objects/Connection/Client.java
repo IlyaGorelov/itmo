@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import Objects.CommandsControllers.Commands.ExecuteScript;
 import Objects.CommandsControllers.Commands.Exit;
+import Objects.CommandsControllers.Commands.Help;
 import Objects.Managers.CommandManager;
 
 public class Client {
@@ -95,6 +96,7 @@ public class Client {
 
             System.out.println("Client connected to server.");
             System.out.println();
+            System.out.println("Log in to an existing account or create a new one to use all commands");
             System.out.println("Type \"help\" to see all available commands.");
 
             while (!socket.isOutputShutdown()) {
@@ -106,7 +108,7 @@ public class Client {
                     break;
                 }
 
-                if (isExecuteScriptCommand(customPackage)) {
+                if (isExecuteScriptCommand(customPackage) || isClientOnlyCommand(customPackage)) {
                     continue;
                 }
 
@@ -170,9 +172,6 @@ public class Client {
 
     private boolean isExitCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
         if (pkg.getCommand().equals(new Exit().getName())) {
-            System.out.println("Client kills connections");
-            System.out.println();
-
             sendRequest(pkg);
 
             System.out.println(getAnswer());
@@ -194,6 +193,19 @@ public class Client {
                 sendRequest(singlePkg);
                 System.out.println(getAnswer());
             }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isClientOnlyCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
+        String commandName = pkg.getCommand();
+        boolean isHelp = commandName.equals(new Help().getName());
+
+        if (isHelp) {
+            String answer =  (String) pkg.getObject();
+
+            System.out.println(answer);
             return true;
         }
         return false;

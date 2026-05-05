@@ -1,16 +1,13 @@
 package Objects.CommandsControllers.Commands;
 
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 
 /**
  * show information about collection
  */
-public class Info extends Command {
-
-    public Info(boolean hasArgument) {
-        super(hasArgument, false);
-    }
+public class Info extends Command implements AuthChecker {
 
     public Info() {
         super();
@@ -22,8 +19,14 @@ public class Info extends Command {
     }
 
     @Override
+    public String getDescription() {
+        return "Show collection information";
+    }
+
+    @Override
     public String getRelevantObject() {
         checkArgument();
+        checkAuth();
         return null;
     }
 

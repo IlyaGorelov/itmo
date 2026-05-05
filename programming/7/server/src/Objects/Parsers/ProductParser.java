@@ -3,11 +3,17 @@ package Objects.Parsers;
 import Objects.Collection.Coordinates;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
+import Objects.Connection.Receiver;
+import Objects.DAOs.UserDAO;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.DBManager;
 import Objects.Managers.IdManager;
+import Objects.UserData.User;
 import Objects.Validators.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -15,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ProductParser extends Parser<Product> {
+    private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
+
     private final InitializedIdValidator idValidator = new InitializedIdValidator();
     private final StringValidator stringValidator = new StringValidator();
     private final IntegerValidator integerValidator = new IntegerValidator();
@@ -78,20 +86,30 @@ public class ProductParser extends Parser<Product> {
         PersonParser personParser = new PersonParser();
         Person person = personParser.parse(resultSet);
 
-        Product product = new Product(
-                id,
-                name,
-                coordinates,
-                creationDate,
-                price != null ? Double.parseDouble(price) : null,
-                Integer.parseInt(manufactureCost),
-                unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
-                person
-        );
+        long authorId = resultSet.getLong(DBManager.Headers.authorId.toString());
 
-        IdManager.addId(id);
+        try {
+            User author = UserDAO.getUserById(authorId);
 
-        return product;
+            Product product = new Product(
+                    id,
+                    name,
+                    coordinates,
+                    creationDate,
+                    price != null ? Double.parseDouble(price) : null,
+                    Integer.parseInt(manufactureCost),
+                    unitOfMeasure != null ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
+                    person,
+                    author
+            );
+
+            IdManager.addId(id);
+
+            return product;
+        } catch (SQLException | IOException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
     }
 
     private Date getDate(ResultSet resultSet) throws SQLException {

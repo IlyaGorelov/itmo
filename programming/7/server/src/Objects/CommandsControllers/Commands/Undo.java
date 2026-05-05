@@ -11,10 +11,6 @@ import Objects.Managers.CollectionManager;
  */
 public class Undo extends Command {
 
-    public Undo(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
-        super(collectionManager, hasArgument, hasComplexArg);
-    }
-
     public Undo(CollectionManager collectionManager) {
         super(collectionManager);
     }

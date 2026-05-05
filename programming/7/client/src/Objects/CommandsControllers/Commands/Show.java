@@ -1,14 +1,15 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 
 /*Show all elements of collection */
-public class Show extends Command {
+public class Show extends Command implements AuthChecker {
 
     public Show(boolean hasArgument) {
-        super(hasArgument, false);
+        super(hasArgument);
     }
 
     public Show() {
@@ -21,8 +22,16 @@ public class Show extends Command {
     }
 
     @Override
+    public String getDescription() {
+        return "Show all elements of collection";
+    }
+
+
+    @Override
     public String getRelevantObject() {
         checkArgument();
+        checkAuth();
+
         return null;
     }
 

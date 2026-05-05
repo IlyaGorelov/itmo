@@ -1,19 +1,28 @@
 package Objects.Connection;
 
-import java.io.Serializable;
-
 import Objects.Collection.Person;
 import Objects.Collection.Product;
+import Objects.UserData.User;
+
+import java.io.Serializable;
 
 public class CustomPackage implements Serializable {
     String command;
     Object argument;
     Object object;
+    User author;
 
     public CustomPackage(String command, Object argument, Object object) {
         this.command = command;
         this.argument = argument;
         this.object = object;
+    }
+
+    public CustomPackage(String command, Object argument, Object object, User author) {
+        this.command = command;
+        this.argument = argument;
+        this.object = object;
+        this.author = author;
     }
 
     public String getCommand() {
@@ -43,5 +52,9 @@ public class CustomPackage implements Serializable {
         }
 
         return result.trim();
+    }
+
+    public User getAuthor() {
+        return author;
     }
 }

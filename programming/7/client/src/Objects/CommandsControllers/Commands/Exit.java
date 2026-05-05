@@ -6,10 +6,6 @@ import Objects.Connection.CustomPackage;
 /** stop program */
 public class Exit extends Command {
 
-    public Exit(boolean hasArgument) {
-        super(hasArgument, false);
-    }
-
     public Exit() {
         super();
     }
@@ -17,6 +13,11 @@ public class Exit extends Command {
     @Override
     public String getName() {
         return "exit";
+    }
+
+    @Override
+    public String getDescription() {
+        return "exit the program";
     }
 
     @Override

@@ -1,6 +1,5 @@
 package Objects.CommandsControllers;
 
-import Objects.CommandsControllers.Commands.Save;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.AuthManager;
@@ -26,27 +25,27 @@ public class CommandExecutor {
         this.authManager = authManager;
     }
 
-    /**
-     * read command from sysin or buffer, then put command in commandManager
-     */
     public void execute(Receiver receiver, SocketChannel client) {
         commandManager = new CommandManager(collectionManager, authManager, receiver, client);
         waitForNextCommand = true;
 
         try {
             while (waitForNextCommand) {
-
                 if (!CommandBuffer.isEmpty()) {
                     commandManager.executeCommand(
                             CommandBuffer.getCommand(),
                             CommandBuffer.getArg(),
                             CommandBuffer.getComplexArg()
                     );
+                    commandManager.setCollectionUser(null);
                     continue;
                 }
                 CustomPackage pack = receiver.getPackage(client);
                 if (pack != null) {
-                    CommandBuffer.addInBuffer(pack.getCommand(), pack.getArgument() != null ? pack.getArgument().toString() : null, pack.getObject());
+                    CommandBuffer.addInBuffer(pack.getCommand(),
+                            pack.getArgument() != null ? pack.getArgument().toString() : null,
+                            pack.getObject());
+                    commandManager.setCollectionUser(pack.getAuthor());
                     System.out.println();
                 } else {
                     break;
@@ -81,21 +80,11 @@ public class CommandExecutor {
                 } else {
                     break;
                 }
-
-
             }
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             System.out.println("User input is not detected");
         } catch (Exception e) {
             System.out.println(e);
-        }
-    }
-
-    public void stop() {
-        try {
-            new Save(collectionManager).execute();
-        } catch (Exception e) {
-            // System.out.println();
         }
     }
 

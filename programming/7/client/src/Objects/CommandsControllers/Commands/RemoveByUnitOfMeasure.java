@@ -1,19 +1,16 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Validators.UnitValidator;
 
 /* remove all elements with the same unit of measure*/
-public class RemoveByUnitOfMeasure extends Command {
+public class RemoveByUnitOfMeasure extends Command implements AuthChecker {
     public RemoveByUnitOfMeasure(boolean hasArgument) {
-        super(hasArgument, false);
-    }
-
-    public RemoveByUnitOfMeasure() {
-        super();
+        super(hasArgument);
     }
 
     @Override
@@ -22,8 +19,15 @@ public class RemoveByUnitOfMeasure extends Command {
     }
 
     @Override
+    public String getDescription() {
+        return "remove all elements with the same unit of measure";
+    }
+
+
+    @Override
     public String getRelevantObject() {
         checkArgument();
+        checkAuth();
         return null;
     }
 

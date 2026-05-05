@@ -1,31 +1,27 @@
 package Objects.CommandsControllers.Commands;
 
-import java.util.Date;
-
 import Objects.Collection.*;
-import Objects.Collection.Builders.ProductBuilder;
+import Objects.Builders.ProductBuilder;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
-import Objects.Enums.Country;
-import Objects.Enums.EyeColor;
-import Objects.Enums.HairColor;
-import Objects.Enums.UnitOfMeasure;
+import Objects.Managers.AuthManager;
 import Objects.Parsers.ProductParser;
-import Objects.Validators.*;
 
 /**
  * Adds an element to the collection
  */
-public class Add extends Command implements CommandWithComplexArg {
+public class Add extends Command implements CommandWithComplexArg, AuthChecker {
 
-    public Add(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
+    public Add(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
     public Object getRelevantObject() {
         checkArgument();
+        checkAuth();
 
         Object complexArg = tryGetObjectViaComplexArg();
         if (complexArg != null) {
@@ -54,6 +50,11 @@ public class Add extends Command implements CommandWithComplexArg {
     }
 
     @Override
+    public String getDescription() {
+        return "add new element";
+    }
+
+    @Override
     public Object tryGetObjectViaComplexArg() {
         ProductParser productParser = new ProductParser();
         try {
@@ -64,5 +65,4 @@ public class Add extends Command implements CommandWithComplexArg {
         }
         return null;
     }
-
 }

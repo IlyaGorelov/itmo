@@ -32,10 +32,10 @@ public class AddIfMin extends RevertableCommand {
 
             History.add(this, getArgument(), getComplexArgument());
 
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
             answer(pkg, "Successfully added");
         } else {
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
             answer(pkg, "Not added");
         }
     }

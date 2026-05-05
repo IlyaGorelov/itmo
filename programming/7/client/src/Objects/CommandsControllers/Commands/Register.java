@@ -1,19 +1,21 @@
 package Objects.CommandsControllers.Commands;
 
-import Objects.Collection.Builders.ProductBuilder;
+import Objects.Builders.ProductBuilder;
+import Objects.Builders.UserBuilder;
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
-import Objects.Parsers.ProductParser;
+import Objects.Managers.AuthManager;
+import Objects.Managers.CommandManager;
+import Objects.UserData.User;
 
 /**
  * Adds an element to the collection
  */
 public class Register extends Command {
 
-    public Register(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
+    public Register(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
@@ -22,23 +24,33 @@ public class Register extends Command {
 
         System.out.println("Type values to register.");
 
-        ProductBuilder productBuilder = new ProductBuilder();
-        return productBuilder.build(getScanner());
+        UserBuilder userBuilder = new UserBuilder();
+        return userBuilder.build(getScanner());
     }
 
     @Override
     public String getName() {
-        return "add";
+        return "register";
+    }
+
+    @Override
+    public String getDescription() {
+        return "create a new account";
     }
 
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = pack.getObject();
+        String result="";
 
-        if (object instanceof Product)
-            return "Element with name \"" + ((Product) object).getName() + "\" was succesfully added" + "\n";
+        if (object instanceof User registered) {
+            AuthManager.getInstance().setUser(registered);
+            result = "User " + registered.getLogin() + " was registered." + "\n";
+            CommandManager.allowCommandsForAuthenticatedUsers();
+            result +="Now all commands are accessible";
+            return result;
+        }
         else
             return object.toString() + "\n";
     }
-
 }

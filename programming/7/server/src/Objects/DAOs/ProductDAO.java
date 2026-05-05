@@ -29,14 +29,15 @@ public class ProductDAO {
         String sql = "SELECT " + DBManager.buildSelectColumns() + " FROM products";
 
         try {
-            Connection connection = dbManager.getConnection();
+            Connection connection = DBManager.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             ProductParser productParser = new ProductParser();
             while (resultSet.next()) {
                 Product product = productParser.parse(resultSet);
-                result.add(product);
+                if (product != null)
+                    result.add(product);
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -54,7 +55,7 @@ public class ProductDAO {
         sql.deleteCharAt(sql.length() - 1);
         sql.append(");");
 
-        Connection connection = dbManager.getConnection();
+        Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
         fillStatementWithProduct(statement, product, false);
@@ -71,7 +72,7 @@ public class ProductDAO {
                 .append("?")
                 .append(");");
 
-        Connection connection = dbManager.getConnection();
+        Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
         statement.setLong(1, id);
@@ -87,7 +88,7 @@ public class ProductDAO {
         sql.append("=?")
                 .append(" WHERE id = ?;");
 
-        Connection connection = dbManager.getConnection();
+        Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
         product.setId(id);
@@ -101,7 +102,7 @@ public class ProductDAO {
         String sql = "DELETE FROM products WHERE id=?;";
 
 
-        Connection connection = dbManager.getConnection();
+        Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql);
 
         statement.setLong(1, id);
@@ -113,7 +114,7 @@ public class ProductDAO {
         String sql = "DELETE FROM products;";
 
 
-        Connection connection = dbManager.getConnection();
+        Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql);
 
         statement.executeUpdate();
@@ -188,6 +189,7 @@ public class ProductDAO {
                 statement.setString(index++, location.getName());
             }
         }
+        statement.setLong(index++, product.getAuthor().getId());
 
         if (fillId)
             statement.setLong(index, product.getId());

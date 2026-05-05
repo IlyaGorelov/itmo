@@ -7,6 +7,7 @@ import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
@@ -14,17 +15,14 @@ import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
 import Objects.Enums.UnitOfMeasure;
+import Objects.Managers.AuthManager;
 import Objects.Parsers.ProductParser;
 import Objects.Validators.*;
 
 /*remove elements greater than input */
-public class RemoveGreater extends Command implements CommandWithComplexArg {
-    public RemoveGreater(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
-    }
-
-    public RemoveGreater() {
-        super();
+public class RemoveGreater extends Command implements CommandWithComplexArg , AuthChecker {
+    public RemoveGreater(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
@@ -33,8 +31,15 @@ public class RemoveGreater extends Command implements CommandWithComplexArg {
     }
 
     @Override
+    public String getDescription() {
+        return "remove your products greater than input ";
+    }
+
+
+    @Override
     public Object getRelevantObject() {
         checkArgument();
+        checkAuth();
 
         Object complexArg = tryGetObjectViaComplexArg();
         if(complexArg!=null) {
@@ -49,19 +54,20 @@ public class RemoveGreater extends Command implements CommandWithComplexArg {
         Integer manufactureCost = integerValidator.get(getScanner(), false, "Enter manufacture cost(integer): ");
 
         return new Product(0, "", new Coordinates(0, 0), new Date(), price, manufactureCost, null,
-                null);
+                null, AuthManager.getInstance().getUser());
     }
 
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
-        Object[] products = (Object[]) pack.getObject();
         String relevant = "";
-        if (products.length == 0)
-            return "There are no elements greater than input\n";
+            Object[] products = (Object[]) pack.getObject();
+            if (products.length == 0)
+                return "There are no elements greater than input\n";
 
-        for (Object product : products) {
-            relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
-        }
+            for (Object product : products) {
+                relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
+            }
+
         return relevant;
     }
 

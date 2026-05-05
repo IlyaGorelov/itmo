@@ -1,9 +1,10 @@
-package Objects.Collection.Builders;
+package Objects.Builders;
 
 import Objects.Collection.Coordinates;
 import Objects.Collection.Person;
 import Objects.Collection.Product;
 import Objects.Enums.UnitOfMeasure;
+import Objects.Managers.AuthManager;
 import Objects.Validators.*;
 
 import java.util.Date;
@@ -27,7 +28,7 @@ public class ProductBuilder extends Builder<Product> {
 
         Person person = personBuilder.build(scanner);
         return new Product(0, name, coordinates, new Date(), price, manufactureCost, unitOfMeasure,
-                person);
+                person, AuthManager.getInstance().getUser());
 
     }
 

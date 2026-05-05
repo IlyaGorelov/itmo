@@ -1,42 +1,24 @@
 package Objects.CommandsControllers.Commands;
 
-import java.util.Date;
-
-import Objects.Collection.Builders.ProductBuilder;
-import Objects.Collection.Coordinates;
-import Objects.Collection.Location;
-import Objects.Collection.Person;
+import Objects.Builders.ProductBuilder;
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
-import Objects.Enums.Country;
-import Objects.Enums.EyeColor;
-import Objects.Enums.HairColor;
-import Objects.Enums.UnitOfMeasure;
 import Objects.Parsers.ProductParser;
-import Objects.Validators.CoordinatesValidator;
-import Objects.Validators.CountryValidator;
-import Objects.Validators.DoubleValidator;
-import Objects.Validators.EyeValidator;
-import Objects.Validators.HairValidator;
-import Objects.Validators.HeightValidator;
-import Objects.Validators.IntegerValidator;
-import Objects.Validators.LocationValidator;
-import Objects.Validators.PriceValidator;
-import Objects.Validators.StringValidator;
-import Objects.Validators.UnitValidator;
 
 /** Adds element to a collection if this element gonna be max */
-public class AddIfMax extends Command implements CommandWithComplexArg {
+public class AddIfMax extends Command implements CommandWithComplexArg, AuthChecker {
 
-    public AddIfMax(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
+    public AddIfMax(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
     public Object getRelevantObject() {
         checkArgument();
+        checkAuth();
 
         Object complexArg = tryGetObjectViaComplexArg();
         if(complexArg!=null) {
@@ -52,6 +34,11 @@ public class AddIfMax extends Command implements CommandWithComplexArg {
     @Override
     public String getName() {
         return "add_if_max";
+    }
+
+    @Override
+    public String getDescription() {
+        return "add new element if the new is bigger than the max of collection";
     }
 
     @Override

@@ -1,34 +1,31 @@
 package Objects.CommandsControllers.Commands;
 
-import java.util.Date;
-
-import Objects.Collection.Builders.ProductBuilder;
-import Objects.Collection.Coordinates;
-import Objects.Collection.Location;
-import Objects.Collection.Person;
+import Objects.Builders.ProductBuilder;
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
-import Objects.Enums.Country;
-import Objects.Enums.EyeColor;
-import Objects.Enums.HairColor;
-import Objects.Enums.UnitOfMeasure;
+import Objects.Managers.AuthManager;
+import Objects.Managers.IdManager;
 import Objects.Parsers.ProductParser;
 import Objects.Validators.*;
+
+import java.io.*;
 
 /**
  * update an element
  */
-public class Update extends Command implements CommandWithComplexArg {
+public class Update extends Command implements CommandWithComplexArg, AuthChecker {
 
-    public Update(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
+    public Update(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
     public Object getRelevantObject() {
         checkArgument();
+        checkAuth();
 
         Object complexArg = tryGetObjectViaComplexArg();
         if(complexArg!=null) {
@@ -40,6 +37,10 @@ public class Update extends Command implements CommandWithComplexArg {
         if (!idValidator.isValid(getArgument(), false))
             throw new IllegalArgumentException();
 
+        if(IdManager.getProductById(id).getAuthor().getId()!= AuthManager.getInstance().getUser().getId()){
+            throw new IllegalArgumentException("You aren't this product's author!");
+        }
+
         System.out.println("Updating an element with id " + id + ". Type new values");
 
         ProductBuilder productBuilder = new ProductBuilder();
@@ -49,6 +50,11 @@ public class Update extends Command implements CommandWithComplexArg {
     @Override
     public String getName() {
         return "update";
+    }
+
+    @Override
+    public String getDescription() {
+        return "update an element";
     }
 
     @Override

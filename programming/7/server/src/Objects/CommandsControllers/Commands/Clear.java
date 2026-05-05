@@ -23,15 +23,13 @@ public class Clear extends RevertableCommand {
     public void execute() {
         checkArgument();
 
-        Product[] deleted = getCollectionManager().getElements().toArray(new Product[1]);
-
+        Product[] deleted = getCollectionManager().clear();
         TrashBin.add(deleted);
 
-        getCollectionManager().clear();
 
         History.add(this, null, null);
 
-        CustomPackage pkg = new CustomPackage(this.getName(), null, null);
+        CustomPackage pkg = new CustomPackage(this.getName(), null, deleted);
         answer(pkg, "Collection successfully cleared");
     }
 

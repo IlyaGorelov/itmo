@@ -2,6 +2,7 @@ package Objects.Parsers;
 
 import Objects.Collection.*;
 import Objects.Enums.UnitOfMeasure;
+import Objects.Managers.AuthManager;
 import Objects.Validators.*;
 
 import java.util.Arrays;
@@ -68,7 +69,8 @@ public class ProductParser extends Parser<Product> {
                 !price.isBlank() ? Double.parseDouble(price) : null,
                 Integer.parseInt(manufactureCost),
                 !unitOfMeasure.isBlank() ? UnitOfMeasure.valueOf(unitOfMeasure.toUpperCase()) : null,
-                person);
+                person,
+                AuthManager.getInstance().getUser());
 
         return product;
     }

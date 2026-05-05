@@ -10,12 +10,12 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DBManager {
-    private final String dbUrl;
-    private final String pathToProps;
+    private static String dbUrl;
+    private static String pathToProps;
 
     public DBManager(String url, String propsPath) {
-        this.dbUrl = url;
-        this.pathToProps = propsPath;
+        dbUrl = url;
+        pathToProps = propsPath;
     }
 
     public enum Headers {
@@ -26,7 +26,8 @@ public class DBManager {
         ownerName("owner_name"), height("height"),
         eyeColor("eye_color"), hairColor("hair_color"),
         nationality("nationality"), locX("loc_x"),
-        locY("loc_y"), locZ("loc_Z"), locName("loc_name");
+        locY("loc_y"), locZ("loc_Z"), locName("loc_name"),
+        authorId("authorId");
 
         private final String columnName;
 
@@ -69,7 +70,8 @@ public class DBManager {
                 .collect(Collectors.joining("=?,"));
     }
 
-    public Connection getConnection() throws IOException, SQLException {
+    public static Connection getConnection() throws IOException, SQLException {
+
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProps));
 

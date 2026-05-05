@@ -1,7 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
-import Objects.Collection.Location;
 import Objects.Collection.Person;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandWithComplexArg;
 import Objects.Connection.CustomPackage;
@@ -14,13 +14,9 @@ import Objects.Validators.*;
 /**
  * get all elements where owner is biger than input one
  */
-public class GreaterThanOwner extends Command implements CommandWithComplexArg {
-    public GreaterThanOwner(boolean hasArgument, boolean hasComplexArgument) {
-        super(hasArgument, hasComplexArgument);
-    }
-
-    public GreaterThanOwner() {
-        super();
+public class GreaterThanOwner extends Command implements CommandWithComplexArg, AuthChecker {
+    public GreaterThanOwner(boolean hasArgument) {
+        super(hasArgument);
     }
 
     @Override
@@ -29,8 +25,14 @@ public class GreaterThanOwner extends Command implements CommandWithComplexArg {
     }
 
     @Override
+    public String getDescription() {
+        return "show all elements where, firstly, owner's name is longer than input, secondly, owner's height is greater than input";
+    }
+
+    @Override
     public Object getRelevantObject() {
         checkArgument();
+        checkAuth();
 
         Object complexArg = tryGetObjectViaComplexArg();
         if (complexArg != null) {

@@ -5,7 +5,9 @@ import Objects.CommandsControllers.CommandExecutor;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
-/** stop program */
+/**
+ * stop program
+ */
 public class Exit extends Command {
 
     public Exit(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
@@ -29,13 +31,9 @@ public class Exit extends Command {
     @Override
     public void execute() {
         checkArgument();
-        var save = new Save(getCollectionManager());
-        save.setReceiver(getReceiver());
-        save.setClient(getCLient());
-        save.execute();
 
-        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped");
-        answer(pkg,"Program successfully stopped");
+        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped", getCollectionManager().getCurrentUser());
+        answer(pkg, "Program successfully stopped");
 
         CommandExecutor.waitForNextCommand = false;
 

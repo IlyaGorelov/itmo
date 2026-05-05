@@ -6,10 +6,6 @@ import Objects.Validators.*;
 
 /** Gets an element by id */
 public class GetById extends Command {
-    public GetById(boolean hasArgument) {
-        super(hasArgument, false);
-    }
-
     public GetById() {
         super();
     }
@@ -17,6 +13,11 @@ public class GetById extends Command {
     @Override
     public String getName() {
         return "get_by_id";
+    }
+
+    @Override
+    public String getDescription() {
+        return "get element of collection by id";
     }
 
     @Override

@@ -1,4 +1,4 @@
-package Objects.Collection.Builders;
+package Objects.Builders;
 
 import java.util.Scanner;
 

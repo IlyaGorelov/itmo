@@ -1,18 +1,14 @@
 package Objects.CommandsControllers.Commands;
 
-import org.openjdk.jol.info.GraphLayout;
-
 import Objects.Collection.Product;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
+import org.openjdk.jol.info.GraphLayout;
 
 /*Show all elements of collection */
 public class Show extends Command {
 
-    public Show(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
-        super(collectionManager, hasArgument,hasComplexArg);
-    }
 
     public Show(CollectionManager collectionManager) {
         super(collectionManager);
@@ -31,7 +27,7 @@ public class Show extends Command {
                 products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
                         GraphLayout.parseInstance(y).totalSize())).toArray());
 
-        answer(pkg,products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
+        answer(pkg, products.stream().sorted((x, y) -> Long.compare(GraphLayout.parseInstance(x).totalSize(),
                 GraphLayout.parseInstance(y).totalSize())).toArray(Product[]::new));
 
     }

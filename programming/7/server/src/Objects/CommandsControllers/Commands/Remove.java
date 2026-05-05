@@ -40,7 +40,6 @@ public class Remove extends RevertableCommand {
         } catch (Exception e) {
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
             answer(pkg, e.getMessage());
-            // System.out.println(e.getMessage());
         }
 
     }

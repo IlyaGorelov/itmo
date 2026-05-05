@@ -1,13 +1,14 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.Collection.Product;
+import Objects.CommandsControllers.AuthChecker;
 import Objects.CommandsControllers.Command;
 import Objects.Connection.CustomPackage;
 
 /** show any element where unit of measure is minimal */
-public class MinByUnit extends Command {
+public class MinByUnit extends Command implements AuthChecker {
     public MinByUnit(boolean hasArgument) {
-        super(hasArgument, false);
+        super(hasArgument);
     }
 
     public MinByUnit() {
@@ -20,8 +21,15 @@ public class MinByUnit extends Command {
     }
 
     @Override
+    public String getDescription() {
+        return "show any element where unit of measure is minimal";
+    }
+
+
+    @Override
     public String getRelevantObject() {
         checkArgument();
+        checkAuth();
         return null;
     }
 

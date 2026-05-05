@@ -1,16 +1,12 @@
-package Objects.Collection.Builders;
+package Objects.Builders;
 
-import Objects.Collection.Coordinates;
 import Objects.Collection.Location;
 import Objects.Collection.Person;
-import Objects.Collection.Product;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;
-import Objects.Enums.UnitOfMeasure;
 import Objects.Validators.*;
 
-import java.util.Date;
 import java.util.Scanner;
 
 public class PersonBuilder extends Builder<Person> {

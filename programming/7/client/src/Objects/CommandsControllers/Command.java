@@ -9,22 +9,15 @@ import Objects.Connection.CustomPackage;
  * Abstract class representing a command
  */
 public abstract class Command implements Serializable {
-    /**
-     * An argument of a command presented in one line format
-     */
     private String argument;
     private String complexArgument;
-    /**
-     * Boolean indicates this command requires argument or not
-     */
+
     private boolean hasArgument = false;
-    private boolean hasComplexArgument = false;
 
     private transient Scanner scanner;
 
-    public Command(boolean hasArgument, boolean hasComplexArgument) {
+    public Command(boolean hasArgument) {
         this.hasArgument = hasArgument;
-        this.hasComplexArgument = hasComplexArgument;
     }
 
     public Command() {
@@ -33,13 +26,10 @@ public abstract class Command implements Serializable {
     }
 
     public abstract String getName();
+    public abstract String getDescription();
 
     public boolean getHasArgument() {
         return hasArgument;
-    }
-
-    public boolean getHasComplexArgument() {
-        return hasComplexArgument;
     }
 
     public abstract Object getRelevantObject();
