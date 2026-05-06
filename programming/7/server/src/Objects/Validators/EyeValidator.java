@@ -13,7 +13,7 @@ public class EyeValidator extends Validator<EyeColor> {
                 throw new IllegalArgumentException("No such eye color");
             return true;
         } catch (Exception e) {
-            if (value.isBlank() || value.equals("null")) {
+            if (value == null) {
                 if (canBeNull)
                     return true;
                 else {

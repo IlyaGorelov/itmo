@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
  */
 public class CollectionManager {
     private final static Logger logger = LoggerFactory.getLogger(CollectionManager.class);
+
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final HashSet<Product> products;
     private final ProductDAO productDAO;
@@ -39,32 +43,50 @@ public class CollectionManager {
         products = productDAO.loadProducts();
     }
 
-
     private Date getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getTime();
     }
 
-
     public String getCollectionInfo() {
-        String info = "";
-        String collectionType = products.getClass().toString();
-        info += "Type of collection: " + collectionType + "\n";
-        info += "Initialization date: " + initialDate + "\n";
-        info += "Collection size: " + products.size() + "\n";
-        return info;
+        lock.readLock().lock();
+
+        try {
+            String info = "";
+            String collectionType = products.getClass().toString();
+            info += "Type of collection: " + collectionType + "\n";
+            info += "Initialization date: " + initialDate + "\n";
+            info += "Collection size: " + products.size() + "\n";
+
+            return info;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
-
     public Product getById(long id) throws IndexOutOfBoundsException {
-        return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+        lock.readLock().lock();
+
+        try {
+            return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public HashSet<Product> getElements() {
-        return products;
+        lock.readLock().lock();
+
+        try {
+            return products;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public Product addElement(Product newProduct) {
+        lock.writeLock().lock();
+
         Product product = createProduct(newProduct);
         try {
             productDAO.insertProduct(product);
@@ -75,10 +97,14 @@ public class CollectionManager {
             logger.error(e.getMessage());
             IdManager.removeId(product.getId());
             throw new RuntimeException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public Product addElement(Long id, Product rawProduct) {
+        lock.writeLock().lock();
+
         try {
             Product product = createProduct(id, rawProduct);
 
@@ -90,16 +116,21 @@ public class CollectionManager {
             logger.error(e.getMessage());
             IdManager.removeId(id);
             throw new RuntimeException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public Product updateElement(long existingId, Product rawProduct) throws IndexOutOfBoundsException {
+        lock.writeLock().lock();
         Product product = null;
-        product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
-
-        if (product == null) throw new IndexOutOfBoundsException("There is no element with such id!");
 
         try {
+            product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
+
+            if (product == null)
+                throw new IndexOutOfBoundsException("There is no element with such id!");
+
             productDAO.updateProduct(existingId, rawProduct);
 
 
@@ -114,23 +145,22 @@ public class CollectionManager {
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
-    /**
-     * @param existingId id of a product
-     * @throws IndexOutOfBoundsException if id isn't in collection
-     */
     public Product deleteById(long existingId) throws IndexOutOfBoundsException {
-        Product product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
-
-        if (product == null)
-            throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
-
-        if (!product.getAuthor().equals(currentUser))
-            throw new IllegalArgumentException("It's not your product");
-
+        lock.writeLock().lock();
         try {
+            Product product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
+
+            if (product == null)
+                throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
+
+            if (!product.getAuthor().equals(currentUser))
+                throw new IllegalArgumentException("It's not your product");
+
             productDAO.deleteProductById(existingId);
 
             products.remove(product);
@@ -140,10 +170,13 @@ public class CollectionManager {
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     public Product[] clear() {
+        lock.writeLock().lock();
         try {
             Product[] productsToDelete = products.stream()
                     .filter(p -> p.getAuthor().equals(currentUser))
@@ -158,6 +191,8 @@ public class CollectionManager {
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -165,10 +200,15 @@ public class CollectionManager {
      * @return boolean is the element gonna be max
      */
     public boolean isMax(Product rawProduct) {
-        Product newProduct = createProduct(rawProduct);
-        var maxProduct = products.stream().max(new ProductsComparator()).orElse(null);
+        lock.readLock().lock();
+        try {
+            Product newProduct = createProduct(rawProduct);
+            var maxProduct = products.stream().max(new ProductsComparator()).orElse(null);
 
-        return newProduct.compareTo(maxProduct) == 1;
+            return newProduct.compareTo(maxProduct) == 1;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -177,10 +217,16 @@ public class CollectionManager {
      * @return boolean is an element gonna be min
      */
     public boolean isMin(Product rawProduct) {
-        Product newProduct = createProduct(rawProduct);
-        var minProduct = products.stream().min(new ProductsComparator()).orElse(null);
+        lock.readLock().lock();
 
-        return newProduct.compareTo(minProduct) == -1;
+        try {
+            Product newProduct = createProduct(rawProduct);
+            var minProduct = products.stream().min(new ProductsComparator()).orElse(null);
+
+            return newProduct.compareTo(minProduct) == -1;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -189,28 +235,40 @@ public class CollectionManager {
      * @return ArrayList of ids
      */
     public Product[] removeGreater(Product product) {
-        Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser)).toArray(Product[]::new);
+        lock.writeLock().lock();
 
-        Arrays.stream(productsToRemove).forEach(p -> {
-            deleteById(p.getId());
-        });
+        try {
+            Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser)).toArray(Product[]::new);
 
-        return productsToRemove;
+            Arrays.stream(productsToRemove).forEach(p -> {
+                deleteById(p.getId());
+            });
+
+            return productsToRemove;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
      * @return Array of deleted Products
      */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
-        Product[] productsToDelete = products.stream()
-                .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor().equals(currentUser))
-                .toArray(Product[]::new);
+        lock.writeLock().lock();
 
-        Arrays.stream(productsToDelete).forEach(p -> {
-            deleteById(p.getId());
-        });
+        try {
+            Product[] productsToDelete = products.stream()
+                    .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor().equals(currentUser))
+                    .toArray(Product[]::new);
 
-        return productsToDelete;
+            Arrays.stream(productsToDelete).forEach(p -> {
+                deleteById(p.getId());
+            });
+
+            return productsToDelete;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -219,14 +277,20 @@ public class CollectionManager {
      * @return information about minimal product
      */
     public Product getMinByUnitOfMeasure() {
-        UnitOfMeasure minUnit = getMinUnitOfMeasure();
+        lock.readLock().lock();
 
-        Product wanted = products.stream()
-                .filter(p -> p.getUnitOfMeasure() == minUnit)
-                .findFirst()
-                .orElse(null);
+        try {
+            UnitOfMeasure minUnit = getMinUnitOfMeasure();
 
-        return wanted;
+            Product wanted = products.stream()
+                    .filter(p -> p.getUnitOfMeasure() == minUnit)
+                    .findFirst()
+                    .orElse(null);
+
+            return wanted;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private UnitOfMeasure getMinUnitOfMeasure() {
@@ -242,22 +306,23 @@ public class CollectionManager {
         return unitOfMeasures.first();
     }
 
-
-    /**
-     * get ids of elements with bigger owner
-     *
-     * @return ArrayList of ids
-     */
     public ArrayList<Long> getIdsGreaterThanOwner(Person owner) {
-        var ids = products.stream().filter(p -> {
-            if (owner == null) {
-                return p.getOwner() != null;
-            } else {
-                return p.getOwner().compareTo(owner) == 1;
-            }
-        }).map(Product::getId).collect(Collectors.toCollection(ArrayList<Long>::new));
+        lock.readLock().lock();
 
-        return ids;
+
+        try {
+            var ids = products.stream().filter(p -> {
+                if (owner == null) {
+                    return p.getOwner() != null;
+                } else {
+                    return p.getOwner().compareTo(owner) == 1;
+                }
+            }).map(Product::getId).collect(Collectors.toCollection(ArrayList<Long>::new));
+
+            return ids;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**

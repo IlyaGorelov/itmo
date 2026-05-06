@@ -15,6 +15,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Receiver {
     private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
@@ -23,17 +27,18 @@ public class Receiver {
     private final int port;
 
     private Selector selector;
-    private ServerSocketChannel serverChannel;
 
     private final List<String> answersForCLI = new ArrayList<>();
     private final Queue<String> requestsForCLI = new LinkedList<>();
 
-    private final HashMap<SocketChannel, ByteBuffer> buffers = new HashMap<>();
-    private final HashMap<SocketChannel, Queue<CustomPackage>> requests = new HashMap<>();
-    private final HashMap<SocketChannel, Queue<CustomPackage>> answers = new HashMap<>();
-    private final HashMap<SocketChannel, ByteBuffer> pendingWrites = new HashMap<>();
+    private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
+    private final Map<SocketChannel, Queue<CustomPackage>> requests = new ConcurrentHashMap<>();
+    private final Map<SocketChannel, Queue<CustomPackage>> answers = new ConcurrentHashMap<>();
 
     private final CommandExecutor commandExecutor;
+
+    private final ExecutorService requestExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService responseExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public Receiver(int port, CommandExecutor commandExecutor) {
         this.port = port;
@@ -41,15 +46,16 @@ public class Receiver {
     }
 
     public void connect() {
-//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//            logger.info("Shutdown detected. Saving data and stopping server...");
-//            commandExecutor.stop();
-//            logger.info("Server stopped safely.");
-//        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Stopping server...");
+
+            requestExecutor.shutdown();
+            responseExecutor.shutdown();
+        }));
 
         try {
             selector = Selector.open();
-            serverChannel = ServerSocketChannel.open();
+            ServerSocketChannel serverChannel = ServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(port));
             serverChannel.configureBlocking(false);
 
@@ -76,15 +82,14 @@ public class Receiver {
                 SelectionKey key = keys.next();
                 keys.remove();
 
-                if (!key.isValid())
-                    continue;
+                if (!key.isValid()) continue;
                 try {
                     if (key.isAcceptable()) {
                         accept(key);
                     } else if (key.isReadable()) {
-                        read(key);
+                        readWithNewThread(key);
                     } else if (key.isWritable()) {
-                        write(key);
+                        writeAsync(key);
                     }
                 } catch (SocketException e) {
                     logger.error("SocketException for client, closing: {}", key.channel());
@@ -92,8 +97,6 @@ public class Receiver {
                 } catch (IOException e) {
                     logger.error("IOException for client, closing: {}", key.channel());
                     closeClient((SocketChannel) key.channel());
-                } catch (ClassNotFoundException e) {
-                    logger.error("Received unknown object from client, skipping");
                 }
             }
 
@@ -109,14 +112,31 @@ public class Receiver {
         clientChannel.register(selector, SelectionKey.OP_READ);
 
         buffers.put(clientChannel, ByteBuffer.allocate(4096));
-        answers.put(clientChannel, new LinkedList<>());
-        requests.put(clientChannel, new LinkedList<>());
-        pendingWrites.put(clientChannel, null);
+        answers.put(clientChannel, new ConcurrentLinkedQueue<>());
+        requests.put(clientChannel, new ConcurrentLinkedQueue<>());
 
         logger.info("Client connected: {}", clientChannel.getRemoteAddress());
     }
 
-    public void read(SelectionKey key) throws IOException, ClassNotFoundException {
+    private void readWithNewThread(SelectionKey key) {
+        key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
+
+        new Thread(() -> {
+            try {
+                read(key);
+            } catch (IOException | ClassNotFoundException e) {
+                logger.error("Error while reading from client: {}", e.getMessage());
+                closeClient((SocketChannel) key.channel());
+            } finally {
+                if (key.isValid()) {
+                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
+                    selector.wakeup();
+                }
+            }
+        }).start();
+    }
+
+    private void read(SelectionKey key) throws IOException, ClassNotFoundException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = buffers.get(clientChannel);
 
@@ -124,6 +144,7 @@ public class Receiver {
         if (bytes == -1) {
             logger.info("Client disconnected: {}", clientChannel.getRemoteAddress());
             closeClient(clientChannel);
+            return;
         }
 
         if (bytes == 0) {
@@ -156,21 +177,35 @@ public class Receiver {
                 HistoryManager.registerNewHistory(pkg.getAuthor());
             }
 
-            commandExecutor.execute(this, clientChannel);
-            key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            requestExecutor.submit(() -> {
+                commandExecutor.execute(this, clientChannel);
+
+                key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            });
+
         }
         buffer.compact();
     }
 
-    public CustomPackage getPackage(SocketChannel client) {
-        var queue = requests.get(client);
-        if (queue != null && !queue.isEmpty()) {
-            return queue.poll();
-        }
-        return null;
+    private void writeAsync(SelectionKey key) {
+        key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
+
+        responseExecutor.submit(() -> {
+            try {
+                write(key);
+            } catch (IOException e) {
+                logger.error("Error while sending answer: {}", e.getMessage());
+                closeClient((SocketChannel) key.channel());
+            } finally {
+                if (key.isValid()) {
+                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
+                    selector.wakeup();
+                }
+            }
+        });
     }
 
-    public void write(SelectionKey key) throws IOException {
+    private void write(SelectionKey key) throws IOException {
         SocketChannel clientCannel = (SocketChannel) key.channel();
         Queue<CustomPackage> answerQueue = answers.get(clientCannel);
 
@@ -197,6 +232,14 @@ public class Receiver {
         logger.info("Sent an answer: {}", pkg);
 
         key.interestOps(SelectionKey.OP_READ);
+    }
+
+    public CustomPackage getPackage(SocketChannel client) {
+        var queue = requests.get(client);
+        if (queue != null && !queue.isEmpty()) {
+            return queue.poll();
+        }
+        return null;
     }
 
     public void addToAnswer(SocketChannel client, CustomPackage pkg) {
