@@ -1,4 +1,4 @@
-CREATE SEQUENCE products_id_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE products_id_seq START WITH 0 INCREMENT BY 1 MINVALUE 0 NO MAXVALUE;
 
 CREATE TABLE products (
     id BIGINT PRIMARY KEY DEFAULT nextval('products_id_seq'),
@@ -25,7 +25,9 @@ CREATE TABLE products (
     loc_x DOUBLE PRECISION,
     loc_y INTEGER,
     loc_z DOUBLE PRECISION,
-    loc_name TEXT
+    loc_name TEXT,
+
+    author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE;
 );
 
 ALTER SEQUENCE products_id_seq OWNED BY products.id;

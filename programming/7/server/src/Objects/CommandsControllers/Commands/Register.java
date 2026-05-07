@@ -22,8 +22,8 @@ public class Register extends AuthCommand {
         User newUser = (User) getComplexArgument();
 
         try {
-            getAuthManager().register(newUser);
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newUser);
+            User registered = getAuthManager().register(newUser);
+            CustomPackage pkg = new CustomPackage(this.getName(), null, registered);
             answer(pkg, "Registered " + newUser.getLogin());
         } catch (SQLException e) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, "This login is taken!");

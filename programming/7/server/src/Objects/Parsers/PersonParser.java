@@ -26,10 +26,10 @@ public class PersonParser extends Parser<Person> {
 
         int row = resultSet.getRow();
 
-        String ownerName = resultSet.getString(DBManager.Headers.ownerName.toString());
+        String ownerName = resultSet.getString(DBManager.Headers.ownerName.column());
 
         if (ownerName != null) {
-            String height = resultSet.getString(DBManager.Headers.height.toString());
+            String height = resultSet.getString(DBManager.Headers.height.column());
             if (!heightValidator.isValid(height, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -38,7 +38,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String eyeColor = resultSet.getString(DBManager.Headers.eyeColor.toString());
+            String eyeColor = resultSet.getString(DBManager.Headers.eyeColor.column());
             if (!eyeValidator.isValid(eyeColor, true)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -47,7 +47,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String hairColor = resultSet.getString(DBManager.Headers.hairColor.toString());
+            String hairColor = resultSet.getString(DBManager.Headers.hairColor.column());
             if (!hairValidator.isValid(hairColor, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -56,7 +56,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String nationality = resultSet.getString(DBManager.Headers.nationality.toString());
+            String nationality = resultSet.getString(DBManager.Headers.nationality.column());
             if (!countryValidator.isValid(nationality, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",

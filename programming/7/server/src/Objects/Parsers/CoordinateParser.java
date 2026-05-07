@@ -18,7 +18,7 @@ public class CoordinateParser extends Parser<Coordinates> {
     public Coordinates parse(ResultSet resultSet) throws SQLException {
         int row = resultSet.getRow();
 
-        String x = resultSet.getString(DBManager.Headers.x.toString());
+        String x = resultSet.getString(DBManager.Headers.x.column());
         if (!integerValidator.isValid(x, false)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -27,7 +27,7 @@ public class CoordinateParser extends Parser<Coordinates> {
             ));
         }
 
-        String y = resultSet.getString(DBManager.Headers.y.toString());
+        String y = resultSet.getString(DBManager.Headers.y.column());
         if (!doubleValidator.isValid(y, false)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",

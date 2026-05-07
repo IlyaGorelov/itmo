@@ -33,7 +33,7 @@ public class ProductParser extends Parser<Product> {
     public Product parse(ResultSet resultSet) throws SQLException {
         int row = resultSet.getRow();
 
-        Long id = resultSet.getLong(DBManager.Headers.id.toString());
+        Long id = resultSet.getLong(DBManager.Headers.id.column());
         if (resultSet.wasNull() || !idValidator.isValid(String.valueOf(id), false)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -42,7 +42,7 @@ public class ProductParser extends Parser<Product> {
             ));
         }
 
-        String name = resultSet.getString(DBManager.Headers.name.toString());
+        String name = resultSet.getString(DBManager.Headers.name.column());
         if (!stringValidator.isValid(name, false)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -56,7 +56,7 @@ public class ProductParser extends Parser<Product> {
 
         Date creationDate = getDate(resultSet);
 
-        String price = resultSet.getString(DBManager.Headers.price.toString());
+        String price = resultSet.getString(DBManager.Headers.price.column());
         if (!priceValidator.isValid(String.valueOf(price), true)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -65,7 +65,7 @@ public class ProductParser extends Parser<Product> {
             ));
         }
 
-        String manufactureCost = resultSet.getString(DBManager.Headers.manufactureCost.toString());
+        String manufactureCost = resultSet.getString(DBManager.Headers.manufactureCost.column());
         if (!integerValidator.isValid(manufactureCost, false)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -74,7 +74,7 @@ public class ProductParser extends Parser<Product> {
             ));
         }
 
-        String unitOfMeasure = resultSet.getString(DBManager.Headers.unitOfMeasure.toString());
+        String unitOfMeasure = resultSet.getString(DBManager.Headers.unitOfMeasure.column());
         if (!unitValidator.isValid(String.valueOf(unitOfMeasure), true)) {
             throw new IllegalArgumentException(String.format(
                     "Invalid value for %s in row %d",
@@ -86,7 +86,7 @@ public class ProductParser extends Parser<Product> {
         PersonParser personParser = new PersonParser();
         Person person = personParser.parse(resultSet);
 
-        long authorId = resultSet.getLong(DBManager.Headers.authorId.toString());
+        long authorId = resultSet.getLong(DBManager.Headers.authorId.column());
 
         try {
             User author = UserDAO.getUserById(authorId);
@@ -115,7 +115,7 @@ public class ProductParser extends Parser<Product> {
     private Date getDate(ResultSet resultSet) throws SQLException {
         int row = resultSet.getRow();
 
-        Timestamp timestamp = resultSet.getTimestamp(DBManager.Headers.creationDate.toString());
+        Timestamp timestamp = resultSet.getTimestamp(DBManager.Headers.creationDate.column());
 
         if (timestamp == null) {
             throw new IllegalArgumentException(String.format(

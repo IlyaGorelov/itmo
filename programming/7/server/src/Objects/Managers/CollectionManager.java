@@ -37,7 +37,12 @@ public class CollectionManager {
 
     public CollectionManager(String envKeyToDbUrl, String envKeyToPropsPath) {
         this.urlToDb = System.getenv(envKeyToDbUrl);
+        if (urlToDb == null)
+            throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToDbUrl));
+
         String pathToProps = System.getenv(envKeyToPropsPath);
+        if (pathToProps == null)
+            throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToPropsPath));
 
         productDAO = new ProductDAO(new DBManager(urlToDb, pathToProps));
         products = productDAO.loadProducts();
@@ -89,10 +94,10 @@ public class CollectionManager {
 
         Product product = createProduct(newProduct);
         try {
-            productDAO.insertProduct(product);
-            products.add(product);
+            Product added = productDAO.insertProduct(product);
+            products.add(added);
 
-            return newProduct;
+            return added;
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             IdManager.removeId(product.getId());
@@ -329,8 +334,6 @@ public class CollectionManager {
      * create product
      */
     private Product createProduct(Product newProduct) {
-        long id = IdManager.getId();
-        newProduct.setId(id);
         newProduct.setCreationDate(getCurrentDate());
         return newProduct;
     }

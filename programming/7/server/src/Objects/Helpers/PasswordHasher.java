@@ -8,7 +8,17 @@ import java.util.Base64;
 
 public class PasswordHasher {
     private static final int SALT_LENGTH = 16;
-    private static final String PEPPER = "lab7_pepper";
+    private static String PEPPER;
+
+    public static void setPEPPER(String pepper) {
+        try {
+            if (System.getenv(pepper) == null)
+                throw new NullPointerException("env var \"%s\" isn't set".formatted(pepper));
+            PEPPER = pepper;
+        } catch (NullPointerException e) {
+            throw new NullPointerException("env var \"%s\" isn't set".formatted(pepper));
+        }
+    }
 
     private static final SecureRandom secureRandom = new SecureRandom();
 

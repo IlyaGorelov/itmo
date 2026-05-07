@@ -27,7 +27,7 @@ public class DBManager {
         eyeColor("eye_color"), hairColor("hair_color"),
         nationality("nationality"), locX("loc_x"),
         locY("loc_y"), locZ("loc_Z"), locName("loc_name"),
-        authorId("authorId");
+        authorId("author_id");
 
         private final String columnName;
 

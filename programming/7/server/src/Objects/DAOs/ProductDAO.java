@@ -46,21 +46,29 @@ public class ProductDAO {
         return result;
     }
 
-    public void insertProduct(Product product) throws SQLException, IOException {
+    public Product insertProduct(Product product) throws SQLException, IOException {
         StringBuilder sql = new StringBuilder("INSERT INTO products (")
                 .append(DBManager.buildInsertColumns())
                 .append(") values (");
 
-        sql.append("?,".repeat(Math.max(0, Product.getCountOfEditableFields(true))));
-        sql.deleteCharAt(sql.length() - 1);
-        sql.append(");");
+        sql.append("?,".repeat(Math.max(0, Product.getCountOfEditableFields(true))))
+                .deleteCharAt(sql.length() - 1)
+                .append(") ")
+                .append("RETURNING ")
+                .append(DBManager.buildInsertColumnsWithId())
+                .append(";");
 
         Connection connection = DBManager.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString());
 
         fillStatementWithProduct(statement, product, false);
 
-        statement.executeUpdate();
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next())
+            return new ProductParser().parse(resultSet);
+        else
+            throw new SQLException("Product wasn't added");
     }
 
     public void insertProductWithId(long id, Product product) throws SQLException, IOException {
@@ -105,16 +113,6 @@ public class ProductDAO {
         PreparedStatement statement = connection.prepareStatement(sql);
 
         statement.setLong(1, id);
-
-        statement.executeUpdate();
-    }
-
-    public void deleteAllProducts() throws SQLException, IOException {
-        String sql = "DELETE FROM products;";
-
-
-        Connection connection = DBManager.getConnection();
-        PreparedStatement statement = connection.prepareStatement(sql);
 
         statement.executeUpdate();
     }

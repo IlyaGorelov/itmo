@@ -1,5 +1,6 @@
 import Objects.CommandsControllers.CommandExecutor;
 import Objects.Connection.Receiver;
+import Objects.Helpers.PasswordHasher;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
 
@@ -9,16 +10,24 @@ import Objects.Managers.CollectionManager;
  * @author Ilya Gorelov
  */
 public class App {
-    private static final String ENV_KEY = "postgres";
-    private static final String PROPS = "props_7";
+    private static final String URL_POSTGRES = "url_postgres";
+    private static final String PROPS_POSTGRES = "props_postgres";
+    private static final String PEPPER = "lab7_pepper";
 
     private static final int PORT = 1234;
 
     public static void main(String[] args) throws Exception {
-        CollectionManager collectionManager = new CollectionManager(ENV_KEY, PROPS);
-        AuthManager authManager = new AuthManager(ENV_KEY, PROPS);
-        CommandExecutor executor = new CommandExecutor(collectionManager, authManager);
-        Receiver receiver = new Receiver(PORT, executor);
-        receiver.connect();
+        try {
+            CollectionManager collectionManager = new CollectionManager(URL_POSTGRES, PROPS_POSTGRES);
+            AuthManager authManager = new AuthManager(URL_POSTGRES, PROPS_POSTGRES);
+            PasswordHasher.setPEPPER(PEPPER);
+
+            CommandExecutor executor = new CommandExecutor(collectionManager, authManager);
+            Receiver receiver = new Receiver(PORT, executor);
+
+            receiver.connect();
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
