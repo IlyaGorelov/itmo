@@ -2,7 +2,8 @@ package Objects.Managers;
 
 import Objects.Collection.Person;
 import Objects.Collection.Product;
-import Objects.Collection.ProductsComparator;
+import Objects.Comparators.PersonComparator;
+import Objects.Comparators.ProductsComparator;
 import Objects.DAOs.ProductDAO;
 import Objects.Enums.UnitOfMeasure;
 import Objects.UserData.User;
@@ -16,35 +17,21 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-/**
- * class that controls collection
- */
 public class CollectionManager {
     private final static Logger logger = LoggerFactory.getLogger(CollectionManager.class);
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final HashSet<Product> products;
+
     private final ProductDAO productDAO;
-    /**
-     * date of creating of the collection
-     */
-    private final Date initialDate = getCurrentDate();
-
-    private final String urlToDb;
-
     private User currentUser;
 
-    public CollectionManager(String envKeyToDbUrl, String envKeyToPropsPath) {
-        this.urlToDb = System.getenv(envKeyToDbUrl);
-        if (urlToDb == null)
-            throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToDbUrl));
+    private final Date initialDate = getCurrentDate();
 
-        String pathToProps = System.getenv(envKeyToPropsPath);
-        if (pathToProps == null)
-            throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToPropsPath));
 
-        productDAO = new ProductDAO(new DBManager(urlToDb, pathToProps));
+    public CollectionManager() {
+        productDAO = new ProductDAO();
         products = productDAO.loadProducts();
     }
 
@@ -73,7 +60,10 @@ public class CollectionManager {
         lock.readLock().lock();
 
         try {
-            return products.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+            return products.stream()
+                    .filter(x -> x.getId() == id)
+                    .findFirst()
+                    .orElse(null);
         } finally {
             lock.readLock().unlock();
         }
@@ -107,16 +97,22 @@ public class CollectionManager {
         }
     }
 
-    public Product addElement(Long id, Product rawProduct) {
+    /***
+     add element with specified id
+     * @param id element will be initialized with this id
+     * @param newProduct product with values of the new element
+     * @return added product
+     */
+    public Product addElement(Long id, Product newProduct) {
         lock.writeLock().lock();
 
         try {
-            Product product = createProduct(id, rawProduct);
+            Product product = createProduct(id, newProduct);
 
             productDAO.insertProductWithId(id, product);
             products.add(product);
 
-            return rawProduct;
+            return newProduct;
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             IdManager.removeId(id);
@@ -131,10 +127,12 @@ public class CollectionManager {
         Product product = null;
 
         try {
-            product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
+            product = products.stream()
+                    .filter(p -> p.getId() == existingId)
+                    .findFirst()
+                    .orElse(null);
 
-            if (product == null)
-                throw new IndexOutOfBoundsException("There is no element with such id!");
+            if (product == null) throw new IndexOutOfBoundsException("There is no element with such id!");
 
             productDAO.updateProduct(existingId, rawProduct);
 
@@ -158,13 +156,14 @@ public class CollectionManager {
     public Product deleteById(long existingId) throws IndexOutOfBoundsException {
         lock.writeLock().lock();
         try {
-            Product product = products.stream().filter(p -> p.getId() == existingId).findFirst().orElse(null);
+            Product product = products.stream()
+                    .filter(p -> p.getId() == existingId)
+                    .findFirst()
+                    .orElse(null);
 
-            if (product == null)
-                throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
+            if (product == null) throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
 
-            if (!product.getAuthor().equals(currentUser))
-                throw new IllegalArgumentException("It's not your product");
+            if (!product.getAuthor().equals(currentUser)) throw new IllegalArgumentException("It's not your product");
 
             productDAO.deleteProductById(existingId);
 
@@ -201,14 +200,13 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * @return boolean is the element gonna be max
-     */
     public boolean isMax(Product rawProduct) {
         lock.readLock().lock();
         try {
             Product newProduct = createProduct(rawProduct);
-            var maxProduct = products.stream().max(new ProductsComparator()).orElse(null);
+            var maxProduct = products.stream()
+                    .max(new ProductsComparator())
+                    .orElse(null);
 
             return newProduct.compareTo(maxProduct) == 1;
         } finally {
@@ -216,17 +214,14 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * Is an element gonna be min
-     *
-     * @return boolean is an element gonna be min
-     */
     public boolean isMin(Product rawProduct) {
         lock.readLock().lock();
 
         try {
             Product newProduct = createProduct(rawProduct);
-            var minProduct = products.stream().min(new ProductsComparator()).orElse(null);
+            var minProduct = products.stream()
+                    .min(new ProductsComparator())
+                    .orElse(null);
 
             return newProduct.compareTo(minProduct) == -1;
         } finally {
@@ -235,7 +230,7 @@ public class CollectionManager {
     }
 
     /**
-     * get ids of element greater than given one
+     * get ids of elements greater than given one
      *
      * @return ArrayList of ids
      */
@@ -243,7 +238,9 @@ public class CollectionManager {
         lock.writeLock().lock();
 
         try {
-            Product[] productsToRemove = products.stream().filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser)).toArray(Product[]::new);
+            Product[] productsToRemove = products.stream()
+                    .filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser))
+                    .toArray(Product[]::new);
 
             Arrays.stream(productsToRemove).forEach(p -> {
                 deleteById(p.getId());
@@ -255,9 +252,6 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * @return Array of deleted Products
-     */
     public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
         lock.writeLock().lock();
 
@@ -279,7 +273,7 @@ public class CollectionManager {
     /**
      * get any minimal product with minimal unit of measure
      *
-     * @return information about minimal product
+     * @return minimal product
      */
     public Product getMinByUnitOfMeasure() {
         lock.readLock().lock();
@@ -313,16 +307,11 @@ public class CollectionManager {
 
     public ArrayList<Long> getIdsGreaterThanOwner(Person owner) {
         lock.readLock().lock();
-
-
         try {
-            var ids = products.stream().filter(p -> {
-                if (owner == null) {
-                    return p.getOwner() != null;
-                } else {
-                    return p.getOwner().compareTo(owner) == 1;
-                }
-            }).map(Product::getId).collect(Collectors.toCollection(ArrayList<Long>::new));
+            var ids = products.stream()
+                    .filter(p -> new PersonComparator().compare(p.getOwner(), owner) == 1)
+                    .map(Product::getId)
+                    .collect(Collectors.toCollection(ArrayList<Long>::new));
 
             return ids;
         } finally {

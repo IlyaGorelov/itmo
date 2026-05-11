@@ -9,15 +9,11 @@ import Objects.Managers.CommandManager;
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
 
-/**
- * Class executes command from sysin or from buffer
- */
 public class CommandExecutor {
     private final CollectionManager collectionManager;
     private final AuthManager authManager;
 
     public static boolean waitForNextCommand = true;
-    public static boolean waitForNextCommandForCLI = false;
     private CommandManager commandManager;
 
     public CommandExecutor(CollectionManager collectionManager, AuthManager authManager) {
@@ -25,31 +21,16 @@ public class CommandExecutor {
         this.authManager = authManager;
     }
 
-    public void execute(Receiver receiver, SocketChannel client) {
-        commandManager = new CommandManager(collectionManager, authManager, receiver, client);
-        waitForNextCommand = true;
+    public void execute(Receiver receiver, SocketChannel client, boolean isCliMode) {
+        commandManager = getCommandManager(receiver, client, isCliMode);
 
         try {
-            while (waitForNextCommand) {
-                if (!CommandBuffer.isEmpty()) {
-                    commandManager.executeCommand(
-                            CommandBuffer.getCommand(),
-                            CommandBuffer.getArg(),
-                            CommandBuffer.getComplexArg()
-                    );
-                    commandManager.setCollectionUser(null);
-                    continue;
-                }
-                CustomPackage pack = receiver.getPackage(client);
-                if (pack != null) {
-                    CommandBuffer.addInBuffer(pack.getCommand(),
-                            pack.getArgument() != null ? pack.getArgument().toString() : null,
-                            pack.getObject());
-                    commandManager.setCollectionUser(pack.getAuthor());
-                    System.out.println();
-                } else {
-                    break;
-                }
+            while (true) {
+                if (tryExecuteSingleCommand()) continue;
+
+                CustomPackage pack = getRequest(receiver, client, isCliMode);
+
+                if (!tryAddInBuffer(pack, isCliMode)) break;
             }
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             System.out.println("User input is not detected");
@@ -58,33 +39,37 @@ public class CommandExecutor {
         }
     }
 
-    public void executeFromCLI(Receiver receiver) {
-        commandManager = new CommandManager(collectionManager, receiver, true);
-        waitForNextCommandForCLI = true;
+    private CommandManager getCommandManager(Receiver receiver, SocketChannel client, boolean isCliMode) {
+        return !isCliMode ? new CommandManager(collectionManager, authManager, receiver, client) :
+                new CommandManager(collectionManager, receiver, true);
+    }
 
-        try {
-            while (waitForNextCommandForCLI) {
-                if (!CommandBuffer.isEmpty()) {
-                    commandManager.executeCommand(
-                            CommandBuffer.getCommand(),
-                            CommandBuffer.getArg(),
-                            CommandBuffer.getComplexArg()
-                    );
-                    continue;
-                }
+    private boolean tryExecuteSingleCommand() {
+        if (!CommandBuffer.isEmpty()) {
+            commandManager.executeCommand(CommandBuffer.getCommand());
+            commandManager.setCollectionUser(null);
+            return true;
+        }
+        return false;
+    }
 
-                String command = receiver.getCLICommand();
-                if (command != null) {
-                    CommandBuffer.addInBuffer(command, null, null);
-                    System.out.println();
-                } else {
-                    break;
-                }
-            }
-        } catch (IndexOutOfBoundsException | NoSuchElementException e) {
-            System.out.println("User input is not detected");
-        } catch (Exception e) {
-            System.out.println(e);
+    private CustomPackage getRequest(Receiver receiver, SocketChannel client, boolean isCLIMode) {
+        if (isCLIMode) {
+            String command = receiver.getCLICommand();
+            return new CustomPackage(command, null, null);
+        } else {
+            return receiver.getPackage(client);
+        }
+    }
+
+    private boolean tryAddInBuffer(CustomPackage pack, boolean isCLIMode) {
+        if (pack != null) {
+            CommandBuffer.addInBuffer(pack);
+            commandManager.setCollectionUser(pack.getAuthor());
+
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -14,10 +14,6 @@ public class RemoveByUnitOfMeasure extends RevertableCommand {
         super(collectionManager, hasArgument, hasComplexArg);
     }
 
-    public RemoveByUnitOfMeasure(CollectionManager collectionManager) {
-        super(collectionManager);
-    }
-
     @Override
     public void execute() {
         checkArgument();

@@ -14,29 +14,15 @@ import java.sql.SQLException;
 public class AuthManager {
     private final static Logger logger = LoggerFactory.getLogger(AuthManager.class);
 
-    private final UserDAO userDAO;
+    private final UserDAO userDAO = new UserDAO();
 
-    private final String urlToDb;
-
-    public AuthManager(String envKeyToDbUrl, String envKeyToPropsPath) {
-        this.urlToDb = System.getenv(envKeyToDbUrl);
-        String pathToProps = System.getenv(envKeyToPropsPath);
-
-        userDAO = new UserDAO(new DBManager(urlToDb, pathToProps));
-    }
-
-    /**
-     * transform collection into ArrayList to save it in CSVManager
-     */
     public User register(User newUser) throws SQLException, IOException {
-        User registered = userDAO.register(newUser);
-        return registered;
+        return userDAO.register(newUser);
     }
 
     public User login(User user) {
         try {
-            User logged = userDAO.login(user);
-            return logged;
+            return userDAO.login(user);
         } catch (SQLException | IOException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());

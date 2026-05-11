@@ -3,11 +3,11 @@ package Objects.Managers;
 import Objects.CommandsControllers.History;
 import Objects.UserData.User;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HistoryManager {
-    private static final Map<User, History> historyMap = new HashMap<>();
+    private static final Map<User, History> historyMap = new ConcurrentHashMap<>();
 
     public static boolean isAtStart(User user) {
         History history = historyMap.get(user);

@@ -3,12 +3,8 @@ import Objects.Connection.Receiver;
 import Objects.Helpers.PasswordHasher;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
+import Objects.Managers.DBManager;
 
-/**
- * Main class of the program, it starts the execution
- *
- * @author Ilya Gorelov
- */
 public class App {
     private static final String URL_POSTGRES = "url_postgres";
     private static final String PROPS_POSTGRES = "props_postgres";
@@ -18,9 +14,13 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         try {
-            CollectionManager collectionManager = new CollectionManager(URL_POSTGRES, PROPS_POSTGRES);
-            AuthManager authManager = new AuthManager(URL_POSTGRES, PROPS_POSTGRES);
+            DBManager.setDbURL(URL_POSTGRES);
+            DBManager.setPathToProps(PROPS_POSTGRES);
+
             PasswordHasher.setPEPPER(PEPPER);
+            
+            CollectionManager collectionManager = new CollectionManager();
+            AuthManager authManager = new AuthManager();
 
             CommandExecutor executor = new CommandExecutor(collectionManager, authManager);
             Receiver receiver = new Receiver(PORT, executor);

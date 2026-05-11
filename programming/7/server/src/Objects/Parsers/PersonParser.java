@@ -26,10 +26,10 @@ public class PersonParser extends Parser<Person> {
 
         int row = resultSet.getRow();
 
-        String ownerName = resultSet.getString(DBManager.Headers.ownerName.column());
+        String ownerName = resultSet.getString(DBManager.Headers.ownerName.name());
 
         if (ownerName != null) {
-            String height = resultSet.getString(DBManager.Headers.height.column());
+            String height = resultSet.getString(DBManager.Headers.height.name());
             if (!heightValidator.isValid(height, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -38,7 +38,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String eyeColor = resultSet.getString(DBManager.Headers.eyeColor.column());
+            String eyeColor = resultSet.getString(DBManager.Headers.eyeColor.name());
             if (!eyeValidator.isValid(eyeColor, true)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -47,7 +47,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String hairColor = resultSet.getString(DBManager.Headers.hairColor.column());
+            String hairColor = resultSet.getString(DBManager.Headers.hairColor.name());
             if (!hairValidator.isValid(hairColor, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",
@@ -56,7 +56,7 @@ public class PersonParser extends Parser<Person> {
                 ));
             }
 
-            String nationality = resultSet.getString(DBManager.Headers.nationality.column());
+            String nationality = resultSet.getString(DBManager.Headers.nationality.name());
             if (!countryValidator.isValid(nationality, false)) {
                 throw new IllegalArgumentException(String.format(
                         "Invalid value for %s in row %d",

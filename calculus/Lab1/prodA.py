@@ -273,7 +273,6 @@ def matrix_to_str(name, A):
     return "\n".join(lines)
 
 
-#=====Генератор тестов=====
 def random_unimodular_matrix(n, steps=12, value_range=(-3, 3)):
     rng = random.Random()
     P = sp.eye(n)
@@ -313,7 +312,7 @@ def random_nonsquare(min_d=2, max_d=30):
             return sp.Integer(d)
         
 def random_sympy_number():
-    kind = random.choice(["integer", "rational", "irrational"])
+    kind = random.choice(["rational", "irrational"])
 
     if kind == "integer":
         return sp.Integer(random.randint(-5, 5))

@@ -1,8 +1,12 @@
-package Objects.Collection;
+package Objects.Comparators;
+
+import Objects.Collection.Product;
 
 import java.util.Comparator;
 
-/** Comparator for TreeSet */
+/**
+ * Comparator for TreeSet
+ */
 public class ProductsComparator implements Comparator<Product> {
 
     @Override

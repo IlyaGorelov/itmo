@@ -11,10 +11,6 @@ import java.util.Scanner;
 
 public class PersonBuilder extends Builder<Person> {
     StringValidator stringValidator = new StringValidator();
-    CoordinatesValidator coordinatesValidator = new CoordinatesValidator();
-    PriceValidator priceValidator = new PriceValidator();
-    IntegerValidator integerValidator = new IntegerValidator();
-    UnitValidator unitValidator = new UnitValidator();
     HeightValidator heightValidator = new HeightValidator();
     EyeValidator eyeValidator = new EyeValidator();
     HairValidator hairValidator = new HairValidator();

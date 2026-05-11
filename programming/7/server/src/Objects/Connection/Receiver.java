@@ -68,9 +68,6 @@ public class Receiver {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-//        finally {
-//            commandExecutor.stop();
-//        }
     }
 
     private void selectKeys() throws IOException {
@@ -83,6 +80,7 @@ public class Receiver {
                 keys.remove();
 
                 if (!key.isValid()) continue;
+
                 try {
                     if (key.isAcceptable()) {
                         accept(key);
@@ -101,7 +99,6 @@ public class Receiver {
             }
 
             processCLI();
-
         }
     }
 
@@ -178,7 +175,7 @@ public class Receiver {
             }
 
             requestExecutor.submit(() -> {
-                commandExecutor.execute(this, clientChannel);
+                commandExecutor.execute(this, clientChannel, false);
 
                 key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
             });
@@ -279,7 +276,7 @@ public class Receiver {
 
             logger.info("CLI command: {}", line);
 
-            commandExecutor.executeFromCLI(this);
+            commandExecutor.execute(this, null, true);
             for (String a : answersForCLI)
                 cliManager.writeLine(a);
 

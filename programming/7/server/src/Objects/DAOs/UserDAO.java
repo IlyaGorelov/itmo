@@ -15,12 +15,6 @@ import java.sql.SQLException;
 public class UserDAO {
     private final static Logger logger = LoggerFactory.getLogger(ProductDAO.class);
 
-    private final DBManager dbManager;
-
-    public UserDAO(DBManager dbManager) {
-        this.dbManager = dbManager;
-    }
-
     public User register(User newUser) throws SQLException, IOException {
         PasswordHasher.PasswordData passwordData = PasswordHasher.hashPassword(newUser.getPassword());
 
@@ -63,8 +57,6 @@ public class UserDAO {
     }
 
     public User login(User user) throws SQLException, IOException {
-        PasswordHasher.PasswordData passwordData = PasswordHasher.hashPassword(user.getPassword());
-
         String sql = "SELECT id,login,password,salt FROM users WHERE login=?;";
 
         Connection connection = DBManager.getConnection();

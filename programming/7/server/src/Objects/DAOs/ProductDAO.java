@@ -17,12 +17,6 @@ import java.util.HashSet;
 public class ProductDAO {
     private final static Logger logger = LoggerFactory.getLogger(ProductDAO.class);
 
-    private final DBManager dbManager;
-
-    public ProductDAO(DBManager dbManager) {
-        this.dbManager = dbManager;
-    }
-
     public HashSet<Product> loadProducts() {
         HashSet<Product> result = new HashSet<>();
 

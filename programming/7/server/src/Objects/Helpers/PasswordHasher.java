@@ -14,7 +14,7 @@ public class PasswordHasher {
         try {
             if (System.getenv(pepper) == null)
                 throw new NullPointerException("env var \"%s\" isn't set".formatted(pepper));
-            PEPPER = pepper;
+            PEPPER = System.getenv(pepper);
         } catch (NullPointerException e) {
             throw new NullPointerException("env var \"%s\" isn't set".formatted(pepper));
         }
@@ -55,13 +55,7 @@ public class PasswordHasher {
     }
 
     private static String getPepper() {
-        String pepper = System.getenv(PEPPER);
-
-        if (pepper == null || pepper.isBlank()) {
-            throw new IllegalStateException(PEPPER + " environment variable is not set");
-        }
-
-        return pepper;
+        return PEPPER;
     }
 
     public record PasswordData(String hash, String salt) {

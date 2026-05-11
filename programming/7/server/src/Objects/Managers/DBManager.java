@@ -13,11 +13,6 @@ public class DBManager {
     private static String dbUrl;
     private static String pathToProps;
 
-    public DBManager(String url, String propsPath) {
-        dbUrl = url;
-        pathToProps = propsPath;
-    }
-
     public enum Headers {
         id("id"), name("name"), x("x"), y("y"),
         creationDate("creation_date"), price("price"),
@@ -42,6 +37,18 @@ public class DBManager {
         public String selectWithAlias() {
             return columnName + " AS " + name();
         }
+    }
+
+    public static void setDbURL(String envKeyToDbUrl) {
+        dbUrl = System.getenv(envKeyToDbUrl);
+        if (dbUrl == null) throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToDbUrl));
+
+    }
+
+    public static void setPathToProps(String envKeyToPropsPath) {
+        pathToProps = System.getenv(envKeyToPropsPath);
+        if (pathToProps == null)
+            throw new NullPointerException("env var \"%s\" isn't set".formatted(envKeyToPropsPath));
     }
 
     public static String buildSelectColumns() {
@@ -71,7 +78,6 @@ public class DBManager {
     }
 
     public static Connection getConnection() throws IOException, SQLException {
-
         Properties props = new Properties();
         props.load(new FileInputStream(pathToProps));
 

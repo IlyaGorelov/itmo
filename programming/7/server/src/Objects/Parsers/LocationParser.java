@@ -22,10 +22,10 @@ public class LocationParser extends Parser<Location> {
 
         int row = resultSet.getRow();
 
-        String locX = resultSet.getString(DBManager.Headers.locX.column());
-        String locY = resultSet.getString(DBManager.Headers.locY.column());
-        String locZ = resultSet.getString(DBManager.Headers.locZ.column());
-        String locName = resultSet.getString(DBManager.Headers.locName.column());
+        String locX = resultSet.getString(DBManager.Headers.locX.name());
+        String locY = resultSet.getString(DBManager.Headers.locY.name());
+        String locZ = resultSet.getString(DBManager.Headers.locZ.name());
+        String locName = resultSet.getString(DBManager.Headers.locName.name());
 
         if (locX != null) {
             if (!doubleValidator.isValid(locX, false)) {

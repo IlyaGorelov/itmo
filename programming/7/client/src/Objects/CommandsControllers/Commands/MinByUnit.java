@@ -7,9 +7,6 @@ import Objects.Connection.CustomPackage;
 
 /** show any element where unit of measure is minimal */
 public class MinByUnit extends Command implements AuthChecker {
-    public MinByUnit(boolean hasArgument) {
-        super(hasArgument);
-    }
 
     public MinByUnit() {
         super();
@@ -17,7 +14,7 @@ public class MinByUnit extends Command implements AuthChecker {
 
     @Override
     public String getName() {
-        return "min_by_unit_of_measure";
+        return "min_by_unit";
     }
 
     @Override
@@ -40,9 +37,9 @@ public class MinByUnit extends Command implements AuthChecker {
         if (object == null)
             return "Collection is empty.";
         if (object instanceof Product)
-            return "An element with min unit:\n" + ((Product) object).toString() + "\n";
+            return "An element with min unit:\n" + object + "\n";
         else
-            return "Element wasn't removed as " + object.toString() + "\n";
+            return "Element wasn't removed as " + object + "\n";
 
     }
 

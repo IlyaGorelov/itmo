@@ -3,6 +3,7 @@ package Objects.Managers;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.Commands.*;
+import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.UserData.User;
 
@@ -21,27 +22,25 @@ public class CommandManager {
 
     private final HashMap<String, Command> commandMapForCLI = new HashMap<>();
 
-    private final Receiver receiver;
     private SocketChannel client;
     private boolean isCLIMode = false;
 
     private CollectionManager collectionManager;
 
     /**
-     * Constructor that fill command map with available commands
+     * Constructor that fills command map with available commands
      *
      * @param collectionManager controls collection
      * @param receiver          to get input
      */
     public CommandManager(CollectionManager collectionManager, AuthManager authManager, Receiver receiver, SocketChannel client) {
-        this.receiver = receiver;
         this.client = client;
         this.collectionManager = collectionManager;
 
         ArrayList<Command> commands = new ArrayList<>();
 
-        addAllAuthCommandsInList(authManager, commands);
-        addAllCollectionCommandsInList(commands);
+        addAllAuthCommandsInMap(authManager, commands);
+        addAllCollectionCommandsInMap(commands);
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
@@ -54,31 +53,31 @@ public class CommandManager {
             CollectionManager collectionManager,
             Receiver receiver,
             boolean isCLIMode) {
-        this.receiver = receiver;
         this.isCLIMode = isCLIMode;
         ArrayList<Command> commands = new ArrayList<>();
 
-        if (!isCLIMode)
-            addAllCollectionCommandsInList(commands);
+        if (!this.isCLIMode)
+            addAllCollectionCommandsInMap(commands);
 
         for (Command command : commands) {
-            if (isCLIMode)
+            if (this.isCLIMode) {
                 commandMapForCLI.put(command.getName(), command);
-            else
+            } else {
                 commandMap.put(command.getName(), command);
+            }
 
             command.setReceiver(receiver);
             command.setClient(client);
-            command.setCLIMode(isCLIMode);
+            command.setCLIMode(this.isCLIMode);
         }
     }
 
-    private void addAllAuthCommandsInList(AuthManager authManager, ArrayList<Command> commands) {
+    private void addAllAuthCommandsInMap(AuthManager authManager, ArrayList<Command> commands) {
         commands.add(new Register(authManager, false, true));
         commands.add(new Login(authManager, false, true));
     }
 
-    private void addAllCollectionCommandsInList(ArrayList<Command> commands) {
+    private void addAllCollectionCommandsInMap(ArrayList<Command> commands) {
         commands.add(new Add(collectionManager, false, true));
         commands.add(new AddIfMax(collectionManager, false, true));
         commands.add(new AddIfMin(collectionManager, false, true));
@@ -107,16 +106,14 @@ public class CommandManager {
      * Executes commands and handles exceptions
      */
     public void executeCommand(
-            String commandName,
-            String arg,
-            Object complexArg
+            CustomPackage pack
     ) {
         var commandMap = getCommandMap();
         try {
-            Command command = commandMap.get(commandName);
+            Command command = commandMap.get(pack.getCommand());
 
-            command.setArgument(arg);
-            command.setComplexArgument(complexArg);
+            command.setArgument((String) pack.getArgument());
+            command.setComplexArgument(pack.getObject());
             command.execute();
 
         } catch (NullPointerException e) {
