@@ -6,7 +6,6 @@ import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.HistoryManager;
-import Objects.UserData.User;
 
 /**
  * show information about collection
@@ -21,14 +20,13 @@ public class Redo extends Command {
     public void execute() {
         checkArgument();
 
-        User currentUser = getCollectionManager().getCurrentUser();
 
-        if (HistoryManager.isAtEnd(currentUser)) {
+        if (HistoryManager.isAtEnd(getUser())) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
             answer(pkg, "Nothing to redo");
 
         } else {
-            History.HistoryObject historyObject = HistoryManager.getHistoryObject(currentUser);
+            History.HistoryObject historyObject = HistoryManager.getHistoryObject(getUser());
 
 
             RevertableCommand command = historyObject.command();
@@ -37,7 +35,7 @@ public class Redo extends Command {
             command.setComplexArgument(historyObject.complexArg());
             command.execute();
 
-            HistoryManager.moveForward(currentUser);
+            HistoryManager.moveForward(getUser());
         }
 
     }

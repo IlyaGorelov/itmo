@@ -30,10 +30,10 @@ public class AddIfMax extends RevertableCommand {
 
             addToHistory();
 
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
             answer(pkg, "Successfully added");
         } else {
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
             answer(pkg, "Not added");
         }
     }
@@ -61,9 +61,9 @@ public class AddIfMax extends RevertableCommand {
         Product complexArg = (Product) getComplexArgument();
 
         long id = complexArg.getId();
-        Product deleted = getCollectionManager().deleteById(id);
+        Product deleted = getCollectionManager().deleteById(id, getUser());
 
-        CustomPackage pkg = new CustomPackage(new Remove(null).getName(), getArgument(), deleted, getCollectionManager().getCurrentUser());
+        CustomPackage pkg = new CustomPackage(new Remove(null).getName(), getArgument(), deleted, getUser());
         answer(pkg, "Successfully removed " + deleted.getName());
     }
 }

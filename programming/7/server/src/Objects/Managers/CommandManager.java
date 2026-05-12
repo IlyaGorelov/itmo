@@ -33,7 +33,12 @@ public class CommandManager {
      * @param collectionManager controls collection
      * @param receiver          to get input
      */
-    public CommandManager(CollectionManager collectionManager, AuthManager authManager, Receiver receiver, SocketChannel client) {
+    public CommandManager(CollectionManager collectionManager,
+                          AuthManager authManager,
+                          Receiver receiver,
+                          SocketChannel client,
+                          User user
+    ) {
         this.client = client;
         this.collectionManager = collectionManager;
 
@@ -44,8 +49,9 @@ public class CommandManager {
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
-            command.setReceiver(receiver);
-            command.setClient(client);
+            command.setReceiver(receiver)
+                    .setClient(client)
+                    .setUser(user);
         }
     }
 
@@ -127,13 +133,5 @@ public class CommandManager {
         } finally {
             CommandBuffer.removeLast();
         }
-    }
-
-    public void setCollectionUser(User user) {
-        collectionManager.setCurrentUser(user);
-    }
-
-    public User getCommandUser() {
-        return collectionManager.getCurrentUser();
     }
 }

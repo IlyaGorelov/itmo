@@ -4,11 +4,13 @@ import Objects.Collection.Product;
 import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
+import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 
 public abstract class Command {
     private CollectionManager collectionManager;
+    private User user;
     private Receiver receiver;
     private SocketChannel client;
 
@@ -86,6 +88,15 @@ public abstract class Command {
 
     public SocketChannel getCLient() {
         return client;
+    }
+
+    public Command setUser(User user) {
+        this.user = user;
+        return this;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public String getArgument() {

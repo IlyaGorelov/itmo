@@ -49,7 +49,7 @@ public class ProductDAO {
                 .deleteCharAt(sql.length() - 1)
                 .append(") ")
                 .append("RETURNING ")
-                .append(DBManager.buildInsertColumnsWithId())
+                .append(DBManager.buildSelectColumns())
                 .append(";");
 
         Connection connection = DBManager.getConnection();

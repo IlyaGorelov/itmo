@@ -22,7 +22,7 @@ public class Clear extends RevertableCommand {
     public void execute() {
         checkArgument();
 
-        Product[] deleted = getCollectionManager().clear();
+        Product[] deleted = getCollectionManager().clear(getUser());
         TrashBin.add(deleted);
 
         addToHistory();

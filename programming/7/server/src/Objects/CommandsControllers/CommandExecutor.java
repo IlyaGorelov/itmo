@@ -5,6 +5,7 @@ import Objects.Connection.Receiver;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
+import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;
@@ -21,8 +22,8 @@ public class CommandExecutor {
         this.authManager = authManager;
     }
 
-    public void execute(Receiver receiver, SocketChannel client, boolean isCliMode) {
-        commandManager = getCommandManager(receiver, client, isCliMode);
+    public void execute(Receiver receiver, SocketChannel client, User user, boolean isCliMode) {
+        commandManager = getCommandManager(receiver, client, user, isCliMode);
 
         try {
             while (true) {
@@ -39,15 +40,17 @@ public class CommandExecutor {
         }
     }
 
-    private CommandManager getCommandManager(Receiver receiver, SocketChannel client, boolean isCliMode) {
-        return !isCliMode ? new CommandManager(collectionManager, authManager, receiver, client) :
+    private CommandManager getCommandManager(Receiver receiver,
+                                             SocketChannel client,
+                                             User user,
+                                             boolean isCliMode) {
+        return !isCliMode ? new CommandManager(collectionManager, authManager, receiver, client, user) :
                 new CommandManager(collectionManager, receiver, true);
     }
 
     private boolean tryExecuteSingleCommand() {
         if (!CommandBuffer.isEmpty()) {
             commandManager.executeCommand(CommandBuffer.getCommand());
-            commandManager.setCollectionUser(null);
             return true;
         }
         return false;
@@ -65,8 +68,6 @@ public class CommandExecutor {
     private boolean tryAddInBuffer(CustomPackage pack, boolean isCLIMode) {
         if (pack != null) {
             CommandBuffer.addInBuffer(pack);
-            commandManager.setCollectionUser(pack.getAuthor());
-
             return true;
         } else {
             return false;

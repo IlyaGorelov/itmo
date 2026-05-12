@@ -7,15 +7,15 @@ public class History {
 
     private int currentStep = 0;
 
-    public boolean isAtStart() {
+    public synchronized boolean isAtStart() {
         return currentStep == 0;
     }
 
-    public boolean isAtEnd() {
+    public synchronized boolean isAtEnd() {
         return currentStep == history.size();
     }
 
-    public void add(HistoryObject historyObject) {
+    public synchronized void add(HistoryObject historyObject) {
         if (!history.contains(historyObject)) {
             history.add(currentStep, historyObject);
             history.removeIf(p -> history.indexOf(p) > currentStep);
@@ -24,19 +24,19 @@ public class History {
         }
     }
 
-    public void moveBack() {
+    public synchronized void moveBack() {
         if (--currentStep < 0) {
             currentStep = 0;
         }
     }
 
-    public void moveForward() {
+    public synchronized void moveForward() {
         if (currentStep + 1 != history.size() + 1) {
             currentStep++;
         }
     }
 
-    public HistoryObject getHistoryObject() {
+    public synchronized HistoryObject getHistoryObject() {
         return history.get(currentStep);
     }
 

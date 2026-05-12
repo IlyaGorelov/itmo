@@ -56,7 +56,7 @@ public class Update extends RevertableCommand {
     @Override
     public void undo() {
         Product[] restoring = TrashBin.pop();
-
+        
         for (Product product : restoring) {
             Product previous = getCollectionManager().updateElement(product.getId(), product);
             CustomPackage pkg = new CustomPackage(new Update(null).getName(), getArgument(), previous);

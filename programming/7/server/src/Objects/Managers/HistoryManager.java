@@ -19,6 +19,10 @@ public class HistoryManager {
         return history.isAtEnd();
     }
 
+    /***
+     * add a new history in map
+     * @param user a key in map
+     */
     public static void registerNewHistory(User user) {
         historyMap.putIfAbsent(user, new History());
     }

@@ -32,7 +32,7 @@ public class Exit extends Command {
     public void execute() {
         checkArgument();
 
-        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped", getCollectionManager().getCurrentUser());
+        CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), "Program successfully stopped", getUser());
         answer(pkg, "Program successfully stopped");
 
         CommandExecutor.waitForNextCommand = false;

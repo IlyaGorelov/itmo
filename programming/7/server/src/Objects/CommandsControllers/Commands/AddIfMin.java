@@ -14,10 +14,6 @@ public class AddIfMin extends RevertableCommand {
         super(collectionManager, hasArgument, hasComplexArg);
     }
 
-    public AddIfMin(CollectionManager collectionManager) {
-        super(collectionManager);
-    }
-
     /**
      * Asks for required fields then creates new element - Product, then put it into
      * collection if it's gonna be min
@@ -31,10 +27,10 @@ public class AddIfMin extends RevertableCommand {
 
             addToHistory();
 
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
             answer(pkg, "Successfully added");
         } else {
-            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getCollectionManager().getCurrentUser());
+            CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
             answer(pkg, "Not added");
         }
     }
@@ -63,7 +59,7 @@ public class AddIfMin extends RevertableCommand {
         Product complexArg = (Product) getComplexArgument();
 
         long id = complexArg.getId();
-        Product deleted = getCollectionManager().deleteById(id);
+        Product deleted = getCollectionManager().deleteById(id, getUser());
 
         CustomPackage pkg = new CustomPackage(new Remove(null).getName(), getArgument(), deleted);
         answer(pkg, "Successfully removed " + deleted.getName());

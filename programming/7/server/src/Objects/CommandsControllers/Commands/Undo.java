@@ -6,7 +6,6 @@ import Objects.CommandsControllers.RevertableCommand;
 import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.HistoryManager;
-import Objects.UserData.User;
 
 /**
  * show information about collection
@@ -22,14 +21,12 @@ public class Undo extends Command {
         checkArgument();
         String answer = "";
 
-        User currentUser = getCollectionManager().getCurrentUser();
-
-        if (HistoryManager.isAtStart(currentUser)) {
+        if (HistoryManager.isAtStart(getUser())) {
             answer += ("Nothing to undo");
         } else {
-            HistoryManager.moveBack(currentUser);
+            HistoryManager.moveBack(getUser());
 
-            History.HistoryObject historyObject = HistoryManager.getHistoryObject(currentUser);
+            History.HistoryObject historyObject = HistoryManager.getHistoryObject(getUser());
 
             RevertableCommand command = historyObject.command();
 

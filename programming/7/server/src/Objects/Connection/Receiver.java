@@ -3,6 +3,7 @@ package Objects.Connection;
 import Objects.CommandsControllers.CommandExecutor;
 import Objects.Managers.CLIManager;
 import Objects.Managers.HistoryManager;
+import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class Receiver {
     private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
     private final Map<SocketChannel, Queue<CustomPackage>> requests = new ConcurrentHashMap<>();
     private final Map<SocketChannel, Queue<CustomPackage>> answers = new ConcurrentHashMap<>();
+    private final Set<SocketChannel> processingClients = ConcurrentHashMap.newKeySet();
 
     private final CommandExecutor commandExecutor;
 
@@ -121,14 +123,11 @@ public class Receiver {
         new Thread(() -> {
             try {
                 read(key);
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 logger.error("Error while reading from client: {}", e.getMessage());
                 closeClient((SocketChannel) key.channel());
             } finally {
-                if (key.isValid()) {
-                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
-                    selector.wakeup();
-                }
+                addInterestOps(key, SelectionKey.OP_READ);
             }
         }).start();
     }
@@ -171,17 +170,31 @@ public class Receiver {
                 requests.get(clientChannel).add(pkg);
                 logger.info("Received a request: {}", pkg.getCommand());
 
-                HistoryManager.registerNewHistory(pkg.getAuthor());
+                if (pkg.getAuthor() != null)
+                    HistoryManager.registerNewHistory(pkg.getAuthor());
+
+                submitCommandExecuting(clientChannel, pkg.getAuthor(), key);
             }
 
-            requestExecutor.submit(() -> {
-                commandExecutor.execute(this, clientChannel, false);
-
-                key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-            });
 
         }
         buffer.compact();
+    }
+
+    private void submitCommandExecuting(SocketChannel channel, User user, SelectionKey key) {
+        if (!processingClients.add(channel)) {
+            return;
+        }
+
+        requestExecutor.submit(() -> {
+            try {
+                commandExecutor.execute(this, channel, user, false);
+            } finally {
+                processingClients.remove(channel);
+
+                addInterestOps(key, SelectionKey.OP_WRITE);
+            }
+        });
     }
 
     private void writeAsync(SelectionKey key) {
@@ -194,10 +207,7 @@ public class Receiver {
                 logger.error("Error while sending answer: {}", e.getMessage());
                 closeClient((SocketChannel) key.channel());
             } finally {
-                if (key.isValid()) {
-                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
-                    selector.wakeup();
-                }
+                addInterestOps(key, SelectionKey.OP_READ);
             }
         });
     }
@@ -206,7 +216,13 @@ public class Receiver {
         SocketChannel clientCannel = (SocketChannel) key.channel();
         Queue<CustomPackage> answerQueue = answers.get(clientCannel);
 
-        Object[] pkg = answerQueue.toArray();
+        List<CustomPackage> packages = new ArrayList<>();
+
+        CustomPackage pkg;
+        while ((pkg = answerQueue.poll()) != null) {
+            packages.add(pkg);
+        }
+
         answerQueue.clear();
 
         byte[] bytes;
@@ -214,7 +230,7 @@ public class Receiver {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
 
-        oos.writeObject(pkg);
+        oos.writeObject(packages.toArray());
         oos.flush();
         bytes = baos.toByteArray();
 
@@ -226,17 +242,12 @@ public class Receiver {
         while (buffer.hasRemaining()) {
             clientCannel.write(buffer);
         }
-        logger.info("Sent an answer: {}", pkg);
-
-        key.interestOps(SelectionKey.OP_READ);
+        logger.info("Sent an answer: {}", packages);
     }
 
     public CustomPackage getPackage(SocketChannel client) {
-        var queue = requests.get(client);
-        if (queue != null && !queue.isEmpty()) {
-            return queue.poll();
-        }
-        return null;
+        Queue<CustomPackage> queue = requests.get(client);
+        return queue == null ? null : queue.poll();
     }
 
     public void addToAnswer(SocketChannel client, CustomPackage pkg) {
@@ -276,7 +287,7 @@ public class Receiver {
 
             logger.info("CLI command: {}", line);
 
-            commandExecutor.execute(this, null, true);
+            commandExecutor.execute(this, null, null, true);
             for (String a : answersForCLI)
                 cliManager.writeLine(a);
 
@@ -286,5 +297,15 @@ public class Receiver {
 
     public String getCLICommand() {
         return requestsForCLI.poll();
+    }
+
+    private void addInterestOps(SelectionKey key, int ops) {
+        synchronized (key) {
+            if (key.isValid()) {
+                key.interestOps(key.interestOps() | ops);
+            }
+        }
+
+        selector.wakeup();
     }
 }

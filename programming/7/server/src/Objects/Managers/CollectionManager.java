@@ -25,7 +25,6 @@ public class CollectionManager {
     private final HashSet<Product> products;
 
     private final ProductDAO productDAO;
-    private User currentUser;
 
     private final Date initialDate = getCurrentDate();
 
@@ -153,7 +152,7 @@ public class CollectionManager {
         }
     }
 
-    public Product deleteById(long existingId) throws IndexOutOfBoundsException {
+    public Product deleteById(long existingId, User user) throws IndexOutOfBoundsException {
         lock.writeLock().lock();
         try {
             Product product = products.stream()
@@ -163,7 +162,7 @@ public class CollectionManager {
 
             if (product == null) throw new IndexOutOfBoundsException("There is no element with id: " + existingId);
 
-            if (!product.getAuthor().equals(currentUser)) throw new IllegalArgumentException("It's not your product");
+            if (!product.getAuthor().equals(user)) throw new IllegalArgumentException("It's not your product");
 
             productDAO.deleteProductById(existingId);
 
@@ -179,11 +178,11 @@ public class CollectionManager {
         }
     }
 
-    public Product[] clear() {
+    public Product[] clear(User user) {
         lock.writeLock().lock();
         try {
             Product[] productsToDelete = products.stream()
-                    .filter(p -> p.getAuthor().equals(currentUser))
+                    .filter(p -> p.getAuthor().equals(user))
                     .toArray(Product[]::new);
 
             for (Product p : productsToDelete) {
@@ -234,16 +233,16 @@ public class CollectionManager {
      *
      * @return ArrayList of ids
      */
-    public Product[] removeGreater(Product product) {
+    public Product[] removeGreater(Product product, User user) {
         lock.writeLock().lock();
 
         try {
             Product[] productsToRemove = products.stream()
-                    .filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(currentUser))
+                    .filter(p -> p.compareTo(product) == 1 && p.getAuthor().equals(user))
                     .toArray(Product[]::new);
 
             Arrays.stream(productsToRemove).forEach(p -> {
-                deleteById(p.getId());
+                deleteById(p.getId(), user);
             });
 
             return productsToRemove;
@@ -252,16 +251,16 @@ public class CollectionManager {
         }
     }
 
-    public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing) {
+    public Product[] removeByUnitOfMeasure(UnitOfMeasure comparing, User user) {
         lock.writeLock().lock();
 
         try {
             Product[] productsToDelete = products.stream()
-                    .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor().equals(currentUser))
+                    .filter(p -> Objects.equals(p.getUnitOfMeasure(), comparing) && p.getAuthor().equals(user))
                     .toArray(Product[]::new);
 
             Arrays.stream(productsToDelete).forEach(p -> {
-                deleteById(p.getId());
+                deleteById(p.getId(), user);
             });
 
             return productsToDelete;
@@ -334,13 +333,5 @@ public class CollectionManager {
         IdManager.addId(id);
         product.setId(id);
         return product;
-    }
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
     }
 }

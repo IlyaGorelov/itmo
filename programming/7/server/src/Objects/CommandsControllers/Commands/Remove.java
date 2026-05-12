@@ -24,7 +24,7 @@ public class Remove extends RevertableCommand {
         Product p = null;
         try {
             long id = Long.parseLong(getArgument());
-            p = getCollectionManager().deleteById(id);
+            p = getCollectionManager().deleteById(id, getUser());
             TrashBin.add(p);
 
             addToHistory();

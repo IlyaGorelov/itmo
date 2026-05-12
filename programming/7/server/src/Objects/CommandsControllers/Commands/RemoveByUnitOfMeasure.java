@@ -24,7 +24,7 @@ public class RemoveByUnitOfMeasure extends RevertableCommand {
 
                 UnitOfMeasure unit = getArgument() != null ? UnitOfMeasure.valueOf(getArgument().toUpperCase())
                         : null;
-                result = getCollectionManager().removeByUnitOfMeasure(unit);
+                result = getCollectionManager().removeByUnitOfMeasure(unit, getUser());
 
                 TrashBin.add(result);
                 addToHistory();

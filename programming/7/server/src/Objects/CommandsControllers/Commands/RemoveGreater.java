@@ -21,7 +21,7 @@ public class RemoveGreater extends RevertableCommand {
         checkArgument();
 
         try {
-            Product[] greaters = getCollectionManager().removeGreater((Product) getComplexArgument());
+            Product[] greaters = getCollectionManager().removeGreater((Product) getComplexArgument(), getUser());
 
             TrashBin.add(greaters);
             addToHistory();
