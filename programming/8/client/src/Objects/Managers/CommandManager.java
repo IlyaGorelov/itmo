@@ -1,0 +1,137 @@
+package Objects.Managers;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import Objects.CommandsControllers.Command;
+import Objects.CommandsControllers.Commands.*;
+import Objects.Connection.CustomPackage;
+
+/**
+ * controls command
+ */
+public class CommandManager {
+    /**
+     * map of command kind of name - Command
+     */
+    private static final HashMap<String, Command> commandMap = new HashMap<>();
+
+    private static Scanner reader;
+
+    /**
+     * Constructor that fill command map with available commands
+     *
+     * @param reader to get input
+     */
+    public CommandManager(Scanner reader, InputStream in, OutputStream out) {
+        CommandManager.reader = reader;
+
+        ArrayList<Command> commands = new ArrayList<>();
+        IdManager.setIO(in, out);
+
+        commands.add(new Register(false));
+        commands.add(new Login(false));
+        commands.add(new Help());
+        commands.add(new Exit());
+
+        for (Command command : commands) {
+            commandMap.put(command.getName(), command);
+            command.setScanner(reader);
+        }
+    }
+
+    public static void allowCommandsForAuthenticatedUsers() {
+        ArrayList<Command> commands = new ArrayList<>();
+        commands.add(new Info());
+        commands.add(new Show());
+        commands.add(new Add(false));
+        commands.add(new AddIfMax(false));
+        commands.add(new AddIfMin(false));
+        commands.add(new Update(true));
+        commands.add(new Remove(true));
+        commands.add(new Clear());
+        commands.add(new ExecuteScript(true));
+        commands.add(new RemoveGreater(false));
+        commands.add(new RemoveByUnitOfMeasure(true));
+        commands.add(new MinByUnit());
+        commands.add(new GreaterThanOwner(false));
+        commands.add(new Undo());
+        commands.add(new Redo());
+
+        for (Command command : commands) {
+            commandMap.put(command.getName(), command);
+            command.setScanner(reader);
+        }
+
+        commandMap.remove(new Register(false).getName());
+        commandMap.remove(new Login(false).getName());
+    }
+
+    public static HashMap<String, Command> getCommandMap() {
+        return commandMap;
+    }
+
+    public static CustomPackage getRelevantPackage(String commandName) {
+        try {
+            String[] commandWithArg = parseCommand(commandName);
+            Object relevantObject = null;
+
+            var command = commandMap.get(commandWithArg[0]);
+            var realArgs = Arrays.stream(commandWithArg).skip(1).toArray(String[]::new);
+
+            String simpleArg = Arrays.stream(realArgs).filter(x -> !isComplexArg(x)).findFirst().orElse(null);
+            String complexArg = Arrays.stream(realArgs).filter(CommandManager::isComplexArg).findFirst().orElse(null);
+
+            command.setArgument(simpleArg);
+            command.setComplexArgument(complexArg);
+
+            relevantObject = command.getRelevantObject();
+            return new CustomPackage(command.getName(), command.getArgument(), relevantObject, AuthManager.getInstance().getUser());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Unknown command");
+        }
+    }
+
+    public static String[] parseCommand(String input) {
+        List<String> parts = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("\\{[^}]*}|\\S+");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            String match = matcher.group();
+            parts.add(match);
+        }
+
+        return parts.toArray(new String[0]);
+    }
+
+    private static boolean isComplexArg(String arg) {
+        return arg.startsWith("{") && arg.endsWith("}");
+    }
+
+    public String getRelevantAnswer(Object[] answer) {
+        try {
+            StringBuilder relevant = new StringBuilder();
+
+            for (Object single : answer) {
+                CustomPackage pack = (CustomPackage) single;
+
+                var command = commandMap.get(pack.getCommand());
+
+                if (command == null) {
+                    relevant.append(pack.getObject()).append("\n");
+                    continue;
+                }
+                relevant.append(command.getRelevantAnswer(pack));
+            }
+
+            return relevant.toString();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Something went wrong while parsing command!");
+        }
+    }
+}
