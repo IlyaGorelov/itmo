@@ -1,9 +1,9 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
+import Commons.UserData.User;
 import Objects.CommandsControllers.AuthCommand;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.AuthManager;
-import Objects.UserData.User;
 
 public class Login extends AuthCommand {
 

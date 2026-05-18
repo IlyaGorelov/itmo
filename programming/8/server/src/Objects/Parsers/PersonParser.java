@@ -1,7 +1,7 @@
 package Objects.Parsers;
 
-import Objects.Collection.Location;
-import Objects.Collection.Person;
+import Commons.Collection.Location;
+import Commons.Collection.Person;
 import Objects.Enums.Country;
 import Objects.Enums.EyeColor;
 import Objects.Enums.HairColor;

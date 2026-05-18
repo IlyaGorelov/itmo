@@ -1,8 +1,8 @@
 package Objects.Validators;
 
-import java.util.Scanner;
+import Commons.Collection.Coordinates;
 
-import Objects.Collection.Coordinates;
+import java.util.Scanner;
 
 public class CoordinatesValidator extends Validator<Coordinates> {
 

@@ -1,12 +1,12 @@
 package Objects.Managers;
 
-import Objects.Collection.Person;
-import Objects.Collection.Product;
+import Commons.Collection.Person;
+import Commons.Collection.Product;
+import Commons.UserData.User;
 import Objects.Comparators.PersonComparator;
 import Objects.Comparators.ProductsComparator;
 import Objects.DAOs.ProductDAO;
 import Objects.Enums.UnitOfMeasure;
-import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

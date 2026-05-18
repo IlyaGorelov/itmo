@@ -1,8 +1,8 @@
 package Objects.CommandsControllers.Commands;
 
-import Objects.Collection.Product;
+import Commons.Collection.Product;
+import Commons.CustomPackage;
 import Objects.CommandsControllers.RevertableCommand;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /**

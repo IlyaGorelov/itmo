@@ -1,8 +1,8 @@
 package Objects.Validators;
 
-import java.util.Scanner;
+import Commons.Collection.Location;
 
-import Objects.Collection.Location;
+import java.util.Scanner;
 
 public class LocationValidator extends Validator<Location> {
 

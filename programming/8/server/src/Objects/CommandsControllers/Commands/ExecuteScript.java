@@ -1,13 +1,7 @@
 package Objects.CommandsControllers.Commands;
 
 import Objects.CommandsControllers.Command;
-import Objects.CommandsControllers.CommandBuffer;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
-
-import java.io.File;
-import java.io.FileReader;
-import java.util.Scanner;
 
 /**
  * execute commands from the script file
@@ -25,7 +19,6 @@ public class ExecuteScript extends Command {
     @Override
     public void execute() throws IllegalArgumentException {
         checkArgument();
-        return;
     }
 
     @Override

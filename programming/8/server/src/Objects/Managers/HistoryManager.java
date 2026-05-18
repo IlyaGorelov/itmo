@@ -1,7 +1,7 @@
 package Objects.Managers;
 
+import Commons.UserData.User;
 import Objects.CommandsControllers.History;
-import Objects.UserData.User;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

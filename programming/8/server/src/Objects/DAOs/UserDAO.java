@@ -1,8 +1,8 @@
 package Objects.DAOs;
 
+import Commons.UserData.User;
 import Objects.Helpers.PasswordHasher;
 import Objects.Managers.DBManager;
-import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

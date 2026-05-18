@@ -1,10 +1,10 @@
 package Objects.CommandsControllers;
 
-import Objects.Collection.Product;
-import Objects.Connection.CustomPackage;
+import Commons.Collection.Product;
+import Commons.CustomPackage;
+import Commons.UserData.User;
 import Objects.Connection.Receiver;
 import Objects.Managers.CollectionManager;
-import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 

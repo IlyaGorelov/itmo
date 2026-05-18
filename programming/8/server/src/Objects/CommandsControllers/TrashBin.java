@@ -1,6 +1,6 @@
 package Objects.CommandsControllers;
 
-import Objects.Collection.Product;
+import Commons.Collection.Product;
 
 import java.util.Deque;
 import java.util.LinkedList;

@@ -1,6 +1,6 @@
 package Objects.Parsers;
 
-import Objects.Collection.Location;
+import Commons.Collection.Location;
 import Objects.Managers.DBManager;
 import Objects.Validators.DoubleValidator;
 import Objects.Validators.IntegerValidator;

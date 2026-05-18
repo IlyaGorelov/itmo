@@ -1,6 +1,6 @@
 package Objects.CommandsControllers;
 
-import Objects.Connection.CustomPackage;
+import Commons.CustomPackage;
 
 import java.util.LinkedList;
 

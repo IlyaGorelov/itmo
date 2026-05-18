@@ -1,14 +1,16 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
 import Objects.CommandsControllers.Command;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
-/** show information about collection */
+/**
+ * show information about collection
+ */
 public class Info extends Command {
 
     public Info(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
-        super(collectionManager, hasArgument,hasComplexArg);
+        super(collectionManager, hasArgument, hasComplexArg);
     }
 
     public Info(CollectionManager collectionManager) {
@@ -17,9 +19,9 @@ public class Info extends Command {
 
     @Override
     public void execute() {
-            checkArgument();
-            CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getCollectionInfo());
-        answer(pkg,getCollectionManager().getCollectionInfo());
+        checkArgument();
+        CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getCollectionInfo());
+        answer(pkg, getCollectionManager().getCollectionInfo());
 
     }
 

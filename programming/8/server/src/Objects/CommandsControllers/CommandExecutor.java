@@ -1,11 +1,11 @@
 package Objects.CommandsControllers;
 
-import Objects.Connection.CustomPackage;
+import Commons.CustomPackage;
+import Commons.UserData.User;
 import Objects.Connection.Receiver;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
-import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 import java.util.NoSuchElementException;

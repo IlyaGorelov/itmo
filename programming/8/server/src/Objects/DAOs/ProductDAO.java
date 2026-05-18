@@ -1,9 +1,9 @@
 package Objects.DAOs;
 
-import Objects.Collection.Coordinates;
-import Objects.Collection.Location;
-import Objects.Collection.Person;
-import Objects.Collection.Product;
+import Commons.Collection.Coordinates;
+import Commons.Collection.Location;
+import Commons.Collection.Person;
+import Commons.Collection.Product;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.DBManager;
 import Objects.Parsers.ProductParser;

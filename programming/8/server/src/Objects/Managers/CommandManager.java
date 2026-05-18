@@ -1,11 +1,11 @@
 package Objects.Managers;
 
+import Commons.CustomPackage;
+import Commons.UserData.User;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.Commands.*;
-import Objects.Connection.CustomPackage;
 import Objects.Connection.Receiver;
-import Objects.UserData.User;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;

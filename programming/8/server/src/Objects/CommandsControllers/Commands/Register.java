@@ -1,9 +1,9 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
+import Commons.UserData.User;
 import Objects.CommandsControllers.AuthCommand;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.AuthManager;
-import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

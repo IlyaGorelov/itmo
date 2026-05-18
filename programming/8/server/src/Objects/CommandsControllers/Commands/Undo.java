@@ -1,9 +1,9 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.History;
 import Objects.CommandsControllers.RevertableCommand;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.HistoryManager;
 

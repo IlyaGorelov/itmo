@@ -1,13 +1,15 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
 import Objects.CommandsControllers.Command;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
-/** show any element where unit of measure is minimal */
+/**
+ * show any element where unit of measure is minimal
+ */
 public class MinByUnit extends Command {
-    public MinByUnit(CollectionManager collectionManager, boolean hasArgument,boolean hasComplexArg) {
-        super(collectionManager, hasArgument,hasComplexArg);
+    public MinByUnit(CollectionManager collectionManager, boolean hasArgument, boolean hasComplexArg) {
+        super(collectionManager, hasArgument, hasComplexArg);
     }
 
     public MinByUnit(CollectionManager collectionManager) {
@@ -20,10 +22,10 @@ public class MinByUnit extends Command {
         try {
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, getCollectionManager().getMinByUnitOfMeasure());
-            answer(pkg,getCollectionManager().getMinByUnitOfMeasure());
+            answer(pkg, getCollectionManager().getMinByUnitOfMeasure());
         } catch (Exception e) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, e);
-            answer(pkg,e.getMessage());
+            answer(pkg, e.getMessage());
         }
     }
 

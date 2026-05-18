@@ -1,9 +1,9 @@
 package Objects.CommandsControllers.Commands;
 
-import Objects.Collection.Product;
+import Commons.Collection.Product;
+import Commons.CustomPackage;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /**
@@ -56,7 +56,7 @@ public class Update extends RevertableCommand {
     @Override
     public void undo() {
         Product[] restoring = TrashBin.pop();
-        
+
         for (Product product : restoring) {
             Product previous = getCollectionManager().updateElement(product.getId(), product);
             CustomPackage pkg = new CustomPackage(new Update(null).getName(), getArgument(), previous);

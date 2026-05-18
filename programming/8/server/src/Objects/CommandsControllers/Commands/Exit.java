@@ -1,8 +1,8 @@
 package Objects.CommandsControllers.Commands;
 
+import Commons.CustomPackage;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandExecutor;
-import Objects.Connection.CustomPackage;
 import Objects.Managers.CollectionManager;
 
 /**

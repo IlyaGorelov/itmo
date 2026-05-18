@@ -1,7 +1,7 @@
 package Objects.Managers;
 
+import Commons.UserData.User;
 import Objects.DAOs.UserDAO;
-import Objects.UserData.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

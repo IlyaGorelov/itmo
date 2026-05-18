@@ -1,6 +1,6 @@
 package Objects.Comparators;
 
-import Objects.Collection.Person;
+import Commons.Collection.Person;
 
 import java.util.Comparator;
 

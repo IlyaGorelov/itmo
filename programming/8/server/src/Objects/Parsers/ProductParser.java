@@ -1,14 +1,14 @@
 package Objects.Parsers;
 
-import Objects.Collection.Coordinates;
-import Objects.Collection.Person;
-import Objects.Collection.Product;
+import Commons.Collection.Coordinates;
+import Commons.Collection.Person;
+import Commons.Collection.Product;
+import Commons.UserData.User;
 import Objects.Connection.Receiver;
 import Objects.DAOs.UserDAO;
 import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.DBManager;
 import Objects.Managers.IdManager;
-import Objects.UserData.User;
 import Objects.Validators.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
