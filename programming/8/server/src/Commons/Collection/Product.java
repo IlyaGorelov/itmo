@@ -1,7 +1,7 @@
 package Commons.Collection;
 
+import Commons.Enums.UnitOfMeasure;
 import Commons.UserData.User;
-import Objects.Enums.UnitOfMeasure;
 
 import java.io.Serializable;
 import java.util.Locale;

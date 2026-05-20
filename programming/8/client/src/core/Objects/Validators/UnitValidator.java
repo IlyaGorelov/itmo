@@ -2,7 +2,7 @@ package core.Objects.Validators;
 
 import java.util.Scanner;
 
-import core.Objects.Enums.UnitOfMeasure;
+import Commons.Enums.UnitOfMeasure;
 
 public class UnitValidator extends Validator<UnitOfMeasure> {
 

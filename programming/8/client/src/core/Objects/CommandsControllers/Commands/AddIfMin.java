@@ -7,6 +7,8 @@ import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
 import Commons.CustomPackage;
 import core.Objects.Parsers.ProductParser;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /** Adds element to a collection if this element gonna be max */
 public class AddIfMin extends Command implements CommandWithComplexArg, AuthChecker {
@@ -15,6 +17,9 @@ public class AddIfMin extends Command implements CommandWithComplexArg, AuthChec
         super(hasArgument);
     }
 
+    public AddIfMin() {
+        super();
+    }
 
     @Override
     public Object getRelevantObject() {
@@ -47,10 +52,16 @@ public class AddIfMin extends Command implements CommandWithComplexArg, AuthChec
     public String getRelevantAnswer(CustomPackage pack) {
         Product product = (Product) pack.getObject();
 
-        if (product != null)
-            return "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
-        else
-            return "Element wasn't added as it's not min" + "\n";
+        if (product != null) {
+            String answer = "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
+            ResultDialog.showSuccess(getName(),answer);
+            TablePanel.fetchProductsAsync();
+            return answer;
+        }else {
+            String answer = "Element wasn't added as it's not min" + "\n";
+            ResultDialog.showInfo(getName(),answer);
+            return answer;
+        }
     }
 
     @Override

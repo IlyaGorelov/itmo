@@ -1,6 +1,6 @@
 package Objects.Validators;
 
-import Objects.Enums.UnitOfMeasure;
+import Commons.Enums.UnitOfMeasure;
 
 import java.util.Scanner;
 

@@ -1,6 +1,6 @@
 package Objects.Validators;
 
-import Objects.Enums.HairColor;
+import Commons.Enums.HairColor;
 
 import java.util.Scanner;
 

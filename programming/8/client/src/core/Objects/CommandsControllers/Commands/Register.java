@@ -7,6 +7,7 @@ import core.Objects.Connection.Client;
 import core.Objects.Managers.AuthManager;
 import core.Objects.Managers.CommandManager;
 import Commons.UserData.User;
+import gui.Objects.Elements.Commons.ResultDialog;
 import gui.Objects.Frames.MainFrame;
 import gui.Objects.Helpers.ErrorMessageDeliverer;
 
@@ -54,7 +55,8 @@ public class Register extends Command {
             return result;
         }
         else {
-            ErrorMessageDeliverer.add(new RuntimeException(object.toString()), ErrorMessageDeliverer.response);
+          //  ErrorMessageDeliverer.add(new RuntimeException(object.toString()), ErrorMessageDeliverer.response);
+            ResultDialog.showError(getName(),object.toString());
             return object.toString() + "\n";
         }
     }

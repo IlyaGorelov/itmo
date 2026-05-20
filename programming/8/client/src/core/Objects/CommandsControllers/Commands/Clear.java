@@ -3,6 +3,8 @@ package core.Objects.CommandsControllers.Commands;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /** removes all elements from the collection */
 public class Clear extends Command implements AuthChecker {
@@ -32,12 +34,17 @@ public class Clear extends Command implements AuthChecker {
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = pack.getObject();
 
-        if (object instanceof Exception)
+        if (object instanceof Exception) {
+            ResultDialog.showError(this.getName(),"Collection wasn't cleared as " + object.toString() + "\n");
             return "Collection wasn't cleared as " + object.toString() + "\n";
+        };
 
         Object[] productObjects = (Object[]) object;
 
-        return "Deleted "+productObjects.length+" elements";
+        String answer = "Deleted "+productObjects.length+" elements";
+        ResultDialog.showSuccess(this.getName(),answer);
+        TablePanel.fetchProductsAsync();
+        return answer;
     }
 
 }

@@ -2,7 +2,7 @@ package core.Objects.Validators;
 
 import java.util.Scanner;
 
-import core.Objects.Enums.Country;
+import Commons.Enums.Country;
 
 public class CountryValidator extends Validator<Country> {
 

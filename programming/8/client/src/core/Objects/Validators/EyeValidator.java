@@ -2,7 +2,7 @@ package core.Objects.Validators;
 
 import java.util.Scanner;
 
-import core.Objects.Enums.EyeColor;
+import Commons.Enums.EyeColor;
 
 public class EyeValidator extends Validator<EyeColor> {
 

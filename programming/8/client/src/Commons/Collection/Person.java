@@ -3,9 +3,9 @@ package Commons.Collection;
 import java.io.Serializable;
 import java.util.Locale;
 
-import core.Objects.Enums.Country;
-import core.Objects.Enums.EyeColor;
-import core.Objects.Enums.HairColor;
+import Commons.Enums.Country;
+import Commons.Enums.EyeColor;
+import Commons.Enums.HairColor;
 
 /** Class representing Person */
 public class Person implements Comparable<Person>, Serializable,Cloneable {

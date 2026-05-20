@@ -1,5 +1,7 @@
 package core.Objects.Validators;
 
+import gui.Objects.Helpers.ErrorMessageDeliverer;
+
 import java.util.Scanner;
 
 public class HeightValidator extends Validator<Float> {
@@ -17,10 +19,12 @@ public class HeightValidator extends Validator<Float> {
                 if (canBeNull)
                     return true;
                 else {
+                    ErrorMessageDeliverer.add(new IllegalArgumentException("Fields is required"));
                     System.out.println(e.getMessage());
                     return false;
                 }
             }
+            ErrorMessageDeliverer.add(new IllegalArgumentException("Invalid number format | " + e.getMessage()));
             System.out.println(e.getMessage());
             return false;
         }

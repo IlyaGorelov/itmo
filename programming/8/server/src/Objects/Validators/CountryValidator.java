@@ -1,6 +1,6 @@
 package Objects.Validators;
 
-import Objects.Enums.Country;
+import Commons.Enums.Country;
 
 import java.util.Scanner;
 

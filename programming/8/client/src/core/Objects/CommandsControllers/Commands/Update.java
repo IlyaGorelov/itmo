@@ -10,6 +10,8 @@ import core.Objects.Managers.AuthManager;
 import core.Objects.Managers.IdManager;
 import core.Objects.Parsers.ProductParser;
 import core.Objects.Validators.*;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /**
  * update an element
@@ -18,6 +20,10 @@ public class Update extends Command implements CommandWithComplexArg, AuthChecke
 
     public Update(boolean hasArgument) {
         super(hasArgument);
+    }
+
+    public Update() {
+        super();
     }
 
     @Override
@@ -59,6 +65,9 @@ public class Update extends Command implements CommandWithComplexArg, AuthChecke
     public String getRelevantAnswer(CustomPackage pack) {
         Product product = (Product) pack.getObject();
         String relevant = "Element was succesfully updated with id " + product.getId() + "\n";
+
+        ResultDialog.showSuccess(this.getName(),relevant);
+        TablePanel.fetchProductsAsync();
 
         return relevant.trim();
     }

@@ -18,6 +18,10 @@ public class RemoveGreater extends Command implements CommandWithComplexArg , Au
         super(hasArgument);
     }
 
+    public RemoveGreater() {
+        super();
+    }
+
     @Override
     public String getName() {
         return "remove_greater";

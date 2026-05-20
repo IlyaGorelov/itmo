@@ -4,7 +4,7 @@ import Commons.Collection.Coordinates;
 import Commons.Collection.Location;
 import Commons.Collection.Person;
 import Commons.Collection.Product;
-import Objects.Enums.UnitOfMeasure;
+import Commons.Enums.UnitOfMeasure;
 import Objects.Managers.DBManager;
 import Objects.Parsers.ProductParser;
 import org.slf4j.Logger;

@@ -4,6 +4,7 @@ import Commons.CustomPackage;
 import core.Objects.CommandsControllers.Commands.Login;
 import core.Objects.CommandsControllers.Commands.Logout;
 import core.Objects.Connection.Client;
+import core.Objects.Managers.AuthManager;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Commons.RoundedPanel;
@@ -20,14 +21,14 @@ public class UserPanel extends JPanel {
 
         RoundedPanel panel = new RoundedPanel(25, Color.WHITE);
         panel.setLayout(new BorderLayout());
-        panel.setPreferredSize(new Dimension(400, 70));
+        panel.setPreferredSize(new Dimension(300, 70));
 
         JPanel userPart = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         userPart.setOpaque(false);
         userPart.setBorder(new EmptyBorder(0, 10, 0, 0));
 
         JLabel avatar = new JLabel(new AvatarIcon(50, App.TEXT_GRAY));
-        JLabel username = new JLabel("User111123213");
+        JLabel username = new JLabel(AuthManager.getInstance().getUser().getLogin());
         username.setFont(new Font("Arial", Font.PLAIN, 22));
         username.setForeground(App.TEXT_PURPLE);
 

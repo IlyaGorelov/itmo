@@ -3,7 +3,7 @@ package core.Objects.Builders;
 import Commons.Collection.Coordinates;
 import Commons.Collection.Person;
 import Commons.Collection.Product;
-import core.Objects.Enums.UnitOfMeasure;
+import Commons.Enums.UnitOfMeasure;
 import core.Objects.Managers.AuthManager;
 import core.Objects.Validators.*;
 

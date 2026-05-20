@@ -1,7 +1,7 @@
 package core.Objects.Parsers;
 
 import Commons.Collection.*;
-import core.Objects.Enums.UnitOfMeasure;
+import Commons.Enums.UnitOfMeasure;
 import core.Objects.Managers.AuthManager;
 import core.Objects.Validators.*;
 

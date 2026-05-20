@@ -24,9 +24,10 @@ import core.Objects.CommandsControllers.Commands.Exit;
 import core.Objects.CommandsControllers.Commands.Help;
 import core.Objects.CommandsControllers.Commands.Logout;
 import core.Objects.Managers.CommandManager;
+import gui.Objects.Elements.Commons.ResultDialog;
 import gui.Objects.Frames.ConnectingFrame;
 import gui.Objects.Frames.LoginFrame;
-import gui.Objects.Frames.MainFrame;
+import gui.Objects.Helpers.ErrorMessageDeliverer;
 
 import javax.swing.*;
 
@@ -39,7 +40,7 @@ public class Client {
     InputStream in;
     OutputStream out;
 
-    DataInputStream dis;
+    static DataInputStream dis;
     DataOutputStream dos;
 
     Scanner scanner;
@@ -53,6 +54,7 @@ public class Client {
     }
 
     private static final BlockingQueue<CustomPackage> guiCommands = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<CustomPackage> guiAnswers = new LinkedBlockingQueue<>();
 
     private void initializeIO(Socket socket) throws IOException {
         in = socket.getInputStream();
@@ -98,7 +100,7 @@ public class Client {
         int retry = 0;
         int delay = 1000;
 
-        while (retry < MAX_RETRY+1) {
+        while (retry < MAX_RETRY + 1) {
             try {
                 Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), CONNECT_TIMEOUT);
@@ -115,7 +117,7 @@ public class Client {
 
     }
 
-    public static void openFrame(JFrame newFrame){
+    public static void openFrame(JFrame newFrame) {
         for (Frame frame : Frame.getFrames()) {
             frame.dispose();
         }
@@ -149,7 +151,7 @@ public class Client {
                 sendRequest(customPackage);
 
                 System.out.println();
-                System.out.println(getAnswer());
+                System.out.println(getStringAnswer());
             }
             socket.close();
             System.out.println("Closing connections & channels on clentSide - DONE.");
@@ -163,7 +165,7 @@ public class Client {
         }
     }
 
-    private CustomPackage getCustomPackage() throws InterruptedException,IOException,ClassNotFoundException {
+    private CustomPackage getCustomPackage() throws InterruptedException, IOException, ClassNotFoundException {
         CustomPackage clientCommand = new CustomPackage("", null, null);
 
         switch (mode) {
@@ -185,11 +187,10 @@ public class Client {
 
     }
 
-    private CustomPackage waitCommandFromGUI() throws InterruptedException,IOException,ClassNotFoundException {
+    private CustomPackage waitCommandFromGUI() throws InterruptedException, IOException, ClassNotFoundException {
         CustomPackage customPackage = guiCommands.take();
-        if(isClientOnlyCommand(customPackage))
-        {
-            return new CustomPackage(customPackage.getCommand(),null,CommandManager.getRelevantPackage(customPackage).getObject());
+        if (isClientOnlyCommand(customPackage)) {
+            return new CustomPackage(customPackage.getCommand(), null, CommandManager.getRelevantPackage(customPackage).getObject());
         }
         return customPackage;
     }
@@ -197,6 +198,14 @@ public class Client {
     public static void putCommand(CustomPackage c) {
         try {
             guiCommands.put(c);
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void putAnswer(CustomPackage c) {
+        try {
+            guiAnswers.put(c);
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
@@ -216,7 +225,7 @@ public class Client {
         dos.flush();
     }
 
-    private String getAnswer() throws IOException, ClassNotFoundException {
+    private String getStringAnswer() throws IOException, ClassNotFoundException {
         int answerLength = dis.readInt();
         byte[] answerBytes = new byte[answerLength];
 
@@ -230,11 +239,20 @@ public class Client {
         return commandManager.getRelevantAnswer(answer);
     }
 
+    public static CustomPackage getAnswer() {
+        try {
+            return guiAnswers.take();
+        } catch (InterruptedException e) {
+            ResultDialog.showError("All commands",e.getMessage());
+            return null;
+        }
+    }
+
     private boolean isExitCommand(CustomPackage pkg) throws IOException, ClassNotFoundException {
         if (pkg.getCommand().equals(new Exit().getName())) {
             sendRequest(pkg);
 
-            System.out.println(getAnswer());
+            System.out.println(getStringAnswer());
             return true;
         }
         return false;
@@ -251,7 +269,7 @@ public class Client {
                 CustomPackage singlePkg = (CustomPackage) pkgObject;
 
                 sendRequest(singlePkg);
-                System.out.println(getAnswer());
+                System.out.println(getStringAnswer());
             }
             return true;
         }

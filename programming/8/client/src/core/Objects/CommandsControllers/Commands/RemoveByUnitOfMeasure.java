@@ -11,6 +11,10 @@ public class RemoveByUnitOfMeasure extends Command implements AuthChecker {
         super(hasArgument);
     }
 
+    public RemoveByUnitOfMeasure() {
+        super();
+    }
+
     @Override
     public String getName() {
         return "remove_all_by_unit";

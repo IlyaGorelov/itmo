@@ -7,12 +7,18 @@ import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
 import Commons.CustomPackage;
 import core.Objects.Parsers.ProductParser;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /** Adds element to a collection if this element gonna be max */
 public class AddIfMax extends Command implements CommandWithComplexArg, AuthChecker {
 
     public AddIfMax(boolean hasArgument) {
         super(hasArgument);
+    }
+
+    public AddIfMax() {
+        super();
     }
 
     @Override
@@ -45,10 +51,16 @@ public class AddIfMax extends Command implements CommandWithComplexArg, AuthChec
     public String getRelevantAnswer(CustomPackage pack) {
         Product product = (Product) pack.getObject();
 
-        if (product != null)
-            return "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
-        else
-            return "Element wasn't added as it's not max" + "\n";
+        if (product != null) {
+            String answer = "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
+            ResultDialog.showSuccess(getName(),answer);
+            TablePanel.fetchProductsAsync();
+            return answer;
+        }else {
+            String answer = "Element wasn't added as it's not max" + "\n";
+            ResultDialog.showInfo(getName(),answer);
+            return answer;
+        }
 
     }
 

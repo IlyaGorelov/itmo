@@ -2,9 +2,9 @@ package Objects.CommandsControllers.Commands;
 
 import Commons.Collection.Product;
 import Commons.CustomPackage;
+import Commons.Enums.UnitOfMeasure;
 import Objects.CommandsControllers.RevertableCommand;
 import Objects.CommandsControllers.TrashBin;
-import Objects.Enums.UnitOfMeasure;
 import Objects.Managers.CollectionManager;
 import Objects.Validators.UnitValidator;
 

@@ -9,11 +9,14 @@ import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
 import core.Objects.Managers.CommandManager;
+import gui.Objects.Elements.Commons.ResultDialog;
 
 /**
  * execute commands from the script file
  */
 public class ExecuteScript extends Command implements AuthChecker {
+
+    String infoText;
 
     public ExecuteScript(boolean hasArgument) {
         super(hasArgument);
@@ -46,11 +49,13 @@ public class ExecuteScript extends Command implements AuthChecker {
     public Object getRelevantObject() {
         checkArgument();
         checkAuth();
+        infoText="";
         try {
             File script = new File(getArgument());
             Scanner scanner = new Scanner(script);
             ArrayList<CustomPackage> pkgs = new ArrayList<>();
 
+            infoText+="Reading script: " + script.getPath();
             System.out.println("Reading script: " + script.getPath());
 
             while (scanner.hasNext()) {
@@ -61,8 +66,10 @@ public class ExecuteScript extends Command implements AuthChecker {
                     addPkgToPkgs(pkg,pkgs);
                 }
             }
+            ResultDialog.showInfo(this.getName(),infoText);
             return pkgs.toArray(new CustomPackage[1]);
         } catch (FileNotFoundException e) {
+            ResultDialog.showError(this.getName(),"File not found");
             throw new IllegalArgumentException("File not found");
         }
     }
@@ -76,9 +83,11 @@ public class ExecuteScript extends Command implements AuthChecker {
 
             File subScript = new File(pathToSubScript);
 
+            infoText+="Recursive reference detected: " + line.trim() + "\nSkipping line\n";
             System.out.println("Recursive reference detected: " + line.trim() + "\nSkipping line\n");
             return !script.equals(subScript);
         }
+        infoText+="Adding new command: " + line.trim();
         System.out.println("Adding new command: " + line.trim());
         return true;
     }

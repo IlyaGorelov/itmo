@@ -1,19 +1,21 @@
 package Commons.Collection;
 
+import Commons.Enums.UnitOfMeasure;
+import Commons.UserData.User;
+
 import java.io.Serializable;
 import java.util.Locale;
 
-import core.Objects.Enums.UnitOfMeasure;
-import Commons.UserData.User;
-
-/** Class representing a Product - element of the collection */
-public class Product implements Comparable<Product>, Serializable,Cloneable {
+/**
+ * Class representing a Product - element of the collection
+ */
+public class Product implements Comparable<Product>, Serializable, Cloneable {
     private long id; // Значение поля должно быть больше 0, Значение этого поля должно быть
-                     // уникальным, Значение этого поля должно генерироваться автоматически
+    // уникальным, Значение этого поля должно генерироваться автоматически
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; // Поле не может быть null
     private java.util.Date creationDate; // Поле не может быть null, Значение этого поля должно генерироваться
-                                         // автоматически
+    // автоматически
     private Double price; // Поле может быть null, Значение поля должно быть больше 0
     private Integer manufactureCost; // Поле не может быть null
     private UnitOfMeasure unitOfMeasure; // Поле может быть null
@@ -21,7 +23,7 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
     private final User author;
 
     public Product(long id, String name, Coordinates coordinates, java.util.Date creationDate,
-            Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, User author) {
+                   Double price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, User author) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -30,7 +32,7 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
         this.manufactureCost = manufactureCost;
         this.unitOfMeasure = unitOfMeasure;
         this.owner = owner;
-        this.author=author;
+        this.author = author;
     }
 
     public static int getCountOfEditableFields(boolean includeCreationDate) {
@@ -102,16 +104,16 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
         this.owner = owner;
     }
 
-    public User getAuthor(){
+    public User getAuthor() {
         return author;
     }
 
     /**
      * compares with other Coordinates
-     * 
+     *
      * @param o other coordinates
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Product o) {
@@ -129,12 +131,12 @@ public class Product implements Comparable<Product>, Serializable,Cloneable {
             return String.format(
                     "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: \n%s\nAuthor: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner),author.getLogin());
+                    unitOfMeasure, owner, author.getLogin());
         else
             return String.format(
                     "ID: %d\nName: %s\nCoordinates: %s\nCreation Date: %s\nPrice: %.4f\nManufacture Cost: %d\nUnit of Measure: %s\nOwner: %s\nAuthor: %s",
                     id, name, coordinates.toString(), creationDate.toString(), price, manufactureCost,
-                    String.valueOf(unitOfMeasure), String.valueOf(owner),author.getLogin());
+                    unitOfMeasure, owner, author.getLogin());
     }
 
     public String getFuncString(boolean askForId) {

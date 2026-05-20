@@ -1,5 +1,7 @@
 package core.Objects.Validators;
 
+import gui.Objects.Helpers.ErrorMessageDeliverer;
+
 import java.util.Scanner;
 
 public class IntegerValidator extends Validator<Integer> {
@@ -14,13 +16,16 @@ public class IntegerValidator extends Validator<Integer> {
                 if (canBeNull)
                     return true;
                 else {
+                    ErrorMessageDeliverer.add(new IllegalArgumentException("Field is required"));
                     System.out.println("Invalid number format | " + e.getMessage());
                     return false;
                 }
             }
+            ErrorMessageDeliverer.add(new IllegalArgumentException("Invalid number format | " + e.getMessage()));
             System.out.println("Invalid number format | " + e.getMessage());
             return false;
         } catch (Exception e) {
+            ErrorMessageDeliverer.add(e);
             System.out.println(e.getMessage());
             return false;
         }

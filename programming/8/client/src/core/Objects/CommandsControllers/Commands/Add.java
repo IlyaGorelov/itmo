@@ -7,6 +7,8 @@ import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
 import Commons.CustomPackage;
 import core.Objects.Parsers.ProductParser;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /**
  * Adds an element to the collection
@@ -15,6 +17,10 @@ public class Add extends Command implements CommandWithComplexArg, AuthChecker {
 
     public Add(boolean hasArgument) {
         super(hasArgument);
+    }
+
+    public Add() {
+        super();
     }
 
     @Override
@@ -42,10 +48,15 @@ public class Add extends Command implements CommandWithComplexArg, AuthChecker {
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = pack.getObject();
 
-        if (object instanceof Product)
-            return "Element with name \"" + ((Product) object).getName() + "\" was succesfully added" + "\n";
-        else
+        if (object instanceof Product) {
+            String answer = "Element with name \"" + ((Product) object).getName() + "\" was succesfully added" + "\n";
+            ResultDialog.showSuccess(getName(),answer);
+            TablePanel.fetchProductsAsync();
+            return answer;
+        } else {
+            ResultDialog.showError(getName(),object.toString());
             return object.toString() + "\n";
+        }
     }
 
     @Override
@@ -57,8 +68,9 @@ public class Add extends Command implements CommandWithComplexArg, AuthChecker {
     public Object tryGetObjectViaComplexArg() {
         ProductParser productParser = new ProductParser();
         try {
-            if (getComplexArgument() != null)
+            if (getComplexArgument() != null) {
                 return productParser.parse(getComplexArgument());
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid command format, use:\n\tadd {Name(String);X(int);Y(double>-990);Price(double>0 | null);Man Cost(int);unit of measure | null;Owner name(String) | null;Height(float>0);eye color | null;hair color;country;location x|null;loc y;loc z;loc name}");
         }

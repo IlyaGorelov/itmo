@@ -2,7 +2,7 @@ package core.Objects.Validators;
 
 import java.util.Scanner;
 
-import core.Objects.Enums.HairColor;
+import Commons.Enums.HairColor;
 
 public class HairValidator extends Validator<HairColor> {
 

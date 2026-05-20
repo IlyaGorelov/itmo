@@ -17,7 +17,7 @@ public class StringValidator extends Validator<String> {
             }
             return true;
         } catch (Exception e) {
-            ErrorMessageDeliverer.add(e,ErrorMessageDeliverer.validation);
+            ErrorMessageDeliverer.add(e);
             System.out.println(e.getMessage());
             return false;
         }

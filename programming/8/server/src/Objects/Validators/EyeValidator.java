@@ -1,6 +1,6 @@
 package Objects.Validators;
 
-import Objects.Enums.EyeColor;
+import Commons.Enums.EyeColor;
 
 import java.util.Scanner;
 

@@ -1,8 +1,8 @@
 package Commons.Collection;
 
-import Objects.Enums.Country;
-import Objects.Enums.EyeColor;
-import Objects.Enums.HairColor;
+import Commons.Enums.Country;
+import Commons.Enums.EyeColor;
+import Commons.Enums.HairColor;
 
 import java.io.Serializable;
 import java.util.Locale;

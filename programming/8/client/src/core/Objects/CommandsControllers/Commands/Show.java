@@ -3,6 +3,7 @@ package core.Objects.CommandsControllers.Commands;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
+import core.Objects.Connection.Client;
 
 /*Show all elements of collection */
 public class Show extends Command implements AuthChecker {
@@ -37,6 +38,8 @@ public class Show extends Command implements AuthChecker {
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
         Object[] products = (Object[]) pack.getObject();
+        Client.putAnswer(pack);
+
         String relevant = "All elements of collection: \n";
 
         if (products.length == 0)

@@ -166,13 +166,13 @@ public class FormPanel extends JPanel {
             String login = loginField.getText();
             fieldToBeChecked = InputType.login;
             if (!(new StringValidator().isValid(login, false))) {
-                showError(ErrorMessageDeliverer.poll(ErrorMessageDeliverer.validation));
+                showError(ErrorMessageDeliverer.poll());
             }
 
             String password = new String(passwordField.getPassword());
             fieldToBeChecked = InputType.password;
             if (!(new PasswordValidator().isValid(password, false))) {
-                showError(ErrorMessageDeliverer.poll(ErrorMessageDeliverer.validation));
+                showError(ErrorMessageDeliverer.poll());
                 return;
             }
 
@@ -260,7 +260,7 @@ public class FormPanel extends JPanel {
 
     private void startErrorListener() {
         Timer timer = new Timer(100, e -> {
-            String error = ErrorMessageDeliverer.poll(ErrorMessageDeliverer.response);
+            String error = ErrorMessageDeliverer.poll();
 
             if (error != null) {
                 showError(error);

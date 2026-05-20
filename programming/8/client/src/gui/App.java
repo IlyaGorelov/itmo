@@ -9,7 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class App {
-    // make add,update,remove menus
+    //make all commands
+    //fix several responses inform
     // make visualizations
 
 
@@ -23,9 +24,9 @@ public class App {
     private static final int PORT = 1234;
 
     public static void main(String[] args) throws Exception {
-        new MainFrame().setVisible(true);
-//        Client client = new Client();
-//        client.connect(HOST, PORT, Client.Mode.GUI);
+//        new MainFrame().setVisible(true);
+        Client client = new Client();
+        client.connect(HOST, PORT, Client.Mode.GUI);
 
 
     }

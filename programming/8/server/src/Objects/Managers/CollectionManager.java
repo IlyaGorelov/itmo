@@ -2,11 +2,11 @@ package Objects.Managers;
 
 import Commons.Collection.Person;
 import Commons.Collection.Product;
+import Commons.Enums.UnitOfMeasure;
 import Commons.UserData.User;
 import Objects.Comparators.PersonComparator;
 import Objects.Comparators.ProductsComparator;
 import Objects.DAOs.ProductDAO;
-import Objects.Enums.UnitOfMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,9 +2,9 @@ package core.Objects.Builders;
 
 import Commons.Collection.Location;
 import Commons.Collection.Person;
-import core.Objects.Enums.Country;
-import core.Objects.Enums.EyeColor;
-import core.Objects.Enums.HairColor;
+import Commons.Enums.Country;
+import Commons.Enums.EyeColor;
+import Commons.Enums.HairColor;
 import core.Objects.Validators.*;
 
 import java.util.Scanner;

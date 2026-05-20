@@ -2,6 +2,7 @@ package gui.Objects.Elements.Main;
 
 import gui.App;
 import gui.Objects.Elements.Commons.LanguagePanel;
+import gui.Objects.Elements.Main.TableTab.ContentPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

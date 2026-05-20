@@ -21,7 +21,7 @@ public class PasswordValidator extends Validator<String> {
                 throw new IllegalArgumentException("Password length must be at least 8");
             return true;
         } catch (Exception e) {
-            ErrorMessageDeliverer.add(e,ErrorMessageDeliverer.validation);
+            ErrorMessageDeliverer.add(e);
             System.out.println(e.getMessage());
             return false;
         }

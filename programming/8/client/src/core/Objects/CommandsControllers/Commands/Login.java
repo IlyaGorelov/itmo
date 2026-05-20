@@ -7,6 +7,7 @@ import core.Objects.Connection.Client;
 import core.Objects.Managers.AuthManager;
 import core.Objects.Managers.CommandManager;
 import Commons.UserData.User;
+import gui.Objects.Elements.Commons.ResultDialog;
 import gui.Objects.Frames.MainFrame;
 import gui.Objects.Helpers.ErrorMessageDeliverer;
 
@@ -44,7 +45,8 @@ public class Login extends Command {
         String result="";
 
         if(object==null) {
-            ErrorMessageDeliverer.add(new IllegalArgumentException("Wrong login or password!"),ErrorMessageDeliverer.response);
+           // ErrorMessageDeliverer.add(new IllegalArgumentException("Wrong login or password!"),ErrorMessageDeliverer.response);
+            ResultDialog.showError(getName(),"Wrong login or password!");
             return "Wrong login or password!";
         }
 

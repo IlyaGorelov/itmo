@@ -2,9 +2,9 @@ package Objects.Parsers;
 
 import Commons.Collection.Location;
 import Commons.Collection.Person;
-import Objects.Enums.Country;
-import Objects.Enums.EyeColor;
-import Objects.Enums.HairColor;
+import Commons.Enums.Country;
+import Commons.Enums.EyeColor;
+import Commons.Enums.HairColor;
 import Objects.Managers.DBManager;
 import Objects.Validators.CountryValidator;
 import Objects.Validators.EyeValidator;

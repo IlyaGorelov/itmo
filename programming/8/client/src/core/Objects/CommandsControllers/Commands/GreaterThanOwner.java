@@ -5,9 +5,9 @@ import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
 import Commons.CustomPackage;
-import core.Objects.Enums.Country;
-import core.Objects.Enums.EyeColor;
-import core.Objects.Enums.HairColor;
+import Commons.Enums.Country;
+import Commons.Enums.EyeColor;
+import Commons.Enums.HairColor;
 import core.Objects.Parsers.PersonParser;
 import core.Objects.Validators.*;
 
@@ -17,6 +17,10 @@ import core.Objects.Validators.*;
 public class GreaterThanOwner extends Command implements CommandWithComplexArg, AuthChecker {
     public GreaterThanOwner(boolean hasArgument) {
         super(hasArgument);
+    }
+
+    public GreaterThanOwner() {
+        super();
     }
 
     @Override
