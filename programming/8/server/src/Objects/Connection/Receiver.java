@@ -1,8 +1,10 @@
 package Objects.Connection;
 
+import Commons.Collection.Product;
 import Commons.CustomPackage;
 import Commons.UserData.User;
 import Objects.CommandsControllers.CommandExecutor;
+import Objects.CommandsControllers.Commands.CollectionUpdated;
 import Objects.Managers.CLIManager;
 import Objects.Managers.HistoryManager;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class Receiver {
     private final Map<SocketChannel, Queue<CustomPackage>> requests = new ConcurrentHashMap<>();
     private final Map<SocketChannel, Queue<CustomPackage>> answers = new ConcurrentHashMap<>();
     private final Set<SocketChannel> processingClients = ConcurrentHashMap.newKeySet();
+    private final Set<SocketChannel> clients = new HashSet<>();
 
     private final CommandExecutor commandExecutor;
 
@@ -110,6 +113,8 @@ public class Receiver {
         SocketChannel clientChannel = serverChannel.accept();
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ);
+
+        clients.add(clientChannel);
 
         buffers.put(clientChannel, ByteBuffer.allocate(4096));
         answers.put(clientChannel, new ConcurrentLinkedQueue<>());
@@ -260,6 +265,7 @@ public class Receiver {
 
     public void closeClient(SocketChannel client) {
         try {
+            clients.remove(client);
             answers.remove(client);
             requests.remove(client);
             buffers.remove(client);
@@ -304,6 +310,26 @@ public class Receiver {
         synchronized (key) {
             if (key.isValid()) {
                 key.interestOps(key.interestOps() | ops);
+            }
+        }
+
+        selector.wakeup();
+    }
+
+    public void broadcastCollectionUpdate(Product[] products) {
+        CustomPackage updatePackage = new CustomPackage(
+                new CollectionUpdated().getName(),
+                null,
+                products
+        );
+
+        for (SocketChannel client : clients) {
+            addToAnswer(client, updatePackage);
+
+            SelectionKey key = client.keyFor(selector);
+
+            if (key != null && key.isValid()) {
+                key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
             }
         }
 

@@ -1,16 +1,16 @@
 package gui.Objects.Elements.Main.TableTab.Dialogs;
 
+import Commons.Enums.UnitOfMeasure;
+import Localization.EnumI18n;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Main.CustomComboBox;
+import Localization.I18n;
 
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.geom.RoundRectangle2D;
 
 public class RemoveAllByUnitDialog extends JDialog {
 
@@ -19,7 +19,7 @@ public class RemoveAllByUnitDialog extends JDialog {
     private boolean confirmed = false;
 
     public RemoveAllByUnitDialog() {
-        super(null, "Remove all by unit", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("dialog.remove.by.unit.title"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -59,18 +59,17 @@ public class RemoveAllByUnitDialog extends JDialog {
         int row = 0;
 
         unitBox = new CustomComboBox(new String[]{
-                "",
-                "KILOGRAMS",
-                "METERS",
-                "LITERS",
-                "MILLILITERS"
+                EnumI18n.unitOfMeasure(UnitOfMeasure.KILOGRAMS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.METERS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.LITERS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.MILLILITERS)
         });
 
         gbc.gridx = 0;
         gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 8, 0);
-        content.add(createFieldBlock("Unit Of Measure", unitBox), gbc);
+        content.add(createFieldBlock(I18n.get("product.unit.inline"), unitBox), gbc);
 
         errorLabel = new JLabel(" ");
         errorLabel.setFont(new Font("Arial", Font.ITALIC, 15));
@@ -85,8 +84,8 @@ public class RemoveAllByUnitDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton cancelButton = createSecondaryButton("Cancel");
-        JButton removeButton = createRemoveButton("Remove all");
+        JButton cancelButton = createSecondaryButton(I18n.get("dialog.cancel"));
+        JButton removeButton = createRemoveButton(I18n.get("remove"));
 
         cancelButton.addActionListener(e -> dispose());
         removeButton.addActionListener(this::removeAll);
@@ -109,7 +108,7 @@ public class RemoveAllByUnitDialog extends JDialog {
         String unit = getUnitOfMeasure();
 
         if (unit.isEmpty()) {
-            errorLabel.setText("Unit Of Measure is required.");
+            errorLabel.setText(I18n.get("error.unit"));
             return;
         }
 

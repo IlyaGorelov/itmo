@@ -1,6 +1,7 @@
 package core.Objects.Validators;
 
 import gui.Objects.Helpers.ErrorMessageDeliverer;
+import Localization.I18n;
 
 import java.util.Scanner;
 
@@ -12,7 +13,7 @@ public class StringValidator extends Validator<String> {
                 if (canBeNull)
                     return true;
                 else {
-                    throw new IllegalArgumentException("It can't be null");
+                    throw new IllegalArgumentException(I18n.get("error.name"));
                 }
             }
             return true;

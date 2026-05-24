@@ -7,11 +7,10 @@ import gui.Objects.Frames.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ResourceBundle;
 
 public class App {
-    //make all commands
-    //fix several responses inform
-    // make visualizations
+    //make number format, add all langs
 
 
     public static final Color BACKGROUND = Color.decode("#7E4286");

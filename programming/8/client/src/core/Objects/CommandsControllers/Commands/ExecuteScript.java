@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
@@ -17,6 +18,8 @@ import gui.Objects.Elements.Commons.ResultDialog;
 public class ExecuteScript extends Command implements AuthChecker {
 
     String infoText;
+
+    public static boolean isProcessing = false;
 
     public ExecuteScript(boolean hasArgument) {
         super(hasArgument);
@@ -55,27 +58,31 @@ public class ExecuteScript extends Command implements AuthChecker {
             Scanner scanner = new Scanner(script);
             ArrayList<CustomPackage> pkgs = new ArrayList<>();
 
-            infoText+="Reading script: " + script.getPath();
+            infoText+= I18n.get("info.execute1")+" " + script.getPath()+"\n\n";
             System.out.println("Reading script: " + script.getPath());
 
             while (scanner.hasNext()) {
                 String line = scanner.nextLine();
                 if (isLineCorrect(line)) {
-                    CustomPackage pkg = CommandManager.getRelevantPackage(new CustomPackage(line,null,null));
+                    try {
+                        CustomPackage pkg = CommandManager.getRelevantPackage(new CustomPackage(line, null, null));
 
-                    addPkgToPkgs(pkg,pkgs);
+                        addPkgToPkgs(pkg, pkgs);
+                    }catch (Exception e){
+                        infoText+=e.getMessage()+'\n';
+                    }
                 }
             }
-            ResultDialog.showInfo(this.getName(),infoText);
+
+            ResultDialog.showInfo(infoText);
             return pkgs.toArray(new CustomPackage[1]);
         } catch (FileNotFoundException e) {
-            ResultDialog.showError(this.getName(),"File not found");
+            ResultDialog.showError(I18n.get("error.execute"));
             throw new IllegalArgumentException("File not found");
         }
     }
 
     private boolean isLineCorrect(String line) {
-
         if (line.startsWith(new ExecuteScript().getName())) {
             File script = new File(getArgument());
 
@@ -83,11 +90,11 @@ public class ExecuteScript extends Command implements AuthChecker {
 
             File subScript = new File(pathToSubScript);
 
-            infoText+="Recursive reference detected: " + line.trim() + "\nSkipping line\n";
+            infoText+=I18n.get("info.execute2")+" " + line.trim() + "\nSkipping line\n";
             System.out.println("Recursive reference detected: " + line.trim() + "\nSkipping line\n");
             return !script.equals(subScript);
         }
-        infoText+="Adding new command: " + line.trim();
+        infoText+=I18n.get("info.execute3")+" " + line.trim()+"\n\n";
         System.out.println("Adding new command: " + line.trim());
         return true;
     }

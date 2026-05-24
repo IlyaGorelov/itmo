@@ -2,6 +2,7 @@ package core.Objects.Validators;
 
 import java.util.Scanner;
 import core.Objects.Managers.IdManager;
+import Localization.I18n;
 
 public class IdValidator extends Validator<Long> {
 
@@ -10,7 +11,7 @@ public class IdValidator extends Validator<Long> {
         try {
             Long x = Long.parseLong(value);
             if (!IdManager.isIdIn(x))
-                throw new IllegalArgumentException("There is no such id");
+                throw new IllegalArgumentException(I18n.get("error.no.id"));
 
             return true;
         } catch (Exception e) {

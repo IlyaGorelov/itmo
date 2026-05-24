@@ -1,5 +1,7 @@
 package core.Objects.Validators;
 
+import Localization.I18n;
+
 import java.util.Scanner;
 
 public class PriceValidator extends Validator<Double> {
@@ -9,7 +11,7 @@ public class PriceValidator extends Validator<Double> {
         try {
             Double x = Double.parseDouble(value.trim());
             if (x <= 0)
-                throw new IllegalArgumentException("Price must be greater than 0");
+                throw new IllegalArgumentException(I18n.get("error.price"));
             return true;
         } catch (Exception e) {
             if (value.isBlank() || value.trim() == "null") {

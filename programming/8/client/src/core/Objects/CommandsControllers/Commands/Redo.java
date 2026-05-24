@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
@@ -34,9 +35,8 @@ public class Redo extends Command implements AuthChecker {
     public String getRelevantAnswer(CustomPackage pack) {
         Object arg = pack.getObject();
 
-        ResultDialog.showInfo(this.getName(),arg.toString());
         TablePanel.fetchProductsAsync();
-        return arg.toString() + "\n";
+        return I18n.get("info.redo") + "\n";
     }
 
 }

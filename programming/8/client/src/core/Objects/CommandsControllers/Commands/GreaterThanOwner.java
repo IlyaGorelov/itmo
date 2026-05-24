@@ -1,6 +1,8 @@
 package core.Objects.CommandsControllers.Commands;
 
 import Commons.Collection.Person;
+import Commons.Collection.Product;
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
@@ -10,6 +12,10 @@ import Commons.Enums.EyeColor;
 import Commons.Enums.HairColor;
 import core.Objects.Parsers.PersonParser;
 import core.Objects.Validators.*;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 /**
  * get all elements where owner is biger than input one
@@ -61,13 +67,14 @@ public class GreaterThanOwner extends Command implements CommandWithComplexArg, 
     public String getRelevantAnswer(CustomPackage pack) {
         Object[] products = (Object[]) pack.getObject();
         if (products.length == 0) {
-            return "There is no products with greater owner.";
+            return I18n.get("info.greater.no");
         } else {
-            String relevant = "Products with greater owner:\n";
+            String relevant = I18n.get("info.greater")+"\n";
+            TablePanel.setProducts(Arrays.copyOf(products, products.length, Product[].class));
             for (Object o : products) {
                 relevant += o.toString() + "\n";
             }
-            return relevant;
+            return "";
         }
     }
 

@@ -30,6 +30,8 @@ public class Update extends RevertableCommand {
 
         addToHistory();
 
+        getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
         CustomPackage pkg = new CustomPackage(getName(), getArgument(), updatedElement);
         answer(pkg, "Updated an element with id " + pkg.getArgument());
     }

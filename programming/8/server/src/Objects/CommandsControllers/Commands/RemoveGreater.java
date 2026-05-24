@@ -26,6 +26,8 @@ public class RemoveGreater extends RevertableCommand {
             TrashBin.add(greaters);
             addToHistory();
 
+            getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
             CustomPackage pkg = new CustomPackage(this.getName(), null, greaters);
             answer(pkg, "Removed");
 

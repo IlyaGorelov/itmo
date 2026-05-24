@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Enums.Country;
+import Localization.I18n;
 
 public class CountryValidator extends Validator<Country> {
 
@@ -10,7 +11,7 @@ public class CountryValidator extends Validator<Country> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if (enumContains(value.toUpperCase()) == false)
-                throw new IllegalArgumentException("No such country");
+                throw new IllegalArgumentException(I18n.get("error.country"));
             return true;
         } catch (Exception e) {
             if (value.isBlank() || value == "null") {

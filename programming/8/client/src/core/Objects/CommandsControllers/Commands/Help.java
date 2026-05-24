@@ -38,6 +38,7 @@ public class Help extends Command {
     public String getRelevantAnswer(CustomPackage pack) {
         Object object = (Object) pack.getObject();
 
+
         return (String) object;
     }
 

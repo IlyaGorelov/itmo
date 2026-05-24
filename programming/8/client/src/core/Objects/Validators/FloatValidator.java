@@ -1,5 +1,7 @@
 package core.Objects.Validators;
 
+import Localization.I18n;
+
 import java.util.Scanner;
 
 public class FloatValidator extends Validator<Float> {
@@ -18,7 +20,7 @@ public class FloatValidator extends Validator<Float> {
                     return false;
                 }
             }
-            System.out.println("Invalid number format | " + e.getMessage());
+            System.out.println(I18n.get("error.nformat") + " | " + e.getMessage());
             return false;
         }
     }

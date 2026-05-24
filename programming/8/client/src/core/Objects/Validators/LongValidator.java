@@ -1,5 +1,7 @@
 package core.Objects.Validators;
 
+import Localization.I18n;
+
 import java.util.Scanner;
 
 public class LongValidator extends Validator<Long> {
@@ -18,7 +20,7 @@ public class LongValidator extends Validator<Long> {
                     return false;
                 }
             }
-            System.out.println("Invalid number format | " + e.getMessage());
+            System.out.println(I18n.get("error.nformat") + " | " + e.getMessage());
             return false;
         }
     }

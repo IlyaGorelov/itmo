@@ -2,6 +2,7 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedButton;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,7 +13,7 @@ public class ClearConfirmDialog extends JDialog {
     private boolean confirmed = false;
 
     public ClearConfirmDialog() {
-        super(null, "Clear collection", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("dialog.clear.title"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -41,7 +42,7 @@ public class ClearConfirmDialog extends JDialog {
 
         int row = 0;
 
-        JLabel question = new JLabel("Are you sure?");
+        JLabel question = new JLabel(I18n.get("dialog.clear.question"));
         question.setFont(new Font("Arial", Font.PLAIN, 26));
         question.setForeground(App.TEXT_PURPLE);
         question.setHorizontalAlignment(SwingConstants.CENTER);
@@ -52,7 +53,7 @@ public class ClearConfirmDialog extends JDialog {
         gbc.insets = new Insets(6, 0, 8, 0);
         content.add(question, gbc);
 
-        JLabel warning = new JLabel("All your products will be removed from the collection.");
+        JLabel warning = new JLabel(I18n.get("dialog.clear.explanation"));
         warning.setFont(new Font("Arial", Font.ITALIC, 16));
         warning.setForeground(App.TEXT_GRAY);
         warning.setHorizontalAlignment(SwingConstants.CENTER);
@@ -66,8 +67,8 @@ public class ClearConfirmDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton cancelButton = createSecondaryButton("Cancel");
-        JButton clearButton = createClearButton("Clear");
+        JButton cancelButton = createSecondaryButton(I18n.get("dialog.cancel"));
+        JButton clearButton = createClearButton(I18n.get("dialog.clear"));
 
         cancelButton.addActionListener(e -> dispose());
 

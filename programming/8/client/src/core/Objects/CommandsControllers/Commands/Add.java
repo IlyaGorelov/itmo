@@ -1,6 +1,7 @@
 package core.Objects.CommandsControllers.Commands;
 
 import Commons.Collection.*;
+import Localization.I18n;
 import core.Objects.Builders.ProductBuilder;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
@@ -49,13 +50,10 @@ public class Add extends Command implements CommandWithComplexArg, AuthChecker {
         Object object = pack.getObject();
 
         if (object instanceof Product) {
-            String answer = "Element with name \"" + ((Product) object).getName() + "\" was succesfully added" + "\n";
-            ResultDialog.showSuccess(getName(),answer);
             TablePanel.fetchProductsAsync();
-            return answer;
+            return I18n.get("info.command.add").formatted(((Product) object).getName())+"\n";
         } else {
-            ResultDialog.showError(getName(),object.toString());
-            return object.toString() + "\n";
+            return object.toString();
         }
     }
 

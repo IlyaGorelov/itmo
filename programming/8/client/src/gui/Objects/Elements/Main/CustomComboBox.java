@@ -2,22 +2,24 @@ package gui.Objects.Elements.Main;
 
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
-import gui.Objects.Elements.Main.TableTab.Dialogs.FilterDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 
-public class CustomComboBox extends JComboBox<String> {
-    public CustomComboBox(String[] items) {
+public class CustomComboBox<T> extends JComboBox<T> {
+
+    public CustomComboBox(T[] items) {
         super(items);
+
         setFont(new Font("Arial", Font.PLAIN, 20));
         setForeground(App.BACKGROUND);
         setBackground(Color.WHITE);
         setBorder(new RoundedBorder(App.BACKGROUND, 2, 18));
         setPreferredSize(new Dimension(240, 44));
         setUI(new PurpleComboBoxUI());
+
         setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(
@@ -30,12 +32,16 @@ public class CustomComboBox extends JComboBox<String> {
                 JLabel c = (JLabel) super.getListCellRendererComponent(
                         list, value, index, isSelected, cellHasFocus
                 );
+
                 c.setFont(new Font("Arial", Font.PLAIN, 18));
                 c.setBorder(new EmptyBorder(4, 10, 4, 10));
 
                 if (!isSelected) {
                     c.setBackground(Color.WHITE);
                     c.setForeground(App.BACKGROUND);
+                } else {
+                    c.setBackground(App.BACKGROUND);
+                    c.setForeground(Color.WHITE);
                 }
 
                 return c;

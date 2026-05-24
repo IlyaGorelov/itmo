@@ -3,7 +3,11 @@ package core.Objects.CommandsControllers;
 import java.io.Serializable;
 import java.util.Scanner;
 
+import Commons.Collection.Product;
 import Commons.CustomPackage;
+import core.Objects.CommandsControllers.Commands.ExecuteScript;
+import gui.Objects.Elements.Commons.ResultDialog;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /**
  * Abstract class representing a command
@@ -26,6 +30,7 @@ public abstract class Command implements Serializable {
     }
 
     public abstract String getName();
+
     public abstract String getDescription();
 
     public boolean getHasArgument() {
@@ -64,6 +69,13 @@ public abstract class Command implements Serializable {
 
     public Scanner getScanner() {
         return scanner;
+    }
+
+    public String sendError(String errorString) {
+        if(!ExecuteScript.isProcessing) {
+            ResultDialog.showError(errorString);
+        }
+        return errorString;
     }
 
 }

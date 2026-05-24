@@ -3,10 +3,12 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 import Commons.Collection.Coordinates;
 import Commons.Collection.Location;
 import Commons.Collection.Person;
+import Commons.Collection.Product;
 import Commons.Enums.Country;
 import Commons.Enums.EyeColor;
 import Commons.Enums.HairColor;
 import Commons.Enums.UnitOfMeasure;
+import Localization.EnumI18n;
 import core.Objects.Validators.DoubleValidator;
 import core.Objects.Validators.HeightValidator;
 import core.Objects.Validators.IntegerValidator;
@@ -16,6 +18,7 @@ import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Main.CustomComboBox;
 import gui.Objects.Helpers.ErrorMessageDeliverer;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -31,10 +34,10 @@ public class ProductDialog extends JDialog {
     private static final int ERROR_HEIGHT = 18;
 
     public enum Mode {
-        ADD("Add product", "add", "Add product"),
-        ADD_IF_MIN("Add product if min", "add_if_min", "Add if min"),
-        ADD_IF_MAX("Add product if max", "add_if_max", "Add if max"),
-        UPDATE("Update product", "update", "Update product");
+        ADD(I18n.get("add"), "add", I18n.get("add")),
+        ADD_IF_MIN(I18n.get("add.if.min"), "add_if_min", I18n.get("add.if.min")),
+        ADD_IF_MAX(I18n.get("add.if.max"), "add_if_max", I18n.get("add.if.max")),
+        UPDATE(I18n.get("update"), "update", I18n.get("update"));
 
         private final String title;
         private final String serverCommand;
@@ -84,7 +87,6 @@ public class ProductDialog extends JDialog {
     private JTextField locZField;
     private JTextField locNameField;
 
-    private JLabel idErrorLabel;
 
     private JLabel nameErrorLabel;
     private JLabel xErrorLabel;
@@ -92,7 +94,6 @@ public class ProductDialog extends JDialog {
     private JLabel priceErrorLabel;
     private JLabel manufactureCostErrorLabel;
 
-    private JLabel ownerNameErrorLabel;
     private JLabel heightErrorLabel;
 
     private JLabel locXErrorLabel;
@@ -100,26 +101,95 @@ public class ProductDialog extends JDialog {
     private JLabel locZErrorLabel;
     private JLabel locNameErrorLabel;
 
-    public void setProductId(String productId) {
-        if (idField != null) {
-            idField.setText(productId);
-            idField.setEditable(false);
-            idField.setFocusable(false);
-        }
-    }
+    private Product defaultProduct;
 
     public ProductDialog(Mode mode) {
+        this(mode, null);
+    }
+
+    public ProductDialog(Mode mode, Product defaultProduct) {
         super(null, mode.getTitle(), ModalityType.APPLICATION_MODAL);
+
         this.mode = mode;
+        this.defaultProduct = defaultProduct;
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         JComponent content = createContent();
         setContentPane(content);
 
+        if (defaultProduct != null) {
+            fillFromDefaultProduct(defaultProduct);
+        }
+
         pack();
         setMinimumSize(new Dimension(900, mode == Mode.UPDATE ? 760 : 700));
         setLocationRelativeTo(null);
+    }
+
+    private void fillFromDefaultProduct(Product product) {
+        if (product == null) {
+            return;
+        }
+
+        setFieldValue(nameField, product.getName());
+
+        if (product.getCoordinates() != null) {
+            setFieldValue(xField, product.getCoordinates().getX());
+            setFieldValue(yField, product.getCoordinates().getY());
+        }
+
+        setFieldValue(priceField, product.getPrice());
+        setFieldValue(manufactureCostField, product.getManufactureCost());
+
+        setComboBoxValue(unitOfMeasureBox, product.getUnitOfMeasure());
+
+        Person owner = product.getOwner();
+
+        if (owner != null) {
+            setFieldValue(ownerNameField, owner.getName());
+            setFieldValue(heightField, owner.getHeight());
+
+            setComboBoxValue(eyeColorBox, owner.getEyeColor());
+            setComboBoxValue(hairColorBox, owner.getHairColor());
+            setComboBoxValue(countryBox, owner.getNationality());
+
+            Location location = owner.getLocation();
+
+            if (location != null) {
+                setFieldValue(locXField, location.getX());
+                setFieldValue(locYField, location.getY());
+                setFieldValue(locZField, location.getZ());
+                setFieldValue(locNameField, location.getName());
+            }
+        }
+
+        refreshDynamicVisibility();
+
+        revalidate();
+        repaint();
+        pack();
+        setLocationRelativeTo(getOwner());
+    }
+
+    private void setFieldValue(JTextField field, Object value) {
+        if (field == null) {
+            return;
+        }
+
+        field.setText(value == null ? "" : String.valueOf(value));
+    }
+
+    private void setComboBoxValue(JComboBox<String> box, Enum<?> value) {
+        if (box == null) {
+            return;
+        }
+
+        if (value == null) {
+            box.setSelectedItem(" ");
+        } else {
+            box.setSelectedItem(value.name());
+        }
     }
 
     public boolean isConfirmed() {
@@ -210,27 +280,11 @@ public class ProductDialog extends JDialog {
 
         int row = 0;
 
-        if (mode == Mode.UPDATE) {
-            gbc.gridx = 0;
-            gbc.gridy = row++;
-            gbc.gridwidth = 3;
-            gbc.insets = new Insets(0, 0, 22, 0);
-            content.add(createSectionHeader("Update Info"), gbc);
-
-            idField = createTextField();
-
-            gbc.gridx = 0;
-            gbc.gridy = row++;
-            gbc.gridwidth = 1;
-            gbc.insets = new Insets(0, 12, 22, 12);
-            content.add(createFieldBlock("Product ID", idField), gbc);
-        }
-
         gbc.gridx = 0;
         gbc.gridy = row++;
         gbc.gridwidth = 3;
         gbc.insets = new Insets(0, 0, 22, 0);
-        content.add(createSectionHeader("Product Info"), gbc);
+        content.add(createSectionHeader(I18n.get("info.title")), gbc);
 
         nameField = createTextField();
         xField = createTextField();
@@ -246,10 +300,10 @@ public class ProductDialog extends JDialog {
 
         unitOfMeasureBox = new CustomComboBox(new String[]{
                 " ",
-                UnitOfMeasure.KILOGRAMS.name(),
-                UnitOfMeasure.METERS.name(),
-                UnitOfMeasure.LITERS.name(),
-                UnitOfMeasure.MILLILITERS.name()
+                EnumI18n.unitOfMeasure(UnitOfMeasure.KILOGRAMS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.METERS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.LITERS),
+                EnumI18n.unitOfMeasure(UnitOfMeasure.MILLILITERS)
         });
 
         gbc.gridwidth = 1;
@@ -257,7 +311,7 @@ public class ProductDialog extends JDialog {
         gbc.insets = new Insets(0, 12, 22, 12);
 
         gbc.gridx = 0;
-        content.add(createFieldBlock("Name", nameField, nameErrorLabel), gbc);
+        content.add(createFieldBlock(I18n.get("product.name"), nameField, nameErrorLabel), gbc);
 
         gbc.gridx = 1;
         content.add(createFieldBlock("X", xField, xErrorLabel), gbc);
@@ -270,13 +324,13 @@ public class ProductDialog extends JDialog {
         gbc.gridy = row;
 
         gbc.gridx = 0;
-        content.add(createFieldBlock("Price", priceField, priceErrorLabel), gbc);
+        content.add(createFieldBlock(I18n.get("product.price"), priceField, priceErrorLabel), gbc);
 
         gbc.gridx = 1;
-        content.add(createFieldBlock("Manufacture Cost", manufactureCostField, manufactureCostErrorLabel), gbc);
+        content.add(createFieldBlock(I18n.get("product.man.cost"), manufactureCostField, manufactureCostErrorLabel), gbc);
 
         gbc.gridx = 2;
-        content.add(createFieldBlock("Unit of Measure", unitOfMeasureBox), gbc);
+        content.add(createFieldBlock(I18n.get("product.unit"), unitOfMeasureBox), gbc);
 
         row++;
 
@@ -284,7 +338,7 @@ public class ProductDialog extends JDialog {
         gbc.gridy = row++;
         gbc.gridwidth = 3;
         gbc.insets = new Insets(12, 0, 22, 0);
-        content.add(createSectionHeader("Owner Info"), gbc);
+        content.add(createSectionHeader(I18n.get("info.owner.panel")), gbc);
 
         ownerNameField = createTextField();
 
@@ -292,10 +346,10 @@ public class ProductDialog extends JDialog {
         gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 12, 6, 12);
-        content.add(createFieldBlock("Owner Name", ownerNameField), gbc);
+        content.add(createFieldBlock(I18n.get("product.owners.name"), ownerNameField), gbc);
 
         JLabel ownerHint = createHintLabel(
-                "Owner details will appear after entering owner name. You may leave it blank."
+                I18n.get("dialog.product.owner.details.hint")
         );
 
         gbc.gridx = 0;
@@ -351,42 +405,42 @@ public class ProductDialog extends JDialog {
 
         eyeColorBox = new CustomComboBox(new String[]{
                 " ",
-                EyeColor.RED.name(),
-                EyeColor.GREEN.name(),
-                EyeColor.ORANGE.name(),
+                EnumI18n.eyeColor(EyeColor.RED),
+                EnumI18n.eyeColor(EyeColor.GREEN),
+                EnumI18n.eyeColor(EyeColor.ORANGE)
         });
 
         hairColorBox = new CustomComboBox(new String[]{
-                HairColor.GREEN.name(),
-                HairColor.BLACK.name(),
-                HairColor.WHITE.name()
+                EnumI18n.hairColor(HairColor.GREEN),
+                EnumI18n.hairColor(HairColor.BLACK),
+                EnumI18n.hairColor(HairColor.WHITE)
         });
 
         countryBox = new CustomComboBox(new String[]{
-                Country.USA.name(),
-                Country.VATICAN.name(),
-                Country.THAILAND.name()
+                EnumI18n.country(Country.USA),
+                EnumI18n.country(Country.VATICAN),
+                EnumI18n.country(Country.THAILAND)
         });
 
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        panel.add(createFieldBlock("Height", heightField, heightErrorLabel), gbc);
+        panel.add(createFieldBlock(I18n.get("owner.height"), heightField, heightErrorLabel), gbc);
 
         gbc.gridx = 1;
-        panel.add(createFieldBlock("Eye Color", eyeColorBox), gbc);
+        panel.add(createFieldBlock(I18n.get("owner.eye"), eyeColorBox), gbc);
 
         gbc.gridx = 2;
-        panel.add(createFieldBlock("Hair Color", hairColorBox), gbc);
+        panel.add(createFieldBlock(I18n.get("owner.hair"), hairColorBox), gbc);
 
         gbc.gridx = 3;
-        panel.add(createFieldBlock("Country", countryBox), gbc);
+        panel.add(createFieldBlock(I18n.get("owner.nationality"), countryBox), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 4;
         gbc.insets = new Insets(12, 0, 22, 0);
-        panel.add(createSectionHeader("Owner Location"), gbc);
+        panel.add(createSectionHeader(I18n.get("owner.loc")), gbc);
 
         locXField = createTextField();
 
@@ -394,10 +448,10 @@ public class ProductDialog extends JDialog {
         gbc.gridy = 2;
         gbc.gridwidth = 1;
         gbc.insets = new Insets(0, 12, 16, 12);
-        panel.add(createFieldBlock("Location X", locXField,locXErrorLabel), gbc);
+        panel.add(createFieldBlock("X", locXField,locXErrorLabel), gbc);
 
         JLabel locationHint = createHintLabel(
-                "Location details will appear after entering X. You may leave it blank."
+                I18n.get("dialog.product.owner.loc.details.hint")
         );
 
         gbc.gridx = 0;
@@ -437,21 +491,18 @@ public class ProductDialog extends JDialog {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panel.add(createFieldBlock("Location Y", locYField, locYErrorLabel), gbc);
+        panel.add(createFieldBlock("Y", locYField, locYErrorLabel), gbc);
 
         gbc.gridx = 1;
-        panel.add(createFieldBlock("Location Z", locZField, locZErrorLabel), gbc);
+        panel.add(createFieldBlock("Z", locZField, locZErrorLabel), gbc);
 
         gbc.gridx = 2;
-        panel.add(createFieldBlock("Location Name", locNameField, locNameErrorLabel), gbc);
+        panel.add(createFieldBlock(I18n.get("owner.loc.name.full"), locNameField, locNameErrorLabel), gbc);
 
         return panel;
     }
 
     private void clearValidationErrors() {
-        if (idErrorLabel != null) {
-            idErrorLabel.setText(" ");
-        }
 
         nameErrorLabel.setText(" ");
         xErrorLabel.setText(" ");
@@ -482,16 +533,12 @@ public class ProductDialog extends JDialog {
     }
 
     private void setupDynamicVisibility() {
-        ownerDetailsPanel.setVisible(false);
-        locationDetailsPanel.setVisible(false);
+        refreshDynamicVisibility();
 
         ownerNameField.getDocument().addDocumentListener(new SimpleDocumentListener() {
             @Override
             public void update() {
-                boolean hasOwner = !ownerNameField.getText().trim().isEmpty();
-
-                ownerDetailsPanel.setVisible(hasOwner);
-
+                refreshDynamicVisibility();
                 repackDialog();
             }
         });
@@ -499,14 +546,20 @@ public class ProductDialog extends JDialog {
         locXField.getDocument().addDocumentListener(new SimpleDocumentListener() {
             @Override
             public void update() {
-                boolean hasOwner = !ownerNameField.getText().trim().isEmpty();
-                boolean hasLocationX = !locXField.getText().trim().isEmpty();
-
-                locationDetailsPanel.setVisible(hasOwner && hasLocationX);
-
+                refreshDynamicVisibility();
                 repackDialog();
             }
         });
+    }
+
+    private void refreshDynamicVisibility() {
+        boolean hasOwner = !ownerNameField.getText().trim().isEmpty();
+
+        ownerDetailsPanel.setVisible(hasOwner);
+
+        boolean hasLocationX = locXField != null && !locXField.getText().trim().isEmpty();
+
+        locationDetailsPanel.setVisible(hasOwner && hasLocationX);
     }
 
     private void repackDialog() {
@@ -534,7 +587,7 @@ public class ProductDialog extends JDialog {
         PriceValidator priceValidator = new PriceValidator();
 
         if (nameField.getText().trim().isEmpty()) {
-            nameErrorLabel.setText("Name is required.");
+            nameErrorLabel.setText(I18n.get("error.name"));
             isValid = false;
         }
 
@@ -549,7 +602,7 @@ public class ProductDialog extends JDialog {
         }
 
         if (!yField.getText().isEmpty() && Double.parseDouble(yField.getText().trim()) <= -990) {
-            yErrorLabel.setText("Y must be > -990.");
+            yErrorLabel.setText(I18n.get("error.y"));
             isValid = false;
         }
 
@@ -559,7 +612,7 @@ public class ProductDialog extends JDialog {
         }
 
         if (!integerValidator.isValid(manufactureCostField.getText().trim(),false)) {
-            manufactureCostErrorLabel.setText("Manufacture cost is required.");
+            manufactureCostErrorLabel.setText(I18n.get("error.man"));
             isValid = false;
         }
 
@@ -607,12 +660,12 @@ public class ProductDialog extends JDialog {
         }
 
         if (locNameField.getText().isBlank()) {
-           locNameErrorLabel.setText("Field is required");
+           locNameErrorLabel.setText(I18n.get("error.required"));
            isValid=false;
         }
 
         if (locNameField.getText().length()>479) {
-            locNameErrorLabel.setText("Length should be < 379");
+            locNameErrorLabel.setText(I18n.get("error.locName.len"));
             isValid=false;
         }
 

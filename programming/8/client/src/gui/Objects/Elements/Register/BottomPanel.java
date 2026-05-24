@@ -2,15 +2,19 @@ package gui.Objects.Elements.Register;
 
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedPanel;
+import gui.Objects.Elements.Localized;
 import gui.Objects.Frames.LoginFrame;
-import gui.Objects.Frames.RegisterFrame;
+import Localization.I18n;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class BottomPanel extends JPanel {
+public class BottomPanel extends JPanel implements Localized {
+    JLabel text;
+    JLabel logIn;
+
     public BottomPanel() {
         super(new FlowLayout(FlowLayout.CENTER, 0, 0));
         setOpaque(false);
@@ -19,11 +23,11 @@ public class BottomPanel extends JPanel {
         card.setPreferredSize(new Dimension(460, 55));
         card.setLayout(new GridBagLayout());
 
-        JLabel text = new JLabel("Already have an account?");
+         text = new JLabel(I18n.get("bottom.register.text"));
         text.setForeground(App.TEXT_GRAY);
         text.setFont(new Font("Arial", Font.PLAIN, 18));
 
-        JLabel logIn = new JLabel("<html><u>Log In</u></html>");
+         logIn = new JLabel(I18n.get("bottom.login"));
         logIn.setForeground(App.TEXT_PURPLE);
         logIn.setFont(new Font("Arial", Font.PLAIN, 18));
         logIn.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -54,6 +58,12 @@ public class BottomPanel extends JPanel {
         card.add(logIn, gbc);
         add(card);
 
+    }
+
+    @Override
+    public void updateTexts() {
+        text.setText(I18n.get("bottom.register.text"));
+        logIn.setText(I18n.get("bottom.login"));
     }
 }
 

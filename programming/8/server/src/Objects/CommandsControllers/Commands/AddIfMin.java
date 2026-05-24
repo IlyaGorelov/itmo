@@ -25,9 +25,13 @@ public class AddIfMin extends RevertableCommand {
         if (getCollectionManager().isMin(newProduct)) {
             newProduct = getCollectionManager().addElement(newProduct);
 
+            setComplexArgument(newProduct);
             addToHistory();
 
+            getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
+
             answer(pkg, "Successfully added");
         } else {
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());

@@ -1,6 +1,7 @@
 package gui.Objects.Elements.Main.TableTab.Dialogs;
 
 import gui.App;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -22,7 +23,7 @@ public class OwnerFilterDialog extends JDialog {
     private boolean confirmed = false;
 
     public OwnerFilterDialog() {
-        super(null, "Filter by owner", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("dialog.filter.by.owner"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -77,9 +78,9 @@ public class OwnerFilterDialog extends JDialog {
         gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 12, 0);
-        content.add(createFieldBlock("Owner name", nameField), gbc);
+        content.add(createFieldBlock(I18n.get("product.owners.name"), nameField), gbc);
 
-        hintLabel = new JLabel("If owner name is empty or null, height will not be used.");
+        hintLabel = new JLabel(I18n.get("dialog.filter.by.owner.hint"));
         hintLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         hintLabel.setForeground(App.TEXT_GRAY);
 
@@ -89,7 +90,7 @@ public class OwnerFilterDialog extends JDialog {
         gbc.insets = new Insets(0, 0, 16, 0);
         content.add(hintLabel, gbc);
 
-        heightPanel = createFieldBlock("Height", heightField);
+        heightPanel = createFieldBlock(I18n.get("owner.height"), heightField);
         heightPanel.setVisible(false);
 
         gbc.gridx = 0;
@@ -111,8 +112,8 @@ public class OwnerFilterDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton cancelButton = createSecondaryButton("Cancel");
-        JButton applyButton = createPrimaryButton("Apply filter");
+        JButton cancelButton = createSecondaryButton(I18n.get("dialog.cancel"));
+        JButton applyButton = createPrimaryButton(I18n.get("dialog.filter.apply"));
 
         cancelButton.addActionListener(e -> dispose());
         applyButton.addActionListener(this::applyFilter);
@@ -169,7 +170,7 @@ public class OwnerFilterDialog extends JDialog {
         String height = heightField.getText().trim();
 
         if (height.isEmpty()) {
-            errorLabel.setText("Height is required when owner name is specified.");
+            errorLabel.setText(I18n.get("dialog.filter.by.owner.height.error"));
             return;
         }
 
@@ -177,11 +178,11 @@ public class OwnerFilterDialog extends JDialog {
             float parsedHeight = Float.parseFloat(height);
 
             if (parsedHeight <= 0) {
-                errorLabel.setText("Height must be greater than 0.");
+                errorLabel.setText(I18n.get("dialog.filter.by.owner.height.error.n"));
                 return;
             }
         } catch (NumberFormatException ex) {
-            errorLabel.setText("Height must be a number.");
+            errorLabel.setText(I18n.get("dialog.filter.by.owner.height.error.not_num"));
             return;
         }
 

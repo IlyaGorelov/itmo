@@ -3,13 +3,12 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
+import Localization.I18n;
 
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 
 public class ExecuteScriptDialog extends JDialog {
@@ -19,7 +18,7 @@ public class ExecuteScriptDialog extends JDialog {
     private boolean confirmed = false;
 
     public ExecuteScriptDialog() {
-        super(null, "Execute script", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("dialog.execute.title"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -54,7 +53,7 @@ public class ExecuteScriptDialog extends JDialog {
 
         pathField = createTextField();
 
-        JButton browseButton = createSecondaryButton("Browse");
+        JButton browseButton = createSecondaryButton(I18n.get("dialog.browse"));
         browseButton.setPreferredSize(new Dimension(130, 44));
         browseButton.addActionListener(this::chooseScriptFile);
 
@@ -67,7 +66,7 @@ public class ExecuteScriptDialog extends JDialog {
         gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 8, 0);
-        content.add(createFieldBlock("Script path", pathInputPanel), gbc);
+        content.add(createFieldBlock(I18n.get("dialog.script.path"), pathInputPanel), gbc);
 
         errorLabel = new JLabel(" ");
         errorLabel.setFont(new Font("Arial", Font.ITALIC, 15));
@@ -82,8 +81,8 @@ public class ExecuteScriptDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton clearButton = createSecondaryButton("Clear");
-        JButton executeButton = createPrimaryButton("Execute");
+        JButton clearButton = createSecondaryButton(I18n.get("dialog.clear"));
+        JButton executeButton = createPrimaryButton(I18n.get("dialog.execute"));
 
         clearButton.addActionListener(e -> {
             pathField.setText("");
@@ -109,7 +108,7 @@ public class ExecuteScriptDialog extends JDialog {
     private void chooseScriptFile(ActionEvent e) {
         FileDialog fileDialog = new FileDialog(
                 this,
-                "Choose script file",
+                I18n.get("dialog.choose.script"),
                 FileDialog.LOAD
         );
 
@@ -132,7 +131,7 @@ public class ExecuteScriptDialog extends JDialog {
         String path = pathField.getText().trim();
 
         if (path.isEmpty()) {
-            errorLabel.setText("Script path cannot be empty.");
+            errorLabel.setText(I18n.get("dialog.execute.error"));
             return;
         }
 

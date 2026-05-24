@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.Builders.ProductBuilder;
 import Commons.Collection.Product;
 import core.Objects.CommandsControllers.AuthChecker;
@@ -53,14 +54,10 @@ public class AddIfMin extends Command implements CommandWithComplexArg, AuthChec
         Product product = (Product) pack.getObject();
 
         if (product != null) {
-            String answer = "Element with name \"" + ((Product) product).getName() + "\" was succesfully added" + "\n";
-            ResultDialog.showSuccess(getName(),answer);
             TablePanel.fetchProductsAsync();
-            return answer;
+            return I18n.get("info.command.add").formatted(product.getName())+"\n";
         }else {
-            String answer = "Element wasn't added as it's not min" + "\n";
-            ResultDialog.showInfo(getName(),answer);
-            return answer;
+             return I18n.get("error.command.add.min");
         }
     }
 

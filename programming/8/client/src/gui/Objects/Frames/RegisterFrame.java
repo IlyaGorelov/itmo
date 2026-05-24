@@ -1,14 +1,14 @@
 package gui.Objects.Frames;
 
-import gui.Objects.Elements.Login.LoginPanel;
 import gui.Objects.Elements.Register.RegisterPanel;
+import Localization.I18n;
 
 import javax.swing.*;
 
 public class RegisterFrame extends JFrame {
     public RegisterFrame(){
         setSize(1100,650);
-        setTitle("Product Manager");
+        setTitle(I18n.get("title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 

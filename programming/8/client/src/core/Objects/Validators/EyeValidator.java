@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Enums.EyeColor;
+import Localization.I18n;
 
 public class EyeValidator extends Validator<EyeColor> {
 
@@ -10,7 +11,7 @@ public class EyeValidator extends Validator<EyeColor> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if (enumContains(value.toUpperCase()) == false)
-                throw new IllegalArgumentException("No such eye color");
+                throw new IllegalArgumentException(I18n.get("error.eye"));
             return true;
         } catch (Exception e) {
             if (value.isBlank() || value == "null") {

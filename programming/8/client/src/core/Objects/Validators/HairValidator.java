@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Enums.HairColor;
+import Localization.I18n;
 
 public class HairValidator extends Validator<HairColor> {
 
@@ -10,7 +11,7 @@ public class HairValidator extends Validator<HairColor> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if (enumContains(value.toUpperCase()) == false)
-                throw new IllegalArgumentException("No such hair color");
+                throw new IllegalArgumentException(I18n.get("error.hair"));
             return true;
         } catch (Exception e) {
             if (value.isBlank() || value == "null") {

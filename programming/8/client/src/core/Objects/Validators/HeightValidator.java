@@ -1,6 +1,7 @@
 package core.Objects.Validators;
 
 import gui.Objects.Helpers.ErrorMessageDeliverer;
+import Localization.I18n;
 
 import java.util.Scanner;
 
@@ -11,7 +12,7 @@ public class HeightValidator extends Validator<Float> {
         try {
             Float height = Float.parseFloat(value);
             if (height <= 0)
-                throw new IllegalArgumentException("Height must be greater than 0");
+                throw new IllegalArgumentException(I18n.get("error.height"));
 
             return true;
         } catch (Exception e) {

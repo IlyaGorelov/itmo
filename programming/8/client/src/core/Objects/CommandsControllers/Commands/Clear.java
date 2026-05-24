@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
@@ -35,16 +36,15 @@ public class Clear extends Command implements AuthChecker {
         Object object = pack.getObject();
 
         if (object instanceof Exception) {
-            ResultDialog.showError(this.getName(),"Collection wasn't cleared as " + object.toString() + "\n");
-            return "Collection wasn't cleared as " + object.toString() + "\n";
+            TablePanel.fetchProductsAsync();
+            sendError(I18n.get("error.clear") + " " + object.toString() + "\n");
+            return "";
         };
 
         Object[] productObjects = (Object[]) object;
 
-        String answer = "Deleted "+productObjects.length+" elements";
-        ResultDialog.showSuccess(this.getName(),answer);
         TablePanel.fetchProductsAsync();
-        return answer;
+        return I18n.get("info.clear").formatted(productObjects.length);
     }
 
 }

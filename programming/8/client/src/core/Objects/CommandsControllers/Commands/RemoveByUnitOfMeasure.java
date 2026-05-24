@@ -1,9 +1,11 @@
 package core.Objects.CommandsControllers.Commands;
 
 import Commons.Collection.Product;
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /* remove all elements with the same unit of measure*/
 public class RemoveByUnitOfMeasure extends Command implements AuthChecker {
@@ -42,11 +44,12 @@ public class RemoveByUnitOfMeasure extends Command implements AuthChecker {
         Object[] products = (Object[]) object;
         String relevant = "";
         if (products.length == 0)
-            return "Elements with this unit was removed if they was there: " + pack.getArgument() + " \n";
+            return I18n.get("info.remove.by.unit") +"\n";
 
         for (Object product : products) {
-            relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
+            relevant += I18n.get("info.remove").formatted(((Product)product).getName())+ "\n";
         }
+        TablePanel.fetchProductsAsync();
         return relevant;
     }
 

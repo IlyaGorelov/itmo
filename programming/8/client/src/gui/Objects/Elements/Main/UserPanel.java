@@ -1,21 +1,23 @@
 package gui.Objects.Elements.Main;
 
 import Commons.CustomPackage;
-import core.Objects.CommandsControllers.Commands.Login;
 import core.Objects.CommandsControllers.Commands.Logout;
 import core.Objects.Connection.Client;
 import core.Objects.Managers.AuthManager;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Commons.RoundedPanel;
-import gui.Objects.Frames.MainFrame;
+import gui.Objects.Elements.Localized;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.geom.Path2D;
 
-public class UserPanel extends JPanel {
+public class UserPanel extends JPanel implements Localized {
+    JButton logoutButton;
+
     public UserPanel() {
         setOpaque(false);
 
@@ -35,7 +37,7 @@ public class UserPanel extends JPanel {
         userPart.add(avatar);
         userPart.add(username);
 
-        JButton logoutButton = new RoundedButton("Logout",
+        logoutButton = new RoundedButton(I18n.get("user.logout"),
                 new ExitIcon(50, Color.BLACK),
                 0, 25, 25, 0,
                 App.LIGHT_GRAY);
@@ -54,6 +56,11 @@ public class UserPanel extends JPanel {
         panel.add(logoutButton, BorderLayout.EAST);
 
         add(panel);
+    }
+
+    @Override
+    public void updateTexts() {
+        logoutButton.setText(I18n.get("user.logout"));
     }
 
     private record AvatarIcon(int size, Color color) implements Icon {

@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.Builders.ProductBuilder;
 import Commons.Collection.Product;
 import core.Objects.CommandsControllers.AuthChecker;
@@ -64,11 +65,9 @@ public class Update extends Command implements CommandWithComplexArg, AuthChecke
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
         Product product = (Product) pack.getObject();
-        String relevant = "Element was succesfully updated with id " + product.getId() + "\n";
+        String relevant = I18n.get("info.update").formatted(product.getName()) + "\n";
 
-        ResultDialog.showSuccess(this.getName(),relevant);
         TablePanel.fetchProductsAsync();
-
         return relevant.trim();
     }
 

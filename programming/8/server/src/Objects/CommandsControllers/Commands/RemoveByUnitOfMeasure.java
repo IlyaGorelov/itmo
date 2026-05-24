@@ -29,6 +29,8 @@ public class RemoveByUnitOfMeasure extends RevertableCommand {
                 TrashBin.add(result);
                 addToHistory();
 
+                getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
                 CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), result);
                 answer(pkg, "Removed all elements with " + unit);
 

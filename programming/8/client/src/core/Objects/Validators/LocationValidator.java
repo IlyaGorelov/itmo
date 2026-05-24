@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Collection.Location;
+import Localization.I18n;
 
 public class LocationValidator extends Validator<Location> {
 
@@ -11,7 +12,7 @@ public class LocationValidator extends Validator<Location> {
         try {
             var location = Location.parse(value);
             if (location.getName().length() > 479)
-                throw new IllegalArgumentException("Name length must be less than 479");
+                throw new IllegalArgumentException(I18n.get("error.locName.len"));
             return true;
         } catch (Exception e) {
             if (value.isBlank()) {

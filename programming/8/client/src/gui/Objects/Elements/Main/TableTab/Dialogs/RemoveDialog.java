@@ -3,6 +3,7 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,7 +17,7 @@ public class RemoveDialog extends JDialog {
     private boolean confirmed = false;
 
     public RemoveDialog() {
-        super(null, "Remove product", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("remove"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -55,7 +56,7 @@ public class RemoveDialog extends JDialog {
         gbc.gridy = row++;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 8, 0);
-        content.add(createFieldBlock("Product ID", idField), gbc);
+        content.add(createFieldBlock("ID", idField), gbc);
 
         errorLabel = new JLabel(" ");
         errorLabel.setFont(new Font("Arial", Font.ITALIC, 15));
@@ -70,8 +71,8 @@ public class RemoveDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton cancelButton = createSecondaryButton("Cancel");
-        JButton deleteButton = createDeleteButton("Delete");
+        JButton cancelButton = createSecondaryButton(I18n.get("dialog.cancel"));
+        JButton deleteButton = createDeleteButton(I18n.get("remove"));
 
         cancelButton.addActionListener(e -> dispose());
         deleteButton.addActionListener(this::deleteProduct);
@@ -94,7 +95,7 @@ public class RemoveDialog extends JDialog {
         String id = idField.getText().trim();
 
         if (id.isEmpty()) {
-            errorLabel.setText("Product ID is required.");
+            errorLabel.setText(I18n.get("error.id"));
             return;
         }
 
@@ -102,11 +103,11 @@ public class RemoveDialog extends JDialog {
             int parsedId = Integer.parseInt(id);
 
             if (parsedId <= 0) {
-                errorLabel.setText("Product ID must be greater than 0.");
+                errorLabel.setText(I18n.get("error.id.n"));
                 return;
             }
         } catch (NumberFormatException ex) {
-            errorLabel.setText("Product ID must be an integer.");
+            errorLabel.setText(I18n.get("error.id.notInt"));
             return;
         }
 

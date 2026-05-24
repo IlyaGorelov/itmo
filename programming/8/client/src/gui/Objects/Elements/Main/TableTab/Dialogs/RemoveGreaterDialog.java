@@ -3,6 +3,7 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,7 +18,7 @@ public class RemoveGreaterDialog extends JDialog {
     private boolean confirmed = false;
 
     public RemoveGreaterDialog() {
-        super(null, "Remove greater", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("remove.greater"), ModalityType.APPLICATION_MODAL);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -33,14 +34,14 @@ public class RemoveGreaterDialog extends JDialog {
         return confirmed;
     }
 
-    public String getPriceValue() {
+    public Double getPriceValue() {
         String price = priceField.getText().trim();
 
         if (price.isEmpty() || "null".equalsIgnoreCase(price)) {
             return null;
         }
 
-        return price;
+        return Double.parseDouble(price);
     }
 
     public String getManufactureCostValue() {
@@ -66,15 +67,15 @@ public class RemoveGreaterDialog extends JDialog {
         gbc.gridy = row;
         gbc.gridwidth = 1;
         gbc.insets = new Insets(0, 0, 12, 12);
-        content.add(createFieldBlock("Price", priceField), gbc);
+        content.add(createFieldBlock(I18n.get("product.price"), priceField), gbc);
 
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 12, 12, 0);
-        content.add(createFieldBlock("Manufacture Cost", manufactureCostField), gbc);
+        content.add(createFieldBlock(I18n.get("product.man.inline"), manufactureCostField), gbc);
 
         row++;
 
-        JLabel hintLabel = new JLabel("Price may be empty or null. Manufacture Cost is required.");
+        JLabel hintLabel = new JLabel(I18n.get("dialog.remove.greater.hint"));
         hintLabel.setFont(new Font("Arial", Font.ITALIC, 15));
         hintLabel.setForeground(App.TEXT_GRAY);
 
@@ -97,8 +98,8 @@ public class RemoveGreaterDialog extends JDialog {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton cancelButton = createSecondaryButton("Cancel");
-        JButton removeButton = createRemoveButton("Remove");
+        JButton cancelButton = createSecondaryButton(I18n.get("dialog.cancel"));
+        JButton removeButton = createRemoveButton(I18n.get("remove"));
 
         cancelButton.addActionListener(e -> dispose());
         removeButton.addActionListener(this::removeGreater);
@@ -126,24 +127,24 @@ public class RemoveGreaterDialog extends JDialog {
                 double parsedPrice = Double.parseDouble(price);
 
                 if (parsedPrice <= 0) {
-                    errorLabel.setText("Price must be greater than 0.");
+                    errorLabel.setText(I18n.get("error.price"));
                     return;
                 }
             } catch (NumberFormatException ex) {
-                errorLabel.setText("Price must be a number or null.");
+                errorLabel.setText(I18n.get("error.price.notNum"));
                 return;
             }
         }
 
         if (manufactureCost.isEmpty()) {
-            errorLabel.setText("Manufacture Cost is required.");
+            errorLabel.setText(I18n.get("error.man"));
             return;
         }
 
         try {
             Integer.parseInt(manufactureCost);
         } catch (NumberFormatException ex) {
-            errorLabel.setText("Manufacture Cost must be an integer.");
+            errorLabel.setText(I18n.get("error.man.notInt"));
             return;
         }
 

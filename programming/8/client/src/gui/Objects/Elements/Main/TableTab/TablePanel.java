@@ -7,7 +7,10 @@ import Commons.CustomPackage;
 import core.Objects.CommandsControllers.Commands.Show;
 import core.Objects.Connection.Client;
 import gui.App;
+import gui.Objects.Elements.Localized;
 import gui.Objects.Elements.Main.TableTab.Dialogs.FilterDialog;
+import Localization.I18n;
+import gui.Objects.Helpers.Formatters;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -17,35 +20,64 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class TablePanel extends JPanel {
+public class TablePanel extends JPanel implements Localized {
     private static JTable table;
     private static DefaultTableModel model;
 
-    static String[] columns = {
+    private static final String[] COLUMN_KEYS = {
             "ID",
-            "Name",
-            "X", "Y",
-            "Creation Date",
-            "Price",
-            "Manufacture Cost",
-            "Unit of Measure",
-            "Owner's Name",
-            "Height",
-            "Eye Color",
-            "Hair Color",
-            "Nationality",
-            "X", "Y", "Z",
-            "Location Name",
-            "Author"
+            "product.name",
+            "X",
+            "Y",
+            "product.creation.date",
+            "product.price",
+            "product.man.cost",
+            "product.unit",
+            "product.owners.name",
+            "owner.height",
+            "owner.eye",
+            "owner.hair",
+            "owner.nationality",
+            "X",
+            "Y",
+            "Z",
+            "owner.loc.name.full",
+            "product.author"
     };
+
+    private static String[] columns = localizedColumns();
+
+    private static String[] localizedColumns() {
+        return Arrays.stream(COLUMN_KEYS)
+                .map(x->{
+                    if(x.contains(".")){
+                        return I18n.get(x);
+                    }
+                    else return x;
+                })
+                .toArray(String[]::new);
+    }
+
+    @Override
+    public void updateTexts() {
+        columns = localizedColumns();
+
+        rows = convertDataToValidForm(products);
+
+        model.setDataVector(rows, columns);
+        applyColumnWidths();
+
+        revalidate();
+        repaint();
+    }
 
     private record FilterRecord(FilterDialog.SortingOperation operation, String parameter) {
     }
 
-    ;
-    private static Map<String, FilterRecord> filterToColumns = new HashMap<>();
+    private static Map<Integer, FilterRecord> filterToColumns = new HashMap<>();
 
     private static Object[][] rows = null;
+    private static Product[] products = new Product[0];
 
     public TablePanel() {
         super(new BorderLayout());
@@ -123,18 +155,6 @@ public class TablePanel extends JPanel {
 
         header.setDefaultRenderer(new HeaderMenuRenderer());
 
-        JPopupMenu headerMenu = new JPopupMenu();
-
-        JMenuItem sortAZ = new JMenuItem("Sort by A-Z");
-        JMenuItem sortZA = new JMenuItem("Sort by Z-A");
-        JMenuItem addFilter = new JMenuItem("Add filter");
-
-
-        headerMenu.add(sortAZ);
-        headerMenu.add(sortZA);
-        headerMenu.addSeparator();
-        headerMenu.add(addFilter);
-
         header.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
@@ -156,7 +176,7 @@ public class TablePanel extends JPanel {
                 int modelColumn = table.convertColumnIndexToModel(viewColumn);
                 String columnName = table.getColumnName(viewColumn);
 
-                JPopupMenu menu = createHeaderPopupMenu(table, modelColumn, columnName);
+                JPopupMenu menu = createHeaderPopupMenu( modelColumn, columnName);
 
                 menu.show(header, headerRect.x + headerRect.width - 10, headerRect.y + headerRect.height);
             }
@@ -184,6 +204,7 @@ public class TablePanel extends JPanel {
             protected void done() {
                 try {
                     Product[] products = get();
+                    TablePanel.products = products;
 
                     Object[][] data = convertDataToValidForm(products);
                     rows = data;
@@ -207,11 +228,18 @@ public class TablePanel extends JPanel {
         return Arrays.copyOf(rawProducts, rawProducts.length, Product[].class);
     }
 
+    public static void setProducts(Product... newProducts) {
+        products = newProducts;
+        rows = convertDataToValidForm(products);
+        model.setDataVector(rows, columns);
+        applyColumnWidths();
+    }
+
     private static Object[][] convertDataToValidForm(Product[] products) {
         ArrayList<Object[]> data = new ArrayList<>();
 
         SimpleDateFormat dateFormat =
-                new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                new SimpleDateFormat("dd.MM.yyyy");
 
         for (Product p : products) {
             Person owner = p.getOwner();
@@ -222,9 +250,9 @@ public class TablePanel extends JPanel {
                     p.getId(),
                     p.getName(),
                     p.getCoordinates().getX(),
-                    p.getCoordinates().getY(),
-                    dateFormat.format(p.getCreationDate()),
-                    p.getPrice(),
+                    Formatters.decimal(p.getCoordinates().getY()),
+                    Formatters.date(p.getCreationDate()),
+                    Formatters.decimal(p.getPrice()),
                     p.getManufactureCost(),
                     p.getUnitOfMeasure(),
 
@@ -234,9 +262,9 @@ public class TablePanel extends JPanel {
                     owner == null ? null : owner.getHairColor(),
                     owner == null ? null : owner.getNationality(),
 
-                    location == null ? null : location.getX(),
+                    location == null ? null : Formatters.decimal(location.getX()),
                     location == null ? null : location.getY(),
-                    location == null ? null : location.getZ(),
+                    location == null ? null : Formatters.decimal(location.getZ()),
                     location == null ? null : location.getName(),
 
                     p.getAuthor().getLogin()};
@@ -274,21 +302,22 @@ public class TablePanel extends JPanel {
         }
     }
 
-    private JPopupMenu createHeaderPopupMenu(JTable table, int modelColumn, String columnName) {
+    private JPopupMenu createHeaderPopupMenu(int modelColumn, String columnName) {
         JPopupMenu menu = new JPopupMenu();
 
-        JMenuItem sortAZ = new JMenuItem("Sort by A-Z");
-        JMenuItem sortZA = new JMenuItem("Sort by Z-A");
+        JMenuItem sortAZ = new JMenuItem(I18n.get("table.sort.AZ"));
+        JMenuItem sortZA = new JMenuItem(I18n.get("table.sort.ZA"));
 
         sortAZ.setFont(new Font("Arial", Font.PLAIN, 22));
         sortZA.setFont(new Font("Arial", Font.PLAIN, 22));
-        JMenuItem filterButton = new JMenuItem("Add filter");
+        JMenuItem filterButton = new JMenuItem(I18n.get("table.add.filter"));
 
-        if(filterToColumns.containsKey(columnName)) {
-            filterButton.setText("Remove filter");
+        if (filterToColumns.containsKey(modelColumn)) {
+            filterButton.setText(I18n.get("table.remove.filter"));
             filterButton.setFont(new Font("Arial", Font.PLAIN, 22));
             filterButton.addActionListener(e -> {
-                model.setDataVector(rows,columns);
+                filterToColumns.remove(modelColumn);
+                model.setDataVector(rows, columns);
                 applyColumnWidths();
             });
         }else{
@@ -379,7 +408,7 @@ public class TablePanel extends JPanel {
         int rowCount = rows.length;
         int columnCount = 18;
 
-        filterToColumns.put(columns[columnModel], new FilterRecord(operation, parameter));
+        filterToColumns.put(columnModel, new FilterRecord(operation, parameter));
 
         List<Object[]> rowsToBeSorted = IntStream.range(0, rowCount)
                 .mapToObj(row -> IntStream.range(0, columnCount)
@@ -388,13 +417,33 @@ public class TablePanel extends JPanel {
 
         switch (operation) {
             case EQUALS ->
-                    rowsToBeSorted = rowsToBeSorted.stream().filter(x -> x[columnModel].toString().equals(parameter)).toList();
+                    rowsToBeSorted = rowsToBeSorted.stream()
+                            .filter(x -> Objects.equals(
+                                    x[columnModel] == null ? null : x[columnModel].toString(),
+                                    parameter
+                            ))
+                            .toList();
+
             case CONTAINS ->
-                    rowsToBeSorted = rowsToBeSorted.stream().filter(x -> x[columnModel].toString().contains(parameter)).toList();
+                    rowsToBeSorted = rowsToBeSorted.stream()
+                            .filter(x -> x[columnModel] != null
+                                    && parameter != null
+                                    && x[columnModel].toString().contains(parameter))
+                            .toList();
+
             case STARTS ->
-                    rowsToBeSorted = rowsToBeSorted.stream().filter(x -> x[columnModel].toString().startsWith(parameter)).toList();
+                    rowsToBeSorted = rowsToBeSorted.stream()
+                            .filter(x -> x[columnModel] != null
+                                    && parameter != null
+                                    && x[columnModel].toString().startsWith(parameter))
+                            .toList();
+
             case ENDS ->
-                    rowsToBeSorted = rowsToBeSorted.stream().filter(x -> x[columnModel].toString().endsWith(parameter)).toList();
+                    rowsToBeSorted = rowsToBeSorted.stream()
+                            .filter(x -> x[columnModel] != null
+                                    && parameter != null
+                                    && x[columnModel].toString().endsWith(parameter))
+                            .toList();
         }
         ;
 

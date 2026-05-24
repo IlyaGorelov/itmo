@@ -2,6 +2,7 @@ package core.Objects.CommandsControllers.Commands;
 
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
+import core.Objects.Connection.Client;
 
 /** Gets an element by id */
 public class GetById extends Command {
@@ -26,7 +27,8 @@ public class GetById extends Command {
 
     @Override
     public String getRelevantAnswer(CustomPackage pack) {
-        return pack.getObject().toString() + "\n";
+        Client.putAnswer(pack);
+        return "";
     }
 
 }

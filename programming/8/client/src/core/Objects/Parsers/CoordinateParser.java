@@ -40,7 +40,7 @@ public class CoordinateParser extends Parser<Coordinates> {
 
         coordinates = new Coordinates(Integer.parseInt(x),
                 Double.parseDouble(y));
-        if (!coordinatesValidator.isValid(String.valueOf(coordinates), false))
+        if (!coordinatesValidator.isValid(coordinates, false))
             throw new IllegalArgumentException("Invalid value for coordinates");
 
 

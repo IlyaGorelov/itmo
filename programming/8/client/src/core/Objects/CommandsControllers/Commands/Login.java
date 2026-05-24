@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.Builders.UserBuilder;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
@@ -45,19 +46,18 @@ public class Login extends Command {
         String result="";
 
         if(object==null) {
-           // ErrorMessageDeliverer.add(new IllegalArgumentException("Wrong login or password!"),ErrorMessageDeliverer.response);
-            ResultDialog.showError(getName(),"Wrong login or password!");
-            return "Wrong login or password!";
+            sendError(I18n.get("error.login"));
+            return "";
         }
 
         if (object instanceof User registered) {
             AuthManager.getInstance().setUser(registered);
-            result = "User " + registered.getLogin() + " was logged in." + "\n";
+            result = I18n.get("info.login1").formatted(registered.getLogin()) + "\n";
             CommandManager.putCommandsForAuthenticatedUsers();
-            result +="Now all commands are accessible";
+            result += I18n.get("info.login2");
 
             Client.openFrame(new MainFrame());
-            return result;
+            return "";
         }
         else
             return object.toString() + "\n";

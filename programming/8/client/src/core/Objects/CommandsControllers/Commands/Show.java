@@ -43,7 +43,7 @@ public class Show extends Command implements AuthChecker {
         String relevant = "All elements of collection: \n";
 
         if (products.length == 0)
-            return "Collection is empty.";
+            return "";
         else {
             for (Object product : products) {
                 relevant += product.toString() + "\n\n";
@@ -51,7 +51,8 @@ public class Show extends Command implements AuthChecker {
             relevant += "END OF LIST\n";
         }
 
-        return relevant;
+
+        return Client.getMode() == Client.Mode.CLI ? relevant : "";
     }
 
 }

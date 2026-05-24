@@ -7,92 +7,58 @@ import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.Commands.*;
 import core.Objects.Connection.Client;
 import core.Objects.Managers.AuthManager;
+import core.Objects.Managers.IdManager;
 import gui.App;
+import gui.Objects.Elements.Commons.ResultDialog;
 import gui.Objects.Elements.Commons.RoundedButton;
+import gui.Objects.Elements.Localized;
 import gui.Objects.Elements.Main.TableTab.Dialogs.*;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Date;
 
-public class ContentPanel extends JPanel {
+public class ContentPanel extends JPanel implements Localized {
+    @Override
+    public void updateTexts() {
+        remove(topPanel);
+        tablePanel.updateTexts();
+
+        topPanel = drawTopPart();
+        add(topPanel, BorderLayout.NORTH);
+
+        revalidate();
+        repaint();
+    }
+
     public enum CommandLabel {
-        ADD(
-                "Add",
-                new Add().getName()
-        ),
+        ADD("add", new Add().getName()),
+        ADD_IF_MAX("add.if.max", new AddIfMax().getName()),
+        ADD_IF_MIN("add.if.min", new AddIfMin().getName()),
+        CLEAR("clear", new Clear().getName()),
+        EXECUTE_SCRIPT("execute.script", new ExecuteScript().getName()),
+        FILTER_GREATER_THAN_OWNER("filter.greater", new GreaterThanOwner().getName()),
+        MIN_BY_UNIT("min.by.unit", new MinByUnit().getName()),
+        REDO("redo", new Redo().getName()),
+        REMOVE("remove", new Remove().getName()),
+        REMOVE_BY_UNIT("remove.by.unit", new RemoveByUnitOfMeasure().getName()),
+        REMOVE_GREATER("remove.greater", new RemoveGreater().getName()),
+        UNDO("undo", new Undo().getName()),
+        UPDATE("update", new Update().getName()),
+        SHOW("show", new Show().getName());
 
-        ADD_IF_MAX(
-                "Add if Max",
-                new AddIfMax().getName()
-        ),
-
-        ADD_IF_MIN(
-                "Add if Min",
-                new AddIfMin().getName()
-        ),
-
-        CLEAR(
-                "Clear",
-                new Clear().getName()
-        ),
-
-        EXECUTE_SCRIPT(
-                "Execute Script",
-                new ExecuteScript().getName()
-        ),
-
-        FILTER_GREATER_THAN_OWNER(
-                "Filter Greater Than Owner",
-                new GreaterThanOwner().getName()
-        ),
-
-        MIN_BY_UNIT(
-                "Min By Unit of Measure",
-                new MinByUnit().getName()
-        ),
-
-        REDO(
-                "Redo",
-                new Redo().getName()
-        ),
-
-        REMOVE(
-                "Remove",
-                new Remove().getName()
-        ),
-
-        REMOVE_BY_UNIT(
-                "Remove By Unit",
-                new RemoveByUnitOfMeasure().getName()
-        ),
-
-        REMOVE_GREATER(
-                "Remove Greater",
-                new RemoveGreater().getName()
-        ),
-
-        UNDO(
-                "Undo",
-                new Undo().getName()
-        ),
-
-        UPDATE(
-                "Update",
-                new Update().getName()
-        );
-
-        private final String guiSideLabel;
+        private final String guiSideKey;
         private final String programSideLabel;
 
-        CommandLabel(String guiSideLabel, String programSideLabel) {
-            this.guiSideLabel = guiSideLabel;
+        CommandLabel(String guiSideKey, String programSideLabel) {
+            this.guiSideKey = guiSideKey;
             this.programSideLabel = programSideLabel;
         }
 
         public String getGUISideLabel() {
-            return guiSideLabel;
+            return I18n.get(guiSideKey);
         }
 
         public String getProgramSideLabel() {
@@ -101,17 +67,24 @@ public class ContentPanel extends JPanel {
 
         @Override
         public String toString() {
-            return guiSideLabel;
+            return getGUISideLabel();
         }
     }
+
+    private JLabel titleLabel;
+    private JPanel topPanel;
+    private TablePanel tablePanel;
 
     public ContentPanel() {
         super(new BorderLayout());
         setOpaque(false);
         setBorder(new EmptyBorder(15, 35, 35, 35));
 
-        add(drawTopPart(), BorderLayout.NORTH);
-        add(new TablePanel(), BorderLayout.CENTER);
+        topPanel = drawTopPart();
+        tablePanel = new TablePanel();
+
+        add(topPanel, BorderLayout.NORTH);
+        add(tablePanel, BorderLayout.CENTER);
 
     }
 
@@ -120,18 +93,18 @@ public class ContentPanel extends JPanel {
         titleAndButtons.setOpaque(false);
         titleAndButtons.setBorder(new EmptyBorder(0, 0, 12, 0));
 
-        JLabel title = new JLabel("Products");
-        title.setForeground(Color.WHITE);
-        title.setFont(new Font("Arial", Font.PLAIN, 42));
+        titleLabel = new JLabel(I18n.get("table.title"));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.PLAIN, 42));
 
-        titleAndButtons.add(title, BorderLayout.WEST);
+        titleAndButtons.add(titleLabel, BorderLayout.WEST);
         titleAndButtons.add(drawButtons(), BorderLayout.CENTER);
 
         return titleAndButtons;
     }
 
     private JPanel drawButtons() {
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 25, 0));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttonsPanel.setOpaque(false);
 
         JButton undoButton = createSimpleButton(CommandLabel.UNDO, 100);
@@ -142,14 +115,15 @@ public class ContentPanel extends JPanel {
         JButton executeScriptButton = createSimpleButton(CommandLabel.EXECUTE_SCRIPT, 220);
 
         JButton showDropDown = createDropDownButton(
-                "Show",
+                I18n.get("show"),
                 150,
+                CommandLabel.SHOW,
                 CommandLabel.FILTER_GREATER_THAN_OWNER,
                 CommandLabel.MIN_BY_UNIT
         );
 
         JButton clearDropDown = createDropDownButton(
-                "Clear",
+                I18n.get("clear"),
                 150,
                 CommandLabel.CLEAR,
                 CommandLabel.REMOVE_BY_UNIT,
@@ -157,7 +131,7 @@ public class ContentPanel extends JPanel {
         );
 
         JButton addDropDown = createDropDownButton(
-                "Add",
+                I18n.get("add"),
                 140,
                 CommandLabel.ADD,
                 CommandLabel.ADD_IF_MIN,
@@ -165,11 +139,11 @@ public class ContentPanel extends JPanel {
         );
 
         undoButton.addActionListener(e -> {
-            Client.putCommand(new CustomPackage(new Undo().getName(),null,null,AuthManager.getInstance().getUser()));
+            Client.putCommand(new CustomPackage(new Undo().getName(), null, null, AuthManager.getInstance().getUser()));
         });
 
         redoButton.addActionListener(e -> {
-            Client.putCommand(new CustomPackage(new Redo().getName(),null,null,AuthManager.getInstance().getUser()));
+            Client.putCommand(new CustomPackage(new Redo().getName(), null, null, AuthManager.getInstance().getUser()));
         });
 
         updateButton.addActionListener(e -> {
@@ -189,7 +163,7 @@ public class ContentPanel extends JPanel {
 
                 System.out.println("execute_script " + scriptPath);
 
-                Client.putCommand(new CustomPackage(new ExecuteScript().getName(),scriptPath,null));
+                Client.putCommand(new CustomPackage(new ExecuteScript().getName() + " " + scriptPath, null, null));
             }
         });
 
@@ -209,9 +183,12 @@ public class ContentPanel extends JPanel {
     private JButton createSimpleButton(CommandLabel label, int width) {
         JButton button = new RoundedButton(label.getGUISideLabel(), 25, Color.WHITE);
 
-        button.setPreferredSize(new Dimension(width, 55));
         button.setFont(new Font("Arial", Font.PLAIN, 28));
         button.setForeground(App.TEXT_PURPLE);
+
+        button.setPreferredSize(new Dimension(width, 55));
+
+        fitButtonText(button,28,14);
 
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -224,11 +201,35 @@ public class ContentPanel extends JPanel {
         return button;
     }
 
+    private void fitButtonText(AbstractButton button, int maxFontSize, int minFontSize) {
+        String text = button.getText();
+        Font baseFont = button.getFont();
+
+        int availableWidth = button.getPreferredSize().width
+                - button.getInsets().left
+                - button.getInsets().right
+                - 20;
+
+        for (int size = maxFontSize; size >= minFontSize; size--) {
+            Font font = baseFont.deriveFont((float) size);
+            FontMetrics metrics = button.getFontMetrics(font);
+
+            if (metrics.stringWidth(text) <= availableWidth) {
+                button.setFont(font);
+                return;
+            }
+        }
+
+        button.setFont(baseFont.deriveFont((float) minFontSize));
+    }
+
     private JButton createDropDownButton(String label, int width, CommandLabel... variants) {
         JButton button = new RoundedButton(label + " ▼", 25, Color.WHITE);
         button.setPreferredSize(new Dimension(width, 55));
         button.setFont(new Font("Arial", Font.PLAIN, 28));
         button.setForeground(App.TEXT_PURPLE);
+
+        fitButtonText(button,28,14);
 
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -253,9 +254,7 @@ public class ContentPanel extends JPanel {
             item.addActionListener(e -> {
                 System.out.println("Selected command: " + variant);
                 openDialog(variant);
-                // здесь потом вызывай свою команду
-                // например:
-                // GUICommand = new CustomPackage(variant, null, null);
+
             });
 
             popupMenu.add(item);
@@ -314,9 +313,13 @@ public class ContentPanel extends JPanel {
             case ADD_IF_MAX -> openProductDialog(ProductDialog.Mode.ADD_IF_MAX);
             case CLEAR -> openClearDialog();
             case FILTER_GREATER_THAN_OWNER -> openOwnerFilterDialog();
-            case MIN_BY_UNIT -> openMinByUnitDialog();
+            case MIN_BY_UNIT -> Client.putCommand(new CustomPackage(
+                    new MinByUnit().getName(),
+                    null, null,
+                    AuthManager.getInstance().getUser()));
             case REMOVE_BY_UNIT -> openRemoveAllByUnitDialog();
             case REMOVE_GREATER -> openRemoveGreaterDialog();
+            case SHOW -> TablePanel.fetchProductsAsync();
         }
     }
 
@@ -328,10 +331,19 @@ public class ContentPanel extends JPanel {
             return;
         }
 
-        String productId = idDialog.getProductId();
+        try {
+            if (!IdManager.isIdIn(idDialog.getProductId()))
+                throw new IllegalArgumentException(I18n.get("error.no.id"));
+        } catch (Exception e) {
+            ResultDialog.showError(e.getMessage());
+            return;
+        }
 
-        ProductDialog productDialog = new ProductDialog(ProductDialog.Mode.UPDATE);
-        productDialog.setProductId(productId);
+        Long productId = idDialog.getProductId();
+
+        Product defaultProduct = IdManager.getProductById(productId);
+
+        ProductDialog productDialog = new ProductDialog(ProductDialog.Mode.UPDATE, defaultProduct);
         productDialog.setVisible(true);
 
         if (productDialog.isConfirmed()) {
@@ -342,7 +354,7 @@ public class ContentPanel extends JPanel {
             System.out.println("Name: " + productDialog.getNameValue());
 
             Product newProduct = new Product(
-                    Long.parseLong(productId),
+                    productId,
                     productDialog.getNameValue(),
                     productDialog.getCoordinatesValue(),
                     new Date(),
@@ -354,7 +366,7 @@ public class ContentPanel extends JPanel {
             );
             CustomPackage updateRequest = new CustomPackage(
                     new Update().getName(),
-                    productId,
+                    productId.toString(),
                     newProduct,
                     AuthManager.getInstance().getUser());
             Client.putCommand(updateRequest);
@@ -420,40 +432,28 @@ public class ContentPanel extends JPanel {
         System.out.println("Owner name: " + ownerName);
         System.out.println("Height: " + height);
 
-        Person newOwner = new Person(
-                ownerName,
-                Float.parseFloat(height),
-                null,
-                null,
-                null,
-                null
-        );
+        if (ownerName == null) {
+            Client.putCommand(new CustomPackage(
+                    new GreaterThanOwner().getName(),
+                    null,
+                    null,
+                    AuthManager.getInstance().getUser()));
+        } else {
+            Person newOwner = new Person(
+                    ownerName,
+                    height != null ? Float.parseFloat(height) : null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
 
-        Client.putCommand(new CustomPackage(
-                new GreaterThanOwner().getName(),
-                null,
-                newOwner,
-                AuthManager.getInstance().getUser()));
-    }
-
-    private void openMinByUnitDialog() {
-        MinByUnitDialog dialog = new MinByUnitDialog();
-        dialog.setVisible(true);
-
-        if (!dialog.isConfirmed()) {
-            return;
+            Client.putCommand(new CustomPackage(
+                    new GreaterThanOwner().getName(),
+                    null,
+                    newOwner,
+                    AuthManager.getInstance().getUser()));
         }
-
-        String commandForServer = "min_by_unit";
-        String unitOfMeasure = dialog.getUnitOfMeasure();
-
-        System.out.println("Command for server: " + commandForServer);
-        System.out.println("Unit of Measure: " + unitOfMeasure);
-
-        Client.putCommand(new CustomPackage(
-                            new MinByUnit().getName(),
-                            unitOfMeasure, null,
-                            AuthManager.getInstance().getUser()));
     }
 
     private void openRemoveAllByUnitDialog() {
@@ -486,7 +486,7 @@ public class ContentPanel extends JPanel {
         }
 
         String commandForServer = "remove_greater";
-        String price = dialog.getPriceValue();
+        Double price = dialog.getPriceValue();
         String manufactureCost = dialog.getManufactureCostValue();
 
         System.out.println("Command for server: " + commandForServer);
@@ -498,7 +498,7 @@ public class ContentPanel extends JPanel {
                 null,
                 null,
                 new Date(),
-                Double.parseDouble(price),
+                price,
                 Integer.parseInt(manufactureCost),
                 null,
                 null,

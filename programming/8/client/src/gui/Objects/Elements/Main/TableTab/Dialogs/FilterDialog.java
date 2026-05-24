@@ -6,9 +6,11 @@ import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Main.CustomComboBox;
 import gui.Objects.Elements.Main.TableTab.TablePanel;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -19,17 +21,14 @@ public class FilterDialog extends JDialog {
     }
 
     private String columnName;
-    private JComboBox<String> operationBox;
+    private JComboBox<OperationItem> operationBox;
     private JTextField valueField;
-    private JTextField secondValueField;
-    private JLabel secondValueLabel;
-    private JPanel secondValuePanel;
 
     private int modelColumn;
 
 
     public FilterDialog( String selectedColumn,int modelColumn) {
-        super(null, "Add filter", ModalityType.APPLICATION_MODAL);
+        super(null, I18n.get("dialog.filter.title"), ModalityType.APPLICATION_MODAL);
 
         this.modelColumn=modelColumn;
         this.columnName = selectedColumn;
@@ -48,24 +47,20 @@ public class FilterDialog extends JDialog {
         content.setBorder(new EmptyBorder(24, 28, 24, 28));
 
         GridBagConstraints gbc = new GridBagConstraints();
-//        gbc.insets = new Insets(10, 12, 10, 12);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.NORTHWEST;
         gbc.weightx = 1;
 
         int row = 0;
 
-
-
-        operationBox = new CustomComboBox(new String[]{
-                "Equals",
-                "Contains",
-                "Starts with",
-                "Ends with"
+        operationBox = new CustomComboBox<>(new OperationItem[]{
+                new OperationItem(I18n.get("dialog.filter.equals"), SortingOperation.EQUALS),
+                new OperationItem(I18n.get("dialog.filter.contains"), SortingOperation.CONTAINS),
+                new OperationItem(I18n.get("dialog.filter.starts"), SortingOperation.STARTS),
+                new OperationItem(I18n.get("dialog.filter.ends"), SortingOperation.ENDS)
         });
 
         valueField = createTextField();
-        secondValueField = createTextField();
 
         gbc.gridwidth = 1;
         gbc.gridy = row;
@@ -82,34 +77,22 @@ public class FilterDialog extends JDialog {
         column.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         column.setHorizontalAlignment(SwingConstants.CENTER);
 
-        content.add(createFieldBlock("Column", column), gbc);
+        content.add(createFieldBlock(I18n.get("dialog.filter.column"), column), gbc);
 
         gbc.gridx = 1;
-        content.add(createFieldBlock("Operation", operationBox), gbc);
+        content.add(createFieldBlock(I18n.get("dialog.filter.operation"), operationBox), gbc);
 
         gbc.gridx = 2;
-        content.add(createFieldBlock("Value", valueField), gbc);
+        content.add(createFieldBlock(I18n.get("dialog.filter.value"), valueField), gbc);
 
         row++;
-
-        secondValueLabel = new JLabel("Second Value");
-        secondValueLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        secondValueLabel.setForeground(App.TEXT_PURPLE);
-
-        secondValuePanel = createFieldBlock("Second Value", secondValueField);
-        secondValuePanel.setVisible(false);
-
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 3;
-        content.add(secondValuePanel, gbc);
 
         row++;
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttons.setOpaque(false);
 
-        JButton applyButton = createPrimaryButton("Apply filter");
+        JButton applyButton = createPrimaryButton(I18n.get("dialog.filter.apply"));
 
         applyButton.addActionListener(this::applyFilter);
 
@@ -127,20 +110,24 @@ public class FilterDialog extends JDialog {
 
 
     private void applyFilter(ActionEvent e) {
-        String column = String.valueOf(columnName);
-        String operation = String.valueOf(operationBox.getSelectedItem());
+        OperationItem selectedOperation = (OperationItem) operationBox.getSelectedItem();
+
+        if (selectedOperation == null) {
+            return;
+        }
+
         String value = valueField.getText().trim();
 
-        System.out.println("Column: " + column);
-        System.out.println("Operation: " + operation);
+        System.out.println("Column: " + columnName);
+        System.out.println("Operation: " + selectedOperation.operation());
         System.out.println("Value: " + value);
 
-        switch (operation){
-            case "Equals" -> TablePanel.filterTable(SortingOperation.EQUALS,modelColumn,value);
-            case "Contains" -> TablePanel.filterTable(SortingOperation.CONTAINS,modelColumn,value);
-            case "Starts with" -> TablePanel.filterTable(SortingOperation.STARTS,modelColumn,value);
-            case "Ends with" -> TablePanel.filterTable(SortingOperation.ENDS,modelColumn,value);
-        }
+        TablePanel.filterTable(
+                selectedOperation.operation(),
+                modelColumn,
+                value
+        );
+
         dispose();
     }
 
@@ -164,36 +151,6 @@ public class FilterDialog extends JDialog {
         return panel;
     }
 
-    private JComponent createSectionHeader(String title) {
-        JPanel panel = new JPanel(new BorderLayout(14, 0));
-        panel.setOpaque(false);
-
-        JLabel label = new JLabel(title);
-        label.setForeground(App.TEXT_PURPLE);
-        label.setFont(new Font("Arial", Font.PLAIN, 24));
-
-        JSeparator separator = new JSeparator();
-        separator.setForeground(App.TEXT_PURPLE);
-        separator.setBackground(App.TEXT_PURPLE);
-
-        JPanel separatorWrapper = new JPanel(new GridBagLayout());
-        separatorWrapper.setOpaque(false);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        separatorWrapper.add(separator, gbc);
-
-        panel.add(label, BorderLayout.WEST);
-        panel.add(separatorWrapper, BorderLayout.CENTER);
-
-        return panel;
-    }
-
     private JTextField createTextField() {
         JTextField field = new JTextField();
         field.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -207,16 +164,21 @@ public class FilterDialog extends JDialog {
     }
 
     private JButton createPrimaryButton(String text) {
-        JButton button = new RoundedButton(text, 18,App.BACKGROUND, Color.WHITE,null);
-        button.setPreferredSize(new Dimension(190, 54));
+        JButton button = new RoundedButton(text, 18, App.BACKGROUND, Color.WHITE, null);
+
+        FontMetrics fm = button.getFontMetrics(button.getFont());
+        int width = Math.max(190, fm.stringWidth(text) + 45);
+
+        button.setPreferredSize(new Dimension(width, 54));
         return button;
     }
 
-    private JButton createSecondaryButton(String text) {
-        JButton button = new RoundedButton(text,18, Color.WHITE, App.BACKGROUND,null);
-        button.setBorder(new RoundedBorder(App.BACKGROUND, 2,18));
-        button.setPreferredSize(new Dimension(130, 54));
-        return button;
+    private record OperationItem(String label, SortingOperation operation) {
+        @Override
+        public String toString() {
+            return label;
+        }
     }
+
 
 }

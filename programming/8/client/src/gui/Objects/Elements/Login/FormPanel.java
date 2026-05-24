@@ -11,7 +11,10 @@ import gui.App;
 import gui.Objects.Elements.Commons.InputPanel;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Commons.RoundedPanel;
+import gui.Objects.Elements.Localized;
 import gui.Objects.Helpers.ErrorMessageDeliverer;
+import Localization.I18n;
+import gui.Objects.Helpers.TextFitter;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,7 +22,30 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FormPanel extends JPanel {
+public class FormPanel extends JPanel implements Localized {
+    private JLabel title;
+    private JToggleButton showButton;
+    private JButton loginButton;
+    private BottomPanel bottomPanel;
+
+    private boolean isPasswordShown = false;
+
+    @Override
+    public void updateTexts() {
+        title.setText(I18n.get("login.instruction"));
+        TextFitter.fitLabelText(title,28,10);
+
+        if(isPasswordShown) {
+            showButton.setText(I18n.get("password.button.hide"));
+        }else{
+            showButton.setText(I18n.get("password.button.show"));
+        }
+
+        loginButton.setText(I18n.get("login.button"));
+
+        bottomPanel.updateTexts();
+    }
+
     private enum InputType {
         login, password
     }
@@ -42,8 +68,9 @@ public class FormPanel extends JPanel {
         card.setPreferredSize(new Dimension(460, 365));
         card.setLayout(new BorderLayout());
 
+        bottomPanel=new BottomPanel();
         card.add(drawForm(), BorderLayout.CENTER);
-        card.add(new BottomPanel(), BorderLayout.SOUTH);
+        card.add(bottomPanel, BorderLayout.SOUTH);
 
         add(card);
     }
@@ -73,10 +100,11 @@ public class FormPanel extends JPanel {
     }
 
     private JLabel drawTitle() {
-        JLabel title = new JLabel("Log in to your account");
+        title = new JLabel(I18n.get("login.instruction"));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setForeground(App.TEXT_PURPLE);
         title.setFont(new Font("Arial", Font.PLAIN, 28));
+        TextFitter.fitLabelText(title,28,10);
         return title;
     }
 
@@ -92,7 +120,7 @@ public class FormPanel extends JPanel {
 
         char defaultEchoChar = passwordField.getEchoChar();
 
-        JToggleButton showButton = new JToggleButton("Show");
+        showButton = new JToggleButton(I18n.get("password.button.show"));
         showButton.setFocusable(false);
         showButton.setBorderPainted(false);
         showButton.setContentAreaFilled(false);
@@ -102,10 +130,12 @@ public class FormPanel extends JPanel {
         showButton.addActionListener(e -> {
             if (showButton.isSelected()) {
                 passwordField.setEchoChar((char) 0);
-                showButton.setText("Hide");
+                showButton.setText(I18n.get("password.button.hide"));
+                isPasswordShown =true;
             } else {
                 passwordField.setEchoChar(defaultEchoChar);
-                showButton.setText("Show");
+                showButton.setText(I18n.get("password.button.show"));
+                isPasswordShown =false;
             }
         });
 
@@ -148,7 +178,7 @@ public class FormPanel extends JPanel {
 
 
     private JButton drawLoginButton(JTextField loginField, JPasswordField passwordField) {
-        JButton loginButton = new RoundedButton("Log in",null,8,8,8,8,App.BACKGROUND);
+        loginButton = new RoundedButton(I18n.get("login.button"),null,8,8,8,8,App.BACKGROUND);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
         loginButton.setFont(new Font("Arial", Font.PLAIN, 24));

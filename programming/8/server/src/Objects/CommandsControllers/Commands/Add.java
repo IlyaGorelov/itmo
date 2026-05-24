@@ -18,11 +18,15 @@ public class Add extends RevertableCommand {
     public void execute() {
         checkArgument();
         Product newProduct = (Product) getComplexArgument();
-        getCollectionManager().addElement(newProduct);
+        Product added = getCollectionManager().addElement(newProduct);
 
+        getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
+        setComplexArgument(added);
         addToHistory();
 
         CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
+
         answer(pkg, "Successfully added " + newProduct.getName());
     }
 

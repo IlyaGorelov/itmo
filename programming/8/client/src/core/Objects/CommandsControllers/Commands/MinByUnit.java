@@ -1,9 +1,11 @@
 package core.Objects.CommandsControllers.Commands;
 
 import Commons.Collection.Product;
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /** show any element where unit of measure is minimal */
 public class MinByUnit extends Command implements AuthChecker {
@@ -35,11 +37,15 @@ public class MinByUnit extends Command implements AuthChecker {
         Object object = pack.getObject();
 
         if (object == null)
-            return "Collection is empty.";
-        if (object instanceof Product)
-            return "An element with min unit:\n" + object + "\n";
-        else
-            return "Element wasn't removed as " + object + "\n";
+            return I18n.get("info.minByUnit1");
+        if (object instanceof Product) {
+            TablePanel.setProducts((Product) object);
+            return "";
+        }
+        else {
+            sendError(object + "\n");
+            return null;
+        }
 
     }
 

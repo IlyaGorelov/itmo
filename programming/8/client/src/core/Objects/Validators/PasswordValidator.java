@@ -1,6 +1,7 @@
 package core.Objects.Validators;
 
 import gui.Objects.Helpers.ErrorMessageDeliverer;
+import Localization.I18n;
 
 import java.util.Scanner;
 
@@ -9,16 +10,16 @@ public class PasswordValidator extends Validator<String> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if(!hasUpperCase(value))
-                throw new IllegalArgumentException("Password must contain at least 1 Upper Case character");
+                throw new IllegalArgumentException(I18n.get("error.password.upper"));
 
             if(!hasDigit(value))
-                throw new IllegalArgumentException("Password must contain at least 1 number");
+                throw new IllegalArgumentException(I18n.get("error.password.number"));
 
             if(!hasSpecSymbol(value))
-                throw new IllegalArgumentException("Password must contain at least 1 spec symbol: $%!@ ...");
+                throw new IllegalArgumentException(I18n.get("error.password.spec"));
 
             if(!hasDecentLength(value))
-                throw new IllegalArgumentException("Password length must be at least 8");
+                throw new IllegalArgumentException(I18n.get("error.password.len"));
             return true;
         } catch (Exception e) {
             ErrorMessageDeliverer.add(e);

@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Enums.UnitOfMeasure;
+import Localization.I18n;
 
 public class UnitValidator extends Validator<UnitOfMeasure> {
 
@@ -10,7 +11,7 @@ public class UnitValidator extends Validator<UnitOfMeasure> {
     public boolean isValid(String value, boolean canBeNull) {
         try {
             if (enumContains(value.toUpperCase()) == false)
-                throw new IllegalArgumentException("No such unit of measure");
+                throw new IllegalArgumentException(I18n.get("error.no.unit"));
             return true;
         } catch (Exception e) {
             if (value.isBlank() || value == "null") {

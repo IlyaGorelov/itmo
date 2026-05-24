@@ -1,5 +1,6 @@
 package core.Objects.CommandsControllers.Commands;
 
+import Localization.I18n;
 import core.Objects.Builders.UserBuilder;
 import core.Objects.CommandsControllers.Command;
 import Commons.CustomPackage;
@@ -47,17 +48,17 @@ public class Register extends Command {
 
         if (object instanceof User registered) {
             AuthManager.getInstance().setUser(registered);
-            result = "User " + registered.getLogin() + " was registered." + "\n";
+            result = I18n.get("info.register1").formatted(registered.getLogin()) + "\n";
             CommandManager.putCommandsForAuthenticatedUsers();
-            result +="Now all commands are accessible";
+            result +=I18n.get("info.register2");
 
             Client.openFrame(new MainFrame());
             return result;
         }
         else {
           //  ErrorMessageDeliverer.add(new RuntimeException(object.toString()), ErrorMessageDeliverer.response);
-            ResultDialog.showError(getName(),object.toString());
-            return object.toString() + "\n";
+            ResultDialog.showError(object.toString());
+            return "";
         }
     }
 }

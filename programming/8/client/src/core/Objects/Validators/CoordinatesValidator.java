@@ -3,6 +3,7 @@ package core.Objects.Validators;
 import java.util.Scanner;
 
 import Commons.Collection.Coordinates;
+import Localization.I18n;
 
 public class CoordinatesValidator extends Validator<Coordinates> {
 
@@ -15,7 +16,7 @@ public class CoordinatesValidator extends Validator<Coordinates> {
     public boolean isValid(Coordinates value, boolean canBeNull) {
         try {
             if (value.getY() <= -990)
-                throw new IllegalArgumentException("Y must be greater than -990");
+                throw new IllegalArgumentException(I18n.get("error.y"));
             return true;
         } catch (Exception e) {
             if (value==null) {

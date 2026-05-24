@@ -4,6 +4,7 @@ import java.util.Date;
 
 import Commons.Collection.Coordinates;
 import Commons.Collection.Product;
+import Localization.I18n;
 import core.Objects.CommandsControllers.AuthChecker;
 import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.CommandWithComplexArg;
@@ -11,6 +12,7 @@ import Commons.CustomPackage;
 import core.Objects.Managers.AuthManager;
 import core.Objects.Parsers.ProductParser;
 import core.Objects.Validators.*;
+import gui.Objects.Elements.Main.TableTab.TablePanel;
 
 /*remove elements greater than input */
 public class RemoveGreater extends Command implements CommandWithComplexArg , AuthChecker {
@@ -59,12 +61,12 @@ public class RemoveGreater extends Command implements CommandWithComplexArg , Au
         String relevant = "";
             Object[] products = (Object[]) pack.getObject();
             if (products.length == 0)
-                return "There are no elements greater than input\n";
+                return I18n.get("info.remove.greater")+ "\n";
 
             for (Object product : products) {
-                relevant += "Element with id " + ((Product) product).getId() + " was removed\n";
+                relevant += I18n.get("info.remove").formatted(((Product) product).getName()) + "\n";
             }
-
+        TablePanel.fetchProductsAsync();
         return relevant;
     }
 

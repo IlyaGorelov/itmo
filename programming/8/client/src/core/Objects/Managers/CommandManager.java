@@ -10,6 +10,7 @@ import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.Commands.*;
 import core.Objects.Connection.Client;
 import Commons.CustomPackage;
+import gui.Objects.Elements.Commons.ResultDialog;
 
 /**
  * controls command
@@ -19,6 +20,7 @@ public class CommandManager {
      * map of command kind of name - Command
      */
     private static final HashMap<String, Command> commandMap = new HashMap<>();
+    private static final HashMap<String, Command> hiddenCommandMap = new HashMap<>();
 
     private static Scanner reader;
 
@@ -32,9 +34,8 @@ public class CommandManager {
     public CommandManager(Scanner reader, InputStream in, OutputStream out) {
         CommandManager.reader = reader;
 
-        IdManager.setIO(in, out);
-
         putCommandForUnAuthenticatedUsers();
+        hiddenCommandMap.put(new GetById().getName(),new GetById());
     }
 
     public static void setMode(Client.Mode mode){
@@ -140,6 +141,7 @@ public class CommandManager {
                 CustomPackage pack = (CustomPackage) single;
 
                 var command = commandMap.get(pack.getCommand());
+                if(command==null) command=hiddenCommandMap.get(pack.getCommand());
 
                 if (command == null) {
                     relevant.append(pack.getObject()).append("\n");
@@ -148,7 +150,13 @@ public class CommandManager {
                 relevant.append(command.getRelevantAnswer(pack));
             }
 
-            return relevant.toString();
+            if(relevant.toString().isBlank())
+                return "";
+
+            if(ExecuteScript.isProcessing)
+                return relevant.toString();
+
+            return ResultDialog.showInfo(relevant.toString());
         } catch (Exception e) {
             throw new IllegalArgumentException("Something went wrong while parsing command!");
         }

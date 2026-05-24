@@ -29,6 +29,8 @@ public class Remove extends RevertableCommand {
 
             addToHistory();
 
+            getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
             answer(pkg, "Successfully removed " + p.getName());
 

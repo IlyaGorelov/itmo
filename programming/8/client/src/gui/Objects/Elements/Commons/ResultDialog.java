@@ -1,5 +1,6 @@
 package gui.Objects.Elements.Commons;
 import gui.App;
+import Localization.I18n;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -8,7 +9,6 @@ import java.awt.*;
 public class ResultDialog extends JDialog {
 
     public enum Type {
-        SUCCESS("Success"),
         ERROR("Error"),
         INFO("Info");
 
@@ -24,14 +24,12 @@ public class ResultDialog extends JDialog {
     }
 
     private final Type type;
-    private final String commandName;
     private final String message;
 
-    public ResultDialog(Type type, String commandName, String message) {
+    public ResultDialog(Type type, String message) {
         super((Frame) null, type.getTitle(), true);
 
         this.type = type;
-        this.commandName = commandName;
         this.message = message == null ? "" : message;
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -45,20 +43,18 @@ public class ResultDialog extends JDialog {
         setLocationRelativeTo(null);
     }
 
-    public static void showSuccess(String commandName, String message) {
-        show( Type.SUCCESS, commandName, message);
+    public static String showError( String message) {
+        show( Type.ERROR, message);
+        return message;
     }
 
-    public static void showError( String commandName, String message) {
-        show( Type.ERROR, commandName, message);
+    public static String showInfo(String message) {
+        show(Type.INFO, message);
+        return message;
     }
 
-    public static void showInfo( String commandName, String message) {
-        show(Type.INFO, commandName, message);
-    }
-
-    public static void show( Type type, String commandName, String message) {
-        ResultDialog dialog = new ResultDialog( type, commandName, message);
+    public static void show(Type type, String message) {
+        ResultDialog dialog = new ResultDialog( type, message);
         dialog.setVisible(true);
     }
 
@@ -80,16 +76,6 @@ public class ResultDialog extends JDialog {
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 20, 0);
         content.add(createSectionHeader(getHeaderText()), gbc);
-
-        JLabel commandLabel = new JLabel("Command: " + commandName);
-        commandLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        commandLabel.setForeground(App.TEXT_PURPLE);
-
-        gbc.gridx = 0;
-        gbc.gridy = row++;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(0, 0, 12, 0);
-        content.add(commandLabel, gbc);
 
         JTextArea messageArea = new JTextArea(message);
         messageArea.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -134,15 +120,14 @@ public class ResultDialog extends JDialog {
 
     private String getHeaderText() {
         return switch (type) {
-            case SUCCESS -> "Command completed";
-            case ERROR -> "Command failed";
-            case INFO -> "Command result";
+            case ERROR -> I18n.get("result.fail");
+            case INFO -> I18n.get("result");
         };
     }
 
     private Color getAccentColor() {
         return switch (type) {
-            case SUCCESS,INFO -> App.TEXT_PURPLE;
+            case INFO -> App.TEXT_PURPLE;
             case ERROR -> new Color(180, 40, 40);
         };
     }
