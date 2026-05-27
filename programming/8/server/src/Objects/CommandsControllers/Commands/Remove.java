@@ -29,13 +29,13 @@ public class Remove extends RevertableCommand {
 
             addToHistory();
 
-            getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+            getServer().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
 
             CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), p);
             answer(pkg, "Successfully removed " + p.getName());
 
         } catch (IndexOutOfBoundsException e) {
-            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e.getMessage());
+            CustomPackage pkg = new CustomPackage(this.getName(), getArgument(), e);
             answer(pkg, e.getMessage());
             throw new IndexOutOfBoundsException(e.getMessage());
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import gui.App;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Main.CustomComboBox;
 import Localization.I18n;
+import gui.Objects.Elements.Main.CustomComboBoxForUnit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +15,7 @@ import java.awt.event.ActionEvent;
 
 public class RemoveAllByUnitDialog extends JDialog {
 
-    private JComboBox<String> unitBox;
+    private CustomComboBoxForUnit unitBox;
     private JLabel errorLabel;
     private boolean confirmed = false;
 
@@ -35,14 +36,20 @@ public class RemoveAllByUnitDialog extends JDialog {
         return confirmed;
     }
 
-    public String getUnitOfMeasure() {
+    public UnitOfMeasure getUnitOfMeasure() {
         Object selected = unitBox.getSelectedItem();
 
         if (selected == null) {
-            return "";
+            selected="";
         }
 
-        return selected.toString().trim();
+        String selectedStr = selected.toString();
+
+        if(!selectedStr.isBlank())
+                return UnitOfMeasure.valueOf(selectedStr);
+
+        return null;
+
     }
 
     private JComponent createContent() {
@@ -58,11 +65,11 @@ public class RemoveAllByUnitDialog extends JDialog {
 
         int row = 0;
 
-        unitBox = new CustomComboBox(new String[]{
-                EnumI18n.unitOfMeasure(UnitOfMeasure.KILOGRAMS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.METERS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.LITERS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.MILLILITERS)
+        unitBox = new CustomComboBoxForUnit(new UnitOfMeasure[]{
+                UnitOfMeasure.KILOGRAMS,
+                UnitOfMeasure.METERS,
+                UnitOfMeasure.LITERS,
+               UnitOfMeasure.MILLILITERS
         });
 
         gbc.gridx = 0;
@@ -105,9 +112,9 @@ public class RemoveAllByUnitDialog extends JDialog {
     }
 
     private void removeAll(ActionEvent e) {
-        String unit = getUnitOfMeasure();
+        UnitOfMeasure unit = getUnitOfMeasure();
 
-        if (unit.isEmpty()) {
+        if (unit==null) {
             errorLabel.setText(I18n.get("error.unit"));
             return;
         }

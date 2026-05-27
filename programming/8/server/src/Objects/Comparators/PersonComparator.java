@@ -11,7 +11,7 @@ public class PersonComparator implements Comparator<Person> {
     @Override
     public int compare(Person o1, Person o2) {
         if (o1 == null)
-            return o2 != null ? 1 : 0;
+            return o2 != null ? 0 : 1;
 
         if (o2 == null)
             return 1;

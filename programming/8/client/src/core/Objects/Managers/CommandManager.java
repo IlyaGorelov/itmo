@@ -31,7 +31,7 @@ public class CommandManager {
      *
      * @param reader to get input
      */
-    public CommandManager(Scanner reader, InputStream in, OutputStream out) {
+    public CommandManager(Scanner reader) {
         CommandManager.reader = reader;
 
         putCommandForUnAuthenticatedUsers();

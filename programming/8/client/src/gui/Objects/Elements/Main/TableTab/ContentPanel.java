@@ -3,6 +3,7 @@ package gui.Objects.Elements.Main.TableTab;
 import Commons.Collection.Person;
 import Commons.Collection.Product;
 import Commons.CustomPackage;
+import Commons.Enums.UnitOfMeasure;
 import core.Objects.CommandsControllers.Command;
 import core.Objects.CommandsControllers.Commands.*;
 import core.Objects.Connection.Client;
@@ -465,14 +466,14 @@ public class ContentPanel extends JPanel implements Localized {
         }
 
         String commandForServer = "remove_all_by_unit";
-        String unitOfMeasure = dialog.getUnitOfMeasure();
+        UnitOfMeasure unitOfMeasure = dialog.getUnitOfMeasure();
 
         System.out.println("Command for server: " + commandForServer);
         System.out.println("Unit of Measure: " + unitOfMeasure);
 
         Client.putCommand(new CustomPackage(
                 new RemoveByUnitOfMeasure().getName()
-                , unitOfMeasure,
+                , unitOfMeasure.toString(),
                 null,
                 AuthManager.getInstance().getUser()));
     }

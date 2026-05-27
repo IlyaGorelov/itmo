@@ -22,7 +22,7 @@ public class Undo extends Command {
         String answer = "";
 
         if (HistoryManager.isAtStart(getUser())) {
-            answer += ("Nothing to undo");
+            answer = null;
         } else {
             HistoryManager.moveBack(getUser());
 

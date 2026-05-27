@@ -5,7 +5,6 @@ import Commons.Collection.Person;
 import Commons.Collection.Product;
 import Commons.Enums.UnitOfMeasure;
 import Commons.UserData.User;
-import Objects.Connection.Receiver;
 import Objects.DAOs.UserDAO;
 import Objects.Managers.DBManager;
 import Objects.Managers.IdManager;
@@ -21,7 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ProductParser extends Parser<Product> {
-    private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProductParser.class);
 
     private final InitializedIdValidator idValidator = new InitializedIdValidator();
     private final StringValidator stringValidator = new StringValidator();

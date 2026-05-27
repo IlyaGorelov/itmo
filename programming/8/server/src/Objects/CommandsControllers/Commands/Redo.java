@@ -7,10 +7,9 @@ import Objects.CommandsControllers.RevertableCommand;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.HistoryManager;
 
-/**
- * show information about collection
- */
 public class Redo extends Command {
+
+    public static boolean redoFlag = false;
 
     public Redo(CollectionManager collectionManager) {
         super(collectionManager);
@@ -20,14 +19,13 @@ public class Redo extends Command {
     public void execute() {
         checkArgument();
 
-
         if (HistoryManager.isAtEnd(getUser())) {
             CustomPackage pkg = new CustomPackage(this.getName(), null, "Nothing to redo");
             answer(pkg, "Nothing to redo");
 
         } else {
+            redoFlag = true;
             History.HistoryObject historyObject = HistoryManager.getHistoryObject(getUser());
-
 
             RevertableCommand command = historyObject.command();
 
@@ -36,6 +34,7 @@ public class Redo extends Command {
             command.execute();
 
             HistoryManager.moveForward(getUser());
+            redoFlag = false;
         }
 
     }

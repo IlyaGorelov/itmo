@@ -27,7 +27,7 @@ public class Clear extends RevertableCommand {
 
         addToHistory();
 
-        getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+        getServer().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
 
         CustomPackage pkg = new CustomPackage(this.getName(), null, deleted);
         answer(pkg, "Collection successfully cleared");

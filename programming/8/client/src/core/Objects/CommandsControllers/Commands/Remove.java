@@ -43,9 +43,12 @@ public class Remove extends Command implements AuthChecker {
 
         if (object instanceof Product) {
             TablePanel.fetchProductsAsync();
-            return I18n.get("info.remove").formatted(((Product) object).getName() ) + "\n";
+            return I18n.get("info.remove").formatted(((Product) object).getName()) + "\n";
+        } else if (object instanceof IndexOutOfBoundsException) {
+            sendError(I18n.get("error.remove") + " " + I18n.get("error.no.id") + "\n");
+            return "";
         } else {
-            sendError(I18n.get("error.remove")+" " + object.toString() + "\n");
+            sendError(I18n.get("error.remove") + " " + I18n.get("error.not.yours.id") + "\n");
             return "";
         }
     }

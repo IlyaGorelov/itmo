@@ -6,6 +6,7 @@ import Commons.Enums.HairColor;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Class representing Person
@@ -126,5 +127,32 @@ public class Person implements Comparable<Person>, Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        return Objects.equals(name, person.name)
+                && Objects.equals(height, person.height)
+                && eyeColor == person.eyeColor
+                && hairColor == person.hairColor
+                && nationality == person.nationality
+                && Objects.equals(location, person.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                name,
+                height,
+                eyeColor,
+                hairColor,
+                nationality,
+                location
+        );
     }
 }

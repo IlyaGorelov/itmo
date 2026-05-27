@@ -5,7 +5,7 @@ import Commons.UserData.User;
 import Objects.CommandsControllers.Command;
 import Objects.CommandsControllers.CommandBuffer;
 import Objects.CommandsControllers.Commands.*;
-import Objects.Connection.Receiver;
+import Objects.Connection.Server;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -31,11 +31,11 @@ public class CommandManager {
      * Constructor that fills command map with available commands
      *
      * @param collectionManager controls collection
-     * @param receiver          to get input
+     * @param server            to get input
      */
     public CommandManager(CollectionManager collectionManager,
                           AuthManager authManager,
-                          Receiver receiver,
+                          Server server,
                           SocketChannel client,
                           User user
     ) {
@@ -49,7 +49,7 @@ public class CommandManager {
 
         for (Command command : commands) {
             commandMap.put(command.getName(), command);
-            command.setReceiver(receiver)
+            command.setServer(server)
                     .setClient(client)
                     .setUser(user);
         }
@@ -57,7 +57,7 @@ public class CommandManager {
 
     public CommandManager(
             CollectionManager collectionManager,
-            Receiver receiver,
+            Server server,
             boolean isCLIMode) {
         this.isCLIMode = isCLIMode;
         ArrayList<Command> commands = new ArrayList<>();
@@ -72,7 +72,7 @@ public class CommandManager {
                 commandMap.put(command.getName(), command);
             }
 
-            command.setReceiver(receiver);
+            command.setServer(server);
             command.setClient(client);
             command.setCLIMode(this.isCLIMode);
         }

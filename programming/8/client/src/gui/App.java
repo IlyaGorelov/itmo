@@ -10,8 +10,7 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 public class App {
-    //make number format, add all langs
-
+    // this login is taken isn't translated
 
     public static final Color BACKGROUND = Color.decode("#7E4286");
     public static final Color TEXT_PURPLE = Color.decode("#7E4286");
@@ -20,12 +19,12 @@ public class App {
     public static final Color TABLE_HEADER_BG = Color.decode("#E5E5E5");
 
     private static final String HOST = "localhost";
-    private static final int PORT = 1234;
+    private static final int PORT = 12345;
 
     public static void main(String[] args) throws Exception {
 //        new MainFrame().setVisible(true);
-        Client client = new Client();
-        client.connect(HOST, PORT, Client.Mode.GUI);
+        Client client = new Client(Client.Mode.GUI);
+        client.start(HOST, PORT);
 
 
     }

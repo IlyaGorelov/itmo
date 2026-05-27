@@ -17,6 +17,9 @@ import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
 import gui.Objects.Elements.Commons.RoundedButton;
 import gui.Objects.Elements.Main.CustomComboBox;
+import gui.Objects.Elements.Main.CustomComboBoxForEye;
+import gui.Objects.Elements.Main.CustomComboBoxForHair;
+import gui.Objects.Elements.Main.CustomComboBoxForUnit;
 import gui.Objects.Helpers.ErrorMessageDeliverer;
 import Localization.I18n;
 
@@ -72,14 +75,14 @@ public class ProductDialog extends JDialog {
     private JTextField yField;
     private JTextField priceField;
     private JTextField manufactureCostField;
-    private JComboBox<String> unitOfMeasureBox;
+    private JComboBox<UnitOfMeasure> unitOfMeasureBox;
 
     private JTextField ownerNameField;
     private JPanel ownerDetailsPanel;
     private JTextField heightField;
-    private JComboBox<String> eyeColorBox;
-    private JComboBox<String> hairColorBox;
-    private JComboBox<String> countryBox;
+    private JComboBox<EyeColor> eyeColorBox;
+    private JComboBox<HairColor> hairColorBox;
+    private JComboBox<Country> countryBox;
 
     private JPanel locationDetailsPanel;
     private JTextField locXField;
@@ -180,15 +183,15 @@ public class ProductDialog extends JDialog {
         field.setText(value == null ? "" : String.valueOf(value));
     }
 
-    private void setComboBoxValue(JComboBox<String> box, Enum<?> value) {
+    private void setComboBoxValue(JComboBox<?> box, Enum<?> value) {
         if (box == null) {
             return;
         }
 
         if (value == null) {
-            box.setSelectedItem(" ");
+            box.setSelectedItem(null);
         } else {
-            box.setSelectedItem(value.name());
+            box.setSelectedItem(value);
         }
     }
 
@@ -255,9 +258,7 @@ public class ProductDialog extends JDialog {
         );
     }
 
-
-
-    private String getSelectedValue(JComboBox<String> box) {
+    private String getSelectedValue(JComboBox<?> box) {
         Object selected = box.getSelectedItem();
 
         if (selected == null) {
@@ -298,12 +299,12 @@ public class ProductDialog extends JDialog {
         priceErrorLabel = createErrorLabel();
         manufactureCostErrorLabel = createErrorLabel();
 
-        unitOfMeasureBox = new CustomComboBox(new String[]{
-                " ",
-                EnumI18n.unitOfMeasure(UnitOfMeasure.KILOGRAMS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.METERS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.LITERS),
-                EnumI18n.unitOfMeasure(UnitOfMeasure.MILLILITERS)
+        unitOfMeasureBox = new CustomComboBoxForUnit(new UnitOfMeasure[]{
+                null,
+                UnitOfMeasure.KILOGRAMS,
+                UnitOfMeasure.METERS,
+                UnitOfMeasure.LITERS,
+                UnitOfMeasure.MILLILITERS
         });
 
         gbc.gridwidth = 1;
@@ -403,23 +404,35 @@ public class ProductDialog extends JDialog {
         heightErrorLabel = createErrorLabel();
         locXErrorLabel = createErrorLabel();
 
-        eyeColorBox = new CustomComboBox(new String[]{
-                " ",
-                EnumI18n.eyeColor(EyeColor.RED),
-                EnumI18n.eyeColor(EyeColor.GREEN),
-                EnumI18n.eyeColor(EyeColor.ORANGE)
+        eyeColorBox = new CustomComboBoxForEye(new EyeColor[]{
+                null,
+                EyeColor.RED,
+                EyeColor.GREEN,
+                EyeColor.ORANGE
         });
 
-        hairColorBox = new CustomComboBox(new String[]{
-                EnumI18n.hairColor(HairColor.GREEN),
-                EnumI18n.hairColor(HairColor.BLACK),
-                EnumI18n.hairColor(HairColor.WHITE)
+        hairColorBox = new CustomComboBoxForHair(new HairColor[]{
+                HairColor.GREEN,
+                HairColor.BLACK,
+               HairColor.WHITE
         });
 
-        countryBox = new CustomComboBox(new String[]{
-                EnumI18n.country(Country.USA),
-                EnumI18n.country(Country.VATICAN),
-                EnumI18n.country(Country.THAILAND)
+        countryBox = new CustomComboBox(new Country[]{
+                Country.USA,
+                Country.VATICAN,
+                Country.THAILAND
+        });
+
+        countryBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel();
+
+            if (value == null) {
+                label.setText(" ");
+            } else {
+                label.setText(EnumI18n.country(value));
+            }
+
+            return label;
         });
 
         gbc.gridx = 0;
@@ -503,13 +516,11 @@ public class ProductDialog extends JDialog {
     }
 
     private void clearValidationErrors() {
-
         nameErrorLabel.setText(" ");
         xErrorLabel.setText(" ");
         yErrorLabel.setText(" ");
         priceErrorLabel.setText(" ");
         manufactureCostErrorLabel.setText(" ");
-
 
         if (heightErrorLabel != null) {
             heightErrorLabel.setText(" ");
@@ -617,14 +628,12 @@ public class ProductDialog extends JDialog {
         }
 
         if(!ownerNameField.getText().isBlank())
-            isValid=validatePersonFields();
+            isValid=validatePersonFields(isValid);
 
         return isValid;
     }
 
-    private boolean validatePersonFields(){
-        boolean isValid = true;
-
+    private boolean validatePersonFields(boolean isValid){
         HeightValidator heightValidator = new HeightValidator();
 
         if (!heightValidator.isValid(heightField.getText(),false)) {
@@ -633,14 +642,12 @@ public class ProductDialog extends JDialog {
         }
 
         if(!locXField.getText().isBlank())
-            isValid=validateLocationFields();
+            isValid=validateLocationFields(isValid);
 
         return isValid;
     }
 
-    private boolean validateLocationFields(){
-        boolean isValid = true;
-
+    private boolean validateLocationFields(boolean isValid){
         IntegerValidator integerValidator = new IntegerValidator();
         DoubleValidator doubleValidator = new DoubleValidator();
 

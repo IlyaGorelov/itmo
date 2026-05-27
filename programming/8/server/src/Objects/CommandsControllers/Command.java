@@ -3,7 +3,7 @@ package Objects.CommandsControllers;
 import Commons.Collection.Product;
 import Commons.CustomPackage;
 import Commons.UserData.User;
-import Objects.Connection.Receiver;
+import Objects.Connection.Server;
 import Objects.Managers.CollectionManager;
 
 import java.nio.channels.SocketChannel;
@@ -11,7 +11,7 @@ import java.nio.channels.SocketChannel;
 public abstract class Command {
     private CollectionManager collectionManager;
     private User user;
-    private Receiver receiver;
+    private Server server;
     private SocketChannel client;
 
     private String argument;
@@ -63,8 +63,8 @@ public abstract class Command {
     public abstract void execute();
 
 
-    public Command setReceiver(Receiver receiver) {
-        this.receiver = receiver;
+    public Command setServer(Server server) {
+        this.server = server;
         return this;
     }
 
@@ -77,8 +77,8 @@ public abstract class Command {
         return isCLIMode;
     }
 
-    public Receiver getReceiver() {
-        return receiver;
+    public Server getServer() {
+        return server;
     }
 
     public Command setClient(SocketChannel client) {
@@ -132,19 +132,19 @@ public abstract class Command {
 
     public void answer(CustomPackage toClient, String toCLI) {
         if (!getIsCLIMode())
-            getReceiver()
+            getServer()
                     .addToAnswer(getCLient(), toClient);
         else
-            getReceiver().addAnswerForCLI(toCLI);
+            getServer().addAnswerForCLI(toCLI);
     }
 
     public void answer(CustomPackage toClient, Product... toCLI) {
         if (!getIsCLIMode())
-            getReceiver()
+            getServer()
                     .addToAnswer(getCLient(), toClient);
         else {
             for (var p : toCLI) {
-                getReceiver().addAnswerForCLI(p.toString());
+                getServer().addAnswerForCLI(p.toString());
             }
         }
     }

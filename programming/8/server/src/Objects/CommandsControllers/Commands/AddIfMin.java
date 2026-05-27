@@ -28,7 +28,7 @@ public class AddIfMin extends RevertableCommand {
             setComplexArgument(newProduct);
             addToHistory();
 
-            getReceiver().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
+            getServer().broadcastCollectionUpdate(getCollectionManager().getElements().toArray(new Product[0]));
 
             CustomPackage pkg = new CustomPackage(this.getName(), null, newProduct, getUser());
 

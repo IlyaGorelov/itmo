@@ -2,53 +2,46 @@ package Objects.Connection;
 
 import Commons.Collection.Product;
 import Commons.CustomPackage;
-import Commons.UserData.User;
 import Objects.CommandsControllers.CommandExecutor;
-import Objects.CommandsControllers.Commands.CollectionUpdated;
 import Objects.Managers.CLIManager;
-import Objects.Managers.HistoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Phaser;
 
-public class Receiver {
-    private final static Logger logger = LoggerFactory.getLogger(Receiver.class);
+public class Server {
+    private final static Logger logger = LoggerFactory.getLogger(Server.class);
     private final CLIManager cliManager = new CLIManager();
 
     private final int port;
 
+    Phaser phaser = new Phaser();
+    private final CommandExecutor commandExecutor;
+
+    ClientManager clientManager;
     private Selector selector;
 
     private final List<String> answersForCLI = new ArrayList<>();
     private final Queue<String> requestsForCLI = new LinkedList<>();
 
-    private final Map<SocketChannel, ByteBuffer> buffers = new ConcurrentHashMap<>();
-    private final Map<SocketChannel, Queue<CustomPackage>> requests = new ConcurrentHashMap<>();
-    private final Map<SocketChannel, Queue<CustomPackage>> answers = new ConcurrentHashMap<>();
-    private final Set<SocketChannel> processingClients = ConcurrentHashMap.newKeySet();
-    private final Set<SocketChannel> clients = new HashSet<>();
-
-    private final CommandExecutor commandExecutor;
 
     private final ExecutorService requestExecutor = Executors.newCachedThreadPool();
     private final ExecutorService responseExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public Receiver(int port, CommandExecutor commandExecutor) {
+    public Server(int port, CommandExecutor commandExecutor) {
         this.port = port;
         this.commandExecutor = commandExecutor;
+        clientManager = new ClientManager(phaser, commandExecutor, this);
     }
 
     public void connect() {
@@ -59,8 +52,11 @@ public class Receiver {
             responseExecutor.shutdown();
         }));
 
+
         try {
             selector = Selector.open();
+            clientManager.setSelector(selector);
+
             ServerSocketChannel serverChannel = ServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(port));
             serverChannel.configureBlocking(false);
@@ -97,10 +93,10 @@ public class Receiver {
                     }
                 } catch (SocketException e) {
                     logger.error("SocketException for client, closing: {}", key.channel());
-                    closeClient((SocketChannel) key.channel());
+                    clientManager.closeClient((SocketChannel) key.channel());
                 } catch (IOException e) {
                     logger.error("IOException for client, closing: {}", key.channel());
-                    closeClient((SocketChannel) key.channel());
+                    clientManager.closeClient((SocketChannel) key.channel());
                 }
             }
 
@@ -114,11 +110,7 @@ public class Receiver {
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ);
 
-        clients.add(clientChannel);
-
-        buffers.put(clientChannel, ByteBuffer.allocate(4096));
-        answers.put(clientChannel, new ConcurrentLinkedQueue<>());
-        requests.put(clientChannel, new ConcurrentLinkedQueue<>());
+        clientManager.register(clientChannel);
 
         logger.info("Client connected: {}", clientChannel.getRemoteAddress());
     }
@@ -131,7 +123,7 @@ public class Receiver {
                 read(key);
             } catch (Exception e) {
                 logger.error("Error while reading from client: {}", e.getMessage());
-                closeClient((SocketChannel) key.channel());
+                clientManager.closeClient((SocketChannel) key.channel());
             } finally {
                 addInterestOps(key, SelectionKey.OP_READ);
             }
@@ -140,67 +132,7 @@ public class Receiver {
 
     private void read(SelectionKey key) throws IOException, ClassNotFoundException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
-        ByteBuffer buffer = buffers.get(clientChannel);
-
-        int bytes = clientChannel.read(buffer);
-        if (bytes == -1) {
-            logger.info("Client disconnected: {}", clientChannel.getRemoteAddress());
-            closeClient(clientChannel);
-            return;
-        }
-
-        if (bytes == 0) {
-            return;
-        }
-
-        buffer.flip();
-
-        while (true) {
-            if (buffer.remaining() < Integer.BYTES) {
-                break;
-            }
-
-            buffer.mark();
-            int length = buffer.getInt();
-
-            if (buffer.remaining() < length) {
-                buffer.reset();
-                break;
-            }
-
-            byte[] objectBytes = new byte[length];
-            buffer.get(objectBytes);
-
-            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(objectBytes))) {
-                CustomPackage pkg = (CustomPackage) ois.readObject();
-                requests.get(clientChannel).add(pkg);
-                logger.info("Received a request: {}", pkg.getCommand());
-
-                if (pkg.getAuthor() != null)
-                    HistoryManager.registerNewHistory(pkg.getAuthor());
-
-                submitCommandExecuting(clientChannel, pkg.getAuthor(), key);
-            }
-
-
-        }
-        buffer.compact();
-    }
-
-    private void submitCommandExecuting(SocketChannel channel, User user, SelectionKey key) {
-        if (!processingClients.add(channel)) {
-            return;
-        }
-
-        requestExecutor.submit(() -> {
-            try {
-                commandExecutor.execute(this, channel, user, false);
-            } finally {
-                processingClients.remove(channel);
-
-                addInterestOps(key, SelectionKey.OP_WRITE);
-            }
-        });
+        clientManager.read(clientChannel, requestExecutor);
     }
 
     private void writeAsync(SelectionKey key) {
@@ -211,7 +143,7 @@ public class Receiver {
                 write(key);
             } catch (IOException e) {
                 logger.error("Error while sending answer: {}", e.getMessage());
-                closeClient((SocketChannel) key.channel());
+                clientManager.closeClient((SocketChannel) key.channel());
             } finally {
                 addInterestOps(key, SelectionKey.OP_READ);
             }
@@ -220,60 +152,15 @@ public class Receiver {
 
     private void write(SelectionKey key) throws IOException {
         SocketChannel clientCannel = (SocketChannel) key.channel();
-        Queue<CustomPackage> answerQueue = answers.get(clientCannel);
-
-        List<CustomPackage> packages = new ArrayList<>();
-
-        CustomPackage pkg;
-        while ((pkg = answerQueue.poll()) != null) {
-            packages.add(pkg);
-        }
-
-        answerQueue.clear();
-
-        byte[] bytes;
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-
-        oos.writeObject(packages.toArray());
-        oos.flush();
-        bytes = baos.toByteArray();
-
-        ByteBuffer buffer = ByteBuffer.allocate(4 + bytes.length);
-        buffer.putInt(bytes.length);
-        buffer.put(bytes);
-        buffer.flip();
-
-        while (buffer.hasRemaining()) {
-            clientCannel.write(buffer);
-        }
-        logger.info("Sent an answer: {}", packages);
+        clientManager.write(clientCannel);
     }
 
     public CustomPackage getPackage(SocketChannel client) {
-        Queue<CustomPackage> queue = requests.get(client);
-        return queue == null ? null : queue.poll();
+        return clientManager.getPackage(client);
     }
 
     public void addToAnswer(SocketChannel client, CustomPackage pkg) {
-        Queue<CustomPackage> queue = answers.get(client);
-        if (queue != null) {
-            queue.add(pkg);
-        }
-    }
-
-    public void closeClient(SocketChannel client) {
-        try {
-            clients.remove(client);
-            answers.remove(client);
-            requests.remove(client);
-            buffers.remove(client);
-            logger.info("Closed connection with client: {}", client.getRemoteAddress());
-            client.close();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        clientManager.addToAnswer(client, pkg);
     }
 
     public void addAnswerForCLI(String answer) {
@@ -306,7 +193,7 @@ public class Receiver {
         return requestsForCLI.poll();
     }
 
-    private void addInterestOps(SelectionKey key, int ops) {
+    public void addInterestOps(SelectionKey key, int ops) {
         synchronized (key) {
             if (key.isValid()) {
                 key.interestOps(key.interestOps() | ops);
@@ -317,22 +204,6 @@ public class Receiver {
     }
 
     public void broadcastCollectionUpdate(Product[] products) {
-        CustomPackage updatePackage = new CustomPackage(
-                new CollectionUpdated().getName(),
-                null,
-                products
-        );
-
-        for (SocketChannel client : clients) {
-            addToAnswer(client, updatePackage);
-
-            SelectionKey key = client.keyFor(selector);
-
-            if (key != null && key.isValid()) {
-                key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
-            }
-        }
-
-        selector.wakeup();
+        clientManager.broadcastCollectionUpdate(products);
     }
 }

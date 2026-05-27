@@ -4,6 +4,7 @@ import Commons.Collection.Location;
 import Commons.Collection.Person;
 import Commons.Collection.Product;
 import Commons.CustomPackage;
+import Localization.EnumI18n;
 import core.Objects.CommandsControllers.Commands.Show;
 import core.Objects.Connection.Client;
 import gui.App;
@@ -238,9 +239,6 @@ public class TablePanel extends JPanel implements Localized {
     private static Object[][] convertDataToValidForm(Product[] products) {
         ArrayList<Object[]> data = new ArrayList<>();
 
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat("dd.MM.yyyy");
-
         for (Product p : products) {
             Person owner = p.getOwner();
             Location location = owner == null ? null : owner.getLocation();
@@ -254,13 +252,13 @@ public class TablePanel extends JPanel implements Localized {
                     Formatters.date(p.getCreationDate()),
                     Formatters.decimal(p.getPrice()),
                     p.getManufactureCost(),
-                    p.getUnitOfMeasure(),
+                    EnumI18n.unitOfMeasure(p.getUnitOfMeasure()),
 
                     owner == null ? null : owner.getName(),
                     owner == null ? null : owner.getHeight(),
-                    owner == null ? null : owner.getEyeColor(),
-                    owner == null ? null : owner.getHairColor(),
-                    owner == null ? null : owner.getNationality(),
+                    owner == null ? null : EnumI18n.eyeColor(owner.getEyeColor()),
+                    owner == null ? null : EnumI18n.hairColor(owner.getHairColor()),
+                    owner == null ? null : EnumI18n.country(owner.getNationality()),
 
                     location == null ? null : Formatters.decimal(location.getX()),
                     location == null ? null : location.getY(),

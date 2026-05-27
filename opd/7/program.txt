@@ -1,0 +1,64 @@
+org 0x215
+test_count: word 2 ; кол-во тестов
+temp_tc : word ?
+result: word 1
+
+start: 
+ld test_count
+st temp_tc
+
+ld #1; ставим флаг верности результата
+st result
+push; смещаем вершину стека на -1 : 7FF
+call $test1; результат будет на 7FF
+push; смещаем вершину стека на -1 : 7FE
+call $test2; результат будет на 7FE
+
+foreach_test_result: pop ; взяли результат testi
+and result
+st result; 
+loop temp_tc
+jump foreach_test_result
+hlt
+
+org 0x240
+test1_ac: word 0xffff
+test1_value: word 0x0001 ; бит C станет = 1
+test1_true_result: word 0x0
+test1:
+ld test1_ac
+hlt
+word 0x9241
+blo t1_fail ; если c=0 -> fail
+ld test1_value
+cmp test1_true_result
+beq t1_pass
+
+t1_fail: cla
+jump t1_return
+
+t1_pass: ld #1
+t1_return: st &1
+ret
+
+org 0x260
+test2_ac: word 0x4
+test2_value: word 0x2
+test2_true_result: word 0x7 ; 4+2+С = 7
+value_to_set_carry: word 0xffff
+test2: ; этот тест проверит сложение с учетом C=1
+ld value_to_set_carry
+add #1; установим C=1
+ld test2_ac
+hlt
+word 0x9261
+ld test2_value
+cmp test2_true_result
+beq t2_pass
+
+t2_fail: cla
+jump t2_return
+
+t2_pass: ld #1
+t2_return: st &1
+ret

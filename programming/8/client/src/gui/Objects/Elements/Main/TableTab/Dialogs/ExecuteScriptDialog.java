@@ -165,7 +165,10 @@ public class ExecuteScriptDialog extends JDialog {
         field.setForeground(App.TEXT_PURPLE);
         field.setCaretColor(App.TEXT_PURPLE);
         field.setBackground(Color.WHITE);
-        field.setBorder(new RoundedBorder(App.TEXT_PURPLE, 2, 12));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new RoundedBorder(App.TEXT_PURPLE, 2, 18),
+                new EmptyBorder(8, 18, 8, 18)
+        ));
         field.setMargin(new Insets(8, 14, 8, 14));
         field.setPreferredSize(new Dimension(420, 44));
         return field;

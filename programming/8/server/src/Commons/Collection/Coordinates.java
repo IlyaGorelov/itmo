@@ -1,6 +1,7 @@
 package Commons.Collection;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Class representing coordinates
@@ -87,5 +88,21 @@ public class Coordinates implements Comparable<Coordinates>, Serializable, Clone
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinates that = (Coordinates) o;
+
+        return Double.compare(that.y, y) == 0
+                && Objects.equals(x, that.x);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

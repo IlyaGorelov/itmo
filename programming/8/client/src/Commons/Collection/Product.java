@@ -5,6 +5,7 @@ import Commons.UserData.User;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Class representing a Product - element of the collection
@@ -161,5 +162,38 @@ public class Product implements Comparable<Product>, Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return id == product.id
+                && Objects.equals(name, product.name)
+                && Objects.equals(coordinates, product.coordinates)
+                && Objects.equals(creationDate, product.creationDate)
+                && Objects.equals(price, product.price)
+                && Objects.equals(manufactureCost, product.manufactureCost)
+                && unitOfMeasure == product.unitOfMeasure
+                && Objects.equals(owner, product.owner)
+                && Objects.equals(author, product.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                id,
+                name,
+                coordinates,
+                creationDate,
+                price,
+                manufactureCost,
+                unitOfMeasure,
+                owner,
+                author
+        );
     }
 }

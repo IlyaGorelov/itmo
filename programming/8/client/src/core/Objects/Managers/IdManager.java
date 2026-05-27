@@ -2,6 +2,7 @@ package core.Objects.Managers;
 
 
 import Commons.Collection.Product;
+import Localization.I18n;
 import core.Objects.CommandsControllers.Commands.GetById;
 import Commons.CustomPackage;
 import core.Objects.Connection.Client;
@@ -14,7 +15,7 @@ public class IdManager {
         Product answer = getProductById(id);
 
         if (answer != null && !AuthManager.getInstance().getUser().equals(answer.getAuthor()))
-            throw new IllegalArgumentException("It's not your product");
+            throw new IllegalArgumentException(I18n.get("error.not.yours.id"));
 
         return answer != null;
     }

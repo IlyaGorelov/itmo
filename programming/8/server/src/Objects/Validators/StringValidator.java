@@ -2,7 +2,6 @@ package Objects.Validators;
 
 import java.util.Scanner;
 
-import Objects.Connection.Receiver;
 
 public class StringValidator extends Validator<String> {
     @Override

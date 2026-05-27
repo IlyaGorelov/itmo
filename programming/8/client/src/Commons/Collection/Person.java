@@ -1,14 +1,17 @@
 package Commons.Collection;
 
-import java.io.Serializable;
-import java.util.Locale;
-
 import Commons.Enums.Country;
 import Commons.Enums.EyeColor;
 import Commons.Enums.HairColor;
 
-/** Class representing Person */
-public class Person implements Comparable<Person>, Serializable,Cloneable {
+import java.io.Serializable;
+import java.util.Locale;
+import java.util.Objects;
+
+/**
+ * Class representing Person
+ */
+public class Person implements Comparable<Person>, Serializable, Cloneable {
     private String name; // Поле не может быть null, Строка не может быть пустой
     private Float height; // Поле не может быть null, Значение поля должно быть больше 0
     private EyeColor eyeColor; // Поле может быть null
@@ -17,7 +20,7 @@ public class Person implements Comparable<Person>, Serializable,Cloneable {
     private Location location; // Поле может быть null
 
     public Person(String name, Float height, EyeColor eyeColor, HairColor hairColor, Country nationality,
-            Location location) {
+                  Location location) {
         this.name = name;
         this.height = height;
         this.eyeColor = eyeColor;
@@ -26,7 +29,7 @@ public class Person implements Comparable<Person>, Serializable,Cloneable {
         this.location = location;
     }
 
-    public static int getCountOfEditableFields(){
+    public static int getCountOfEditableFields() {
         return 5 + Location.getCountOfEditableFields();
     }
 
@@ -89,10 +92,10 @@ public class Person implements Comparable<Person>, Serializable,Cloneable {
 
     /**
      * compares with other Coordinates
-     * 
+     *
      * @param o other coordinates
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Person o) {
@@ -107,13 +110,13 @@ public class Person implements Comparable<Person>, Serializable,Cloneable {
     public String toString() {
         return String.format(
                 "\tName: %s\n\tHeight: %.2f\n\tEye Color: %s\n\tHair Color: %s\n\tNationality: %s\n\tLocation: %s",
-                name, height, eyeColor, hairColor, nationality, String.valueOf(location));
+                name, height, eyeColor, hairColor, nationality, location);
     }
 
     public String getFuncString() {
         return String.format(Locale.US, "%s;%f;%s;%s;%s;%s", name, height,
                 eyeColor == null ? "" : String.valueOf(eyeColor),
-                String.valueOf(hairColor), String.valueOf(nationality),
+                hairColor, nationality,
                 location == null ? "" : location.getFuncString());
     }
 
@@ -124,5 +127,32 @@ public class Person implements Comparable<Person>, Serializable,Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Person person = (Person) o;
+
+        return Objects.equals(name, person.name)
+                && Objects.equals(height, person.height)
+                && eyeColor == person.eyeColor
+                && hairColor == person.hairColor
+                && nationality == person.nationality
+                && Objects.equals(location, person.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                name,
+                height,
+                eyeColor,
+                hairColor,
+                nationality,
+                location
+        );
     }
 }

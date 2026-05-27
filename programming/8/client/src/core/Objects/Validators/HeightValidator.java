@@ -20,12 +20,12 @@ public class HeightValidator extends Validator<Float> {
                 if (canBeNull)
                     return true;
                 else {
-                    ErrorMessageDeliverer.add(new IllegalArgumentException("Fields is required"));
+                    ErrorMessageDeliverer.add(new IllegalArgumentException(I18n.get("error.required")));
                     System.out.println(e.getMessage());
                     return false;
                 }
             }
-            ErrorMessageDeliverer.add(new IllegalArgumentException("Invalid number format | " + e.getMessage()));
+            ErrorMessageDeliverer.add(new IllegalArgumentException(e.getMessage()));
             System.out.println(e.getMessage());
             return false;
         }

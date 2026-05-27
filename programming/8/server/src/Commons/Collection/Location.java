@@ -2,6 +2,8 @@ package Commons.Collection;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
+
 
 /**
  * Class representing location of a person
@@ -114,5 +116,23 @@ public class Location implements Comparable<Location>, Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        return Double.compare(location.z, z) == 0
+                && Objects.equals(x, location.x)
+                && Objects.equals(y, location.y)
+                && Objects.equals(name, location.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, name);
     }
 }

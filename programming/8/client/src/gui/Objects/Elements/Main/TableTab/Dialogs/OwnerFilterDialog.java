@@ -2,6 +2,7 @@ package gui.Objects.Elements.Main.TableTab.Dialogs;
 
 import gui.App;
 import Localization.I18n;
+import gui.Objects.Elements.Commons.RoundedBorder;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -217,7 +218,10 @@ public class OwnerFilterDialog extends JDialog {
         field.setForeground(App.TEXT_PURPLE);
         field.setCaretColor(App.TEXT_PURPLE);
         field.setBackground(Color.WHITE);
-        field.setBorder(new RoundedLineBorder(App.TEXT_PURPLE, 18, 2));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new RoundedBorder(App.TEXT_PURPLE, 2, 18),
+                new EmptyBorder(8, 18, 8, 18)
+        ));
         field.setMargin(new Insets(8, 14, 8, 14));
         field.setPreferredSize(new Dimension(420, 44));
 

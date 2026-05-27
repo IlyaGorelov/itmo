@@ -1,5 +1,7 @@
 package gui.Objects.Elements.Main;
 
+import Commons.Enums.UnitOfMeasure;
+import Localization.EnumI18n;
 import gui.App;
 import gui.Objects.Elements.Commons.RoundedBorder;
 

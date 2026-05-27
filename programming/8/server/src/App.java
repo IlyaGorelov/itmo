@@ -1,5 +1,5 @@
 import Objects.CommandsControllers.CommandExecutor;
-import Objects.Connection.Receiver;
+import Objects.Connection.Server;
 import Objects.Helpers.PasswordHasher;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
@@ -18,14 +18,14 @@ public class App {
             DBManager.setPathToProps(PROPS_POSTGRES);
 
             PasswordHasher.setPEPPER(PEPPER);
-            
+
             CollectionManager collectionManager = new CollectionManager();
             AuthManager authManager = new AuthManager();
 
             CommandExecutor executor = new CommandExecutor(collectionManager, authManager);
-            Receiver receiver = new Receiver(PORT, executor);
+            Server server = new Server(PORT, executor);
 
-            receiver.connect();
+            server.connect();
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
         }

@@ -1,6 +1,9 @@
 package Objects.CommandsControllers;
 
+import Objects.CommandsControllers.Commands.Redo;
+
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class History {
     private final LinkedList<HistoryObject> history = new LinkedList<>();
@@ -16,7 +19,7 @@ public class History {
     }
 
     public synchronized void add(HistoryObject historyObject) {
-        if (!history.contains(historyObject)) {
+        if (!Redo.redoFlag) {
             history.add(currentStep, historyObject);
             history.removeIf(p -> history.indexOf(p) > currentStep);
 
@@ -41,6 +44,20 @@ public class History {
     }
 
     public record HistoryObject(RevertableCommand command, String simpleArg, Object complexArg) {
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            HistoryObject hObject = (HistoryObject) o;
+
+            return command.getName().equals(hObject.command().getName()) && Objects.equals(simpleArg, hObject.simpleArg()) && Objects.equals(complexArg, hObject.complexArg());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(command.getName(), simpleArg, Objects.hash(complexArg));
+        }
     }
 
 }

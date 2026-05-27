@@ -36,7 +36,10 @@ public class Undo extends Command implements AuthChecker {
         Object arg = (Object) pack.getObject();
 
         TablePanel.fetchProductsAsync();
-        return I18n.get("info.undo") + "\n";
+        if (arg==null) {
+            return I18n.get("info.undo") + "\n";
+        }
+        return "";
     }
 
 }

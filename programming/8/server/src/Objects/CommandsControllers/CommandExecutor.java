@@ -2,7 +2,7 @@ package Objects.CommandsControllers;
 
 import Commons.CustomPackage;
 import Commons.UserData.User;
-import Objects.Connection.Receiver;
+import Objects.Connection.Server;
 import Objects.Managers.AuthManager;
 import Objects.Managers.CollectionManager;
 import Objects.Managers.CommandManager;
@@ -22,14 +22,14 @@ public class CommandExecutor {
         this.authManager = authManager;
     }
 
-    public void execute(Receiver receiver, SocketChannel client, User user, boolean isCliMode) {
-        commandManager = getCommandManager(receiver, client, user, isCliMode);
+    public void execute(Server server, SocketChannel client, User user, boolean isCliMode) {
+        commandManager = getCommandManager(server, client, user, isCliMode);
 
         try {
             while (true) {
                 if (tryExecuteSingleCommand()) continue;
 
-                CustomPackage pack = getRequest(receiver, client, isCliMode);
+                CustomPackage pack = getRequest(server, client, isCliMode);
 
                 if (!tryAddInBuffer(pack, isCliMode)) break;
             }
@@ -40,12 +40,12 @@ public class CommandExecutor {
         }
     }
 
-    private CommandManager getCommandManager(Receiver receiver,
+    private CommandManager getCommandManager(Server server,
                                              SocketChannel client,
                                              User user,
                                              boolean isCliMode) {
-        return !isCliMode ? new CommandManager(collectionManager, authManager, receiver, client, user) :
-                new CommandManager(collectionManager, receiver, true);
+        return !isCliMode ? new CommandManager(collectionManager, authManager, server, client, user) :
+                new CommandManager(collectionManager, server, true);
     }
 
     private boolean tryExecuteSingleCommand() {
@@ -56,12 +56,12 @@ public class CommandExecutor {
         return false;
     }
 
-    private CustomPackage getRequest(Receiver receiver, SocketChannel client, boolean isCLIMode) {
+    private CustomPackage getRequest(Server server, SocketChannel client, boolean isCLIMode) {
         if (isCLIMode) {
-            String command = receiver.getCLICommand();
+            String command = server.getCLICommand();
             return new CustomPackage(command, null, null);
         } else {
-            return receiver.getPackage(client);
+            return server.getPackage(client);
         }
     }
 

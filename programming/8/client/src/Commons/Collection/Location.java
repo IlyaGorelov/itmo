@@ -2,9 +2,13 @@ package Commons.Collection;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
-/** Class representing location of a person */
-public class Location implements Comparable<Location>, Serializable,Cloneable {
+
+/**
+ * Class representing location of a person
+ */
+public class Location implements Comparable<Location>, Serializable, Cloneable {
     private Double x; // Поле не может быть null
     private Integer y; // Поле не может быть null
     private double z;
@@ -12,7 +16,7 @@ public class Location implements Comparable<Location>, Serializable,Cloneable {
 
     /**
      * Constructor
-     * 
+     *
      * @param x    coordinate x
      * @param y    coordinate y
      * @param z    coordinate z
@@ -25,7 +29,7 @@ public class Location implements Comparable<Location>, Serializable,Cloneable {
         this.name = name;
     }
 
-    public static int getCountOfEditableFields(){
+    public static int getCountOfEditableFields() {
         return 4;
     }
 
@@ -63,10 +67,10 @@ public class Location implements Comparable<Location>, Serializable,Cloneable {
 
     /**
      * compares with other Location
-     * 
+     *
      * @param o other location
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Location o) {
@@ -85,7 +89,7 @@ public class Location implements Comparable<Location>, Serializable,Cloneable {
 
     /**
      * Parse toString (@see toString of this class) into new Location
-     * 
+     *
      * @param input String represantation of this object that is got from toString
      * @return new Coordinates
      */
@@ -112,5 +116,23 @@ public class Location implements Comparable<Location>, Serializable,Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        return Double.compare(location.z, z) == 0
+                && Objects.equals(x, location.x)
+                && Objects.equals(y, location.y)
+                && Objects.equals(name, location.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, name);
     }
 }

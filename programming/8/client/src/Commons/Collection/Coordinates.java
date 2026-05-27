@@ -1,15 +1,18 @@
 package Commons.Collection;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-/** Class representing coordinates */
-public class Coordinates implements Comparable<Coordinates>, Serializable ,Cloneable{
+/**
+ * Class representing coordinates
+ */
+public class Coordinates implements Comparable<Coordinates>, Serializable, Cloneable {
     private Integer x; // Поле не может быть null
     private double y; // Значение поля должно быть больше -990
 
     /**
      * Constructor for class
-     * 
+     *
      * @param x first coordinate
      * @param y second coordinate
      */
@@ -18,7 +21,7 @@ public class Coordinates implements Comparable<Coordinates>, Serializable ,Clone
         this.y = y;
     }
 
-    public static int getCountOfEditableFields(){
+    public static int getCountOfEditableFields() {
         return 2;
     }
 
@@ -43,10 +46,10 @@ public class Coordinates implements Comparable<Coordinates>, Serializable ,Clone
 
     /**
      * compares with other Coordinates
-     * 
+     *
      * @param o other coordinates
      * @return 1 if this object is greater than other, 0 if objects are equal, -1 -
-     *         if this object is less than other
+     * if this object is less than other
      */
     @Override
     public int compareTo(Coordinates o) {
@@ -64,7 +67,7 @@ public class Coordinates implements Comparable<Coordinates>, Serializable ,Clone
 
     /**
      * Parse toString (@see toString of this class) into new Coordinates
-     * 
+     *
      * @param input String represantation of this object that is got from toString
      * @return new Coordinates
      */
@@ -85,5 +88,21 @@ public class Coordinates implements Comparable<Coordinates>, Serializable ,Clone
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinates that = (Coordinates) o;
+
+        return Double.compare(that.y, y) == 0
+                && Objects.equals(x, that.x);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }
