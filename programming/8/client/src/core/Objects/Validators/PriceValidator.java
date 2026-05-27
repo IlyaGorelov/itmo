@@ -1,6 +1,7 @@
 package core.Objects.Validators;
 
 import Localization.I18n;
+import gui.Objects.Helpers.ErrorMessageDeliverer;
 
 import java.util.Scanner;
 
@@ -22,6 +23,7 @@ public class PriceValidator extends Validator<Double> {
                     return false;
                 }
             }
+            ErrorMessageDeliverer.add(e);
             System.out.println(e.getMessage());
             return false;
         }

@@ -19,7 +19,7 @@ public class App {
     public static final Color TABLE_HEADER_BG = Color.decode("#E5E5E5");
 
     private static final String HOST = "localhost";
-    private static final int PORT = 12345;
+    private static final int PORT = 1234;
 
     public static void main(String[] args) throws Exception {
 //        new MainFrame().setVisible(true);
