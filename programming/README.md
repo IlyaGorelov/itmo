@@ -20,6 +20,9 @@ Sum: 94
 
 ### Term 2
 
+>Small tip: Use port forwarding to run a server on helios with a client on your PC. <br/>
+>Helios has solid anti-DDoS defense so it doesn't let you connect via host+port
+
 |   Lab №    |  Score / Points   |
 | :--------: | :---------------: |
 |  [5](./5)  | ⬜ Not passed / — |
