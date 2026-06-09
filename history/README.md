@@ -22,6 +22,8 @@ Sum: 96
 
 https://youtu.be/kcZhIqm8o4g - link for museum review (part of presence).
 
+Answers for the exam tickets: [PDF](./History_Answ.pdf)
+
 ## Common info
 
 Lecturer and practitioner: Bogomazov N. I.
