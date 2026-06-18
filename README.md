@@ -18,9 +18,9 @@ The repository is organized **by subjects**, each subject having its own directo
 |  2  |                     [Programming](./programming)                     |   🟩 / 94    | 🟩 A / 98.4 |
 |  4  |                             [OPD](./opd)                             |   🟩 / 83    |   ⬜ / -    |
 |  5  |                         [History](./history)                         |   🟩 / 72    |  🟩 A / 96  |
-|  6  |                          [MathAn](./matan)                           | 🟩 C / 80.5  |   ⬜ / -    |
+|  6  |                          [MathAn](./matan)                           | 🟩 C / 80.5  |  🟩 C / 75  |
 |  7  |                        [Culculus](./culculus)                        |  🟩 C / 81   |  🟩 A / 93  |
-|  9  |                     [Discrete Maths](./discrete)                     |   🟩 / 96    |   ⬜ / -    |
+|  9  |                     [Discrete Maths](./discrete)                     |   🟩 / 96    |   🟩 / 92   |
 | 10  |                          [Databases](./db)                           |      -       |   ⬜ / -    |
 | 11  | [<span title="Communications and Team Building">CaTB</span>](./CaTB) |      -       |  🟩 / 74.6  |
 | 12  |                             Life Safety                              |      -       |  🟩 / 74.2  |

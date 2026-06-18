@@ -11,3 +11,5 @@
 | 1                               | 2                                             | 3                                             | 4                               | 5                               | 6                               | 7                               |
 | ------------------------------- | --------------------------------------------- | --------------------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- |
 | [PDF](./term_2/homeworks/1.pdf) | [PDF](./term_2/homeworks/2_with_solver/2.pdf) | [PDF](./term_2/homeworks/3_with_solver/3.pdf) | [PDF](./term_2/homeworks/4.pdf) | [PDF](./term_2/homeworks/5.pdf) | [PDF](./term_2/homeworks/6.pdf) | [PDF](./term_2/homeworks/7.pdf) |
+
+> Polyakov is a true legend with magnificent delivery of theory.
