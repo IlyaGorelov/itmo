@@ -8,7 +8,11 @@ The repository is organized **by subjects**, each subject having its own directo
 
 ---
 
-## 📚 Subjects Overview
+## Subjects Overview
+
+> 🔹 **Status**: 🟩 Passed / ⬜ Not passed yet
+
+### Year 1
 
 |  №  |                          Subject / Semester                          |      1       |      2       |
 | :-: | :------------------------------------------------------------------: | :----------: | :----------: |
@@ -20,19 +24,31 @@ The repository is organized **by subjects**, each subject having its own directo
 |  6  |                         [History](./history)                         |   🟩 / 72    |  🟩 A / 96   |
 |  7  |                          [MathAn](./matan)                           | 🟩 C / 80.5  |  🟩 C / 75   |
 |  8  |                        [Culculus](./culculus)                        |  🟩 C / 81   |  🟩 A / 93   |
-|  9  |                     [Discrete Maths](./discrete)                     |   🟩 / 96    |   🟩 / 92    |
+|  9  |                     [Discrete Maths](./discrete)                     |   🟩 / 96    |  🟩 A / 92   |
 | 10  |                          [Databases](./db)                           |      -       |  🟩 A / 96   |
 | 11  | [<span title="Communications and Team Building">CaTB</span>](./CaTB) |      -       |  🟩 / 74.6   |
 | 12  |                             Life Safety                              |      -       |  🟩 / 74.2   |
 
-> 🔹 **Status**: 🟩 Passed / ⬜ Not passed yet
+### Year 2
+
+|  №  |               Subject / Semester               |  3  |  4  |
+| :-: | :--------------------------------------------: | :-: | :-: |
+|  1  |                       PE                       | ⬜  |     |
+|  2  |                   English B2                   | ⬜  |     |
+|  3  |             Computer Architecture              | ⬜  |     |
+|  4  |             Programming Languages              | ⬜  |     |
+|  5  |               Probability Theory               | ⬜  |     |
+|  6  |       Fundamentals of Physical Processes       | ⬜  |     |
+|  7  |                    Math An                     | ⬜  |     |
+|  8  | Introduction to Technological Entrepreneurship | ⬜  |     |
+|  9  |                WEB-programming                 | ⬜  |     |
 
 ---
 
-## 🗂 Repository Structure
+## Repository Structure
 
 Each subject directory may include:
 
-- 🧪 Laboratory works
-- 💻 Code implementations
-- 📊 Reports and presentations
+- Laboratory works
+- Code implementations
+- Reports and presentations
