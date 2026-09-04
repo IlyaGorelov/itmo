@@ -41,7 +41,7 @@ The repository is organized **by subjects**, each subject having its own directo
 |  6  |       Fundamentals of Physical Processes       | ⬜  |     |
 |  7  |                    Math An                     | ⬜  |     |
 |  8  | Introduction to Technological Entrepreneurship | ⬜  |     |
-|  9  |                WEB-programming                 | ⬜  |     |
+|  9  |                [WEB-programming](./web)                 | ⬜  |     |
 
 ---
 
