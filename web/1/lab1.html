@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <style></style>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 1</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <header>Горелов Илья Александрович, P3231, Вариант: 22660</header>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="5">
+          <canvas id="myCanvas" width="500" height="500"></canvas>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="5">
+          <form>
+            <table>
+              <tr>
+                <td>
+                  <label for="changeX">Изменение X:</label>
+                  <button>Увеличить на 1 (макс: 4)</button>
+                  <span>4<</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="changeY">Изменение Y:</label>
+                  <input
+                    id="y"
+                    name="y"
+                    type="number"
+                    min="-3"
+                    max="3"
+                    step="1"
+                    required
+                  />
+                  <span>(-3,...,3)</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label for="changeR">Изменение R:</label>
+                  <select>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <button>Отправить</button>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="5">Результаты</td>
+      </tr>
+
+      <tr>
+        <td>№</td>
+        <td>X</td>
+        <td>Y</td>
+        <td>R</td>
+        <td>Попало?</td>
+      </tr>
+
+      <tr>
+        <td>1</td>
+        <td>4</td>
+        <td>2</td>
+        <td>6</td>
+        <td>Да</td>
+      </tr>
+    </table>
+
+    <script src="scrypt.js"></script>
+  </body>
+</html>
