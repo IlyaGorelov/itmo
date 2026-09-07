@@ -204,8 +204,8 @@ function checkBottomLeftCorner(x, y, r) {
 }
 
 function checkBottomRightCorner(x, y, r) {
-  if (x >= 0 && y <= 0) {
-    return r * r <= x * x + y * y;
+  if (x >= 0 && x <= r && y <= 0 && y >= -r) {
+    return r * r >= x * x + y * y;
   }
   return false;
 }
