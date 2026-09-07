@@ -1,11 +1,185 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <style></style>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lab 1</title>
+    <style>
+      body {
+        background: white;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /*Наследование: по дефолту текст darkblue*/
+        color: darkblue;
+      }
+
+      table {
+        border-collapse: collapse;
+        background: white;
+      }
+
+      /*селекторов потомств*/
+      table td {
+        padding: 0.5rem 0.2rem;
+        vertical-align: middle;
+      }
+
+      /*селекторов дочерних элементов*/
+      table > tbody > tr > td {
+        border-bottom: 1px solid #e9e6e0;
+      }
+
+      header {
+        font-family: fantasy;
+        font-size: 1.6rem;
+        letter-spacing: 0.02em;
+        background: #e6e2da;
+        padding: 0.5rem 1.2rem;
+        display: inline-block;
+        margin: 0.2rem 0 0.6rem 0;
+      }
+
+      /*селекторов классов*/
+      .canvas-wrapper {
+        display: flex;
+        justify-content: center;
+        background: white;
+        border-radius: 28px;
+        padding: 0.5rem 0;
+      }
+
+      .form-grid {
+        width: 100%;
+        background: white;
+        padding: 0.8rem 0.5rem;
+      }
+
+      .form-grid td {
+        padding: 0.3rem 0.2rem;
+      }
+
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem 0.8rem;
+      }
+
+      .input-group label {
+        font-weight: 500;
+        min-width: 6rem;
+      }
+
+      .defaultX {
+        background: white;
+        padding: 0.1rem 0.9rem;
+        font-size: 0.9rem;
+      }
+
+      input,
+      select,
+      button {
+        margin: 1% 0 1%;
+        padding: 1% 1%;
+        border-radius: 10px;
+        border: 1px solid;
+        background: white;
+        font-size: 0.95rem;
+        transition: 0.1s ease;
+      }
+
+      button:hover {
+        background: #d3cdc1;
+        border-color: #9f9486;
+      }
+
+      input[type="submit"] {
+        background: darkblue;
+        color: white;
+        border: none;
+        padding: 0.4rem 2.2rem;
+        font-weight: 600;
+        margin: 0.2rem 0;
+        border-radius: 60px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+
+      input[type="submit"]:hover {
+        background: darkgray;
+        transform: scale(0.97);
+      }
+
+      #resultTable {
+        width: 100%;
+        background: white;
+      }
+
+      #resultTable th {
+        background: #e3ddd4;
+        padding: 0.5rem 0.6rem;
+        font-weight: 600;
+        color: gray;
+      }
+
+      #resultTable td {
+        padding: 0.3rem 0.6rem;
+        text-align: center;
+      }
+
+      #resultTable thead {
+        background: #e3ddd4;
+      }
+
+      #resultBody td {
+        border-bottom: 1px solid #e2dbd2;
+        padding: 0.3rem 0.2rem;
+      }
+
+      /*селекторов псевдоэлементов*/
+      #resultTable thead th::first-letter {
+        font-size: 1.2rem;
+        color: red;
+        font-weight: 700;
+      }
+
+      #resultTable tbody tr:nth-child(even) {
+        background: #f6f3ef;
+      }
+
+      #resultTable tbody tr:hover {
+        background: beige;
+      }
+
+      #clear {
+        background: #c8bdb0;
+        border: 1px solid #ae9f8f;
+        padding: 0.3rem 2rem;
+        font-weight: 500;
+        margin: 0.2rem 0;
+      }
+
+      #clear:hover {
+        background: #b9aa9a;
+      }
+
+      #currentX {
+        font-weight: 600;
+        background: #d9d4cb;
+        padding: 0.1rem 0.1rem;
+        display: inline-block;
+        min-width: 2.2rem;
+        text-align: center;
+      }
+
+      canvas {
+        background: whitesmoke;
+        border-radius: 32px;
+        margin: 0.2rem auto;
+      }
+    </style>
   </head>
   <body>
     <table>
@@ -15,54 +189,64 @@
         </td>
       </tr>
       <tr>
-        <td colspan="5">
-          <canvas id="myCanvas" width="500" height="500"></canvas>
+        <td>
+          <div class="canvas-wrapper">
+            <canvas id="myCanvas" width="500" height="500"></canvas>
+          </div>
         </td>
       </tr>
 
       <tr>
-        <td colspan="5">
-          <form>
-            <table>
+        <td>
+          <form id="myForm">
+            <table class="form-grid">
               <tr>
                 <td>
-                  <label for="changeX">Изменение X:</label>
-                  <button>Увеличить на 1 (макс: 4)</button>
-                  <span>4<</span>
+                  <div class="input-group">
+                    <label for="increaseXField">Изменение X:</label>
+                    <button type="button" id="increaseXButton">
+                      Увеличить на 1 (макс: 4)
+                    </button>
+                    <span id="currentX" class="defaultX">-4</span>
+                  </div>
                 </td>
               </tr>
 
               <tr>
                 <td>
-                  <label for="changeY">Изменение Y:</label>
-                  <input
-                    id="y"
-                    name="y"
-                    type="number"
-                    min="-3"
-                    max="3"
-                    step="1"
-                    required
-                  />
-                  <span>(-3,...,3)</span>
+                  <div class="input-group">
+                    <label for="changeY">Изменение Y:</label>
+                    <input
+                      id="changeY"
+                      name="changeY"
+                      type="number"
+                      min="-3"
+                      max="3"
+                      step="any"
+                      required
+                    />
+                    <span>(-3,…,3)</span>
+                  </div>
                 </td>
               </tr>
 
               <tr>
                 <td>
-                  <label for="changeR">Изменение R:</label>
-                  <select>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                  </select>
+                  <div class="input-group">
+                    <label for="changeR">Изменение R:</label>
+                    <select id="changeR" name="changeR">
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <button>Отправить</button>
+                  <input type="submit" value="Отправить" />
                 </td>
               </tr>
             </table>
@@ -71,23 +255,39 @@
       </tr>
 
       <tr>
-        <td colspan="5">Результаты</td>
+        <td
+          style="
+            font-weight: 500;
+            padding-top: 0.8rem;
+            color: darkblue;
+            font-weight: bold;
+            text-align: center;
+          "
+        >
+          Результаты
+        </td>
       </tr>
 
       <tr>
-        <td>№</td>
-        <td>X</td>
-        <td>Y</td>
-        <td>R</td>
-        <td>Попало?</td>
+        <td>
+          <table id="resultTable">
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>X</th>
+                <th>Y</th>
+                <th>R</th>
+                <th>Попали?</th>
+                <th>Дата и время</th>
+              </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+          </table>
+        </td>
       </tr>
 
       <tr>
-        <td>1</td>
-        <td>4</td>
-        <td>2</td>
-        <td>6</td>
-        <td>Да</td>
+        <td><button id="clear">Очистить</button></td>
       </tr>
     </table>
 
