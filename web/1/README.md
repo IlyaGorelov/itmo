@@ -1,5 +1,7 @@
 # My option: 22660
 
+[Link](https://se.ifmo.ru/~s502362/1/lab1.html)
+
 # Лабораторная работа #1
 
 ![image](./condition.png)
