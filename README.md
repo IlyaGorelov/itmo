@@ -35,13 +35,13 @@ The repository is organized **by subjects**, each subject having its own directo
 | :-: | :--------------------------------------------: | :-: | :-: |
 |  1  |                       PE                       | ⬜  |     |
 |  2  |                   English B2                   | ⬜  |     |
-|  3  |             Computer Architecture              | ⬜  |     |
+|  3  |         [Computer Architecture](./ca)          | ⬜  |     |
 |  4  |             Programming Languages              | ⬜  |     |
 |  5  |               Probability Theory               | ⬜  |     |
 |  6  |       Fundamentals of Physical Processes       | ⬜  |     |
 |  7  |                    Math An                     | ⬜  |     |
 |  8  | Introduction to Technological Entrepreneurship | ⬜  |     |
-|  9  |                [WEB-programming](./web)                 | ⬜  |     |
+|  9  |            [WEB-programming](./web)            | ⬜  |     |
 
 ---
 
