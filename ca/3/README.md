@@ -1,6 +1,6 @@
 # My option:
 
-acc32:
+acc32: [wrench.edu](https://wrench.edu.swampbuds.me/report/8ae7a838-ed02-4e9f-b4aa-c6cda426b85b)
 
 ```py
 def capital_case_pstr(s: str) -> tuple[str | list[int], str]:
