@@ -36,7 +36,7 @@ The repository is organized **by subjects**, each subject having its own directo
 |  1  |                       PE                       | ⬜  |     |
 |  2  |                   English B2                   | ⬜  |     |
 |  3  |         [Computer Architecture](./ca)          | ⬜  |     |
-|  4  |             Programming Languages              | ⬜  |     |
+|  4  |       [Programming Languages](./plangs)        | ⬜  |     |
 |  5  |               Probability Theory               | ⬜  |     |
 |  6  |       Fundamentals of Physical Processes       | ⬜  |     |
 |  7  |                    Math An                     | ⬜  |     |
