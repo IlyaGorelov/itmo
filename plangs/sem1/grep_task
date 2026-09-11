@@ -1,0 +1,35 @@
+answers:
+1) grep '^.$' grep_task
+2) grep '.*[0-9]\+.*' grep_task 
+3) grep '^0x[0-9A-Fa-f]\+$' grep_task 
+4) grep -w '[A-Za-z]\{3\}' grep_task
+5) grep '^$' grep_task
+6) grep -v '^.$' grep_task 
+
+a
+bb
+ccc
+123
+bweb2sfb
+abc
+0x1F
+0xABcd
+0xZZZ
+Hello World
+test123
+CAT
+dog
+3460xFF
+1234567
+
+The quick brown fox
+xyz
+A
+0x00
+abcde
+123abc
+dogcat
+999
+0xDEADbeef
+x1F
+0x
