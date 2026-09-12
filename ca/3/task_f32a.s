@@ -13,7 +13,7 @@ _start:
 _get_number:
     @p input_addr a! @       \ stack.push(input number)
     !p number @p number      \ number = stack.pop() | stack.push(number)
-    if _zero_halt            
+    if _zero_halt
     @p number                \ stack.push(number)
 
     @p R                     \ stack.push(R)
@@ -27,10 +27,11 @@ shift_R_times:
 
     if _zero
 
-    _const_one ;
+    _one ;
+
 _zero:
-    @p count_zeros @p const_one + !p count_zeros \ count_zeros++
-_const_one:
+    inc_count
+_one:
     @p number                \ restore number | stack.push(number)
     next for
 
@@ -38,6 +39,12 @@ _const_one:
     _halt
 
 _zero_halt:
-    @p const_32 @p output_addr a! ! \ sout(32)
+    print_result_for_zero
 _halt:
     halt
+
+print_result_for_zero:
+    @p const_32 @p output_addr a! ! \ sout(32) ;
+
+inc_count:
+    @p count_zeros @p const_one + !p count_zeros ; \ count_zeros++
