@@ -31,7 +31,7 @@ assert capital_case_pstr('python programming\n') == ('Python Programming', '')
 # and mem[0..31]: 12 50 79 74 68 6f 6e 20 50 72 6f 67 72 61 6d 6d 69 6e 67 5f 5f 5f 5f 5f 5f 5f 5f 5f 5f 5f 5f 5f
 ```
 
-f32a:
+f32a: [wrench.edu](https://wrench.edu.swampbuds.me/report/eaf9d4d3-84ee-4f9e-89b7-5a40a20db6e4)
 
 ```py
 def count_leading_zeros(n: int) -> int:

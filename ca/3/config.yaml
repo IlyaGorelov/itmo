@@ -4,43 +4,7 @@ memory_size: 8192 # Memory size in bytes
 
 # I/O configuration
 memory_mapped_io:
-  0x80: [
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      0x31,
-      10,
-    ] # Input values at address 0x80
+  0x80: [346] # Input values at address 0x80
   0x84: [] # Output-only port at address 0x84
 
 # Reports configuration
@@ -48,11 +12,11 @@ reports:
   - name: "Execution trace"
     slice: all
     view: |
-      {pc}: {instruction:next} {pc:label}  AC: {Acc:hex}
+      {pc}: {instruction:next} {pc:label} {stack:hex} {memory:16:19}
 
   - name: "Result verification"
     slice: last
     view: |
       numio[0x84]: {io:0x84:dec}
     assert: |
-      numio[0x84]: "" >>> "Hello World!"
+      numio[0x84]: [] >>> [23]
