@@ -21,8 +21,8 @@ space_ascii:     .word  0x20               ; const int space_ascii = 0x20
 lf_ascii:        .word  10                 ; const int lf_ascii = 10 - keeps the code of line feed (\n)
 add_5f:          .word  0x5f5f5f00         ; const int add_5f - adds underscores to the major bytes of a char
 error:           .word  0xCCCCCCCC         ; const int error
-shift_number:    .word  24                 ; const int shift = 24 - shift to get only a needed char
-shift_to_remove_junior_bytes: .word  8
+and_number_to_get_junior_byte: .word 0x000000FF
+and_number_to_remove_junior_byte: .word 0xFFFFFF00
 
     .text
     .org         200                         ; starting here because otherwise programm code could, probably, override some important IO things
@@ -65,8 +65,7 @@ _for:
     bgtz         _halt                          ; then _halt
     load         pointer                        ; AC = pointer
     load_acc                                    ; AC = buffer[pointer]
-    shiftl       shift_number
-    shiftr       shift_number                   ; AC = char
+    and          and_number_to_get_junior_byte     ; AC = char
     store        cur_char                       ; cur_char = AC
     sub          space_ascii                    ; if AC == ' ' (AC -= space_ascii)
     beqz         _set_next_symbol_is_first_flag ; then next_symbol_is_first_flag = 1
@@ -79,8 +78,7 @@ _continue_for:
     load         cur_char
     load         pointer                     ; AC = pointer
     load_acc                                 ; AC = buffer[pointer] - getting a 'dirty' value containing other chars
-    shiftr       shift_to_remove_junior_bytes
-    shiftl       shift_to_remove_junior_bytes
+    and          and_number_to_remove_junior_byte
     add          cur_char                    ; AC = cur_char
     store_ind    pointer                     ; buffer[pointer] = AC
     load         pointer                     ; AC = pointer
