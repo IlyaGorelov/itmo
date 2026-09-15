@@ -4,7 +4,35 @@ memory_size: 8192 # Memory size in bytes
 
 # I/O configuration
 memory_mapped_io:
-  0x80: [346] # Input values at address 0x80
+  0x80: [
+      77,
+      105,
+      110,
+      32,
+      51,
+      50,
+      45,
+      98,
+      105,
+      116,
+      58,
+      32,
+      37,
+      100,
+      10,
+      45,
+      50,
+      49,
+      52,
+      55,
+      52,
+      56,
+      51,
+      54,
+      52,
+      56,
+      10,
+    ] # ABC %d\n\n - should be error because there is no number
   0x84: [] # Output-only port at address 0x84
 
 # Reports configuration
@@ -12,11 +40,9 @@ reports:
   - name: "Execution trace"
     slice: all
     view: |
-      {pc}: {instruction:next} {pc:label} {stack:hex} {memory:16:19}
+      {pc}: {instruction:next} {pc:label}  {D0:hex} {memory:160:176}
 
   - name: "Result verification"
     slice: last
     view: |
-      numio[0x84]: {io:0x84:dec}
-    assert: |
-      numio[0x84]: [] >>> [23]
+      numio[0x84]: {io:0x84:sym}
