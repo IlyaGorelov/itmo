@@ -2,12 +2,17 @@ const xButton = document.getElementById("increaseXButton");
 const clearButton = document.getElementById("clear");
 const xElement = document.getElementById("currentX");
 const resultBody = document.getElementById("resultBody");
+const yInput = document.getElementById("changeY");
 
 let results = JSON.parse(localStorage.getItem("results") || "[]");
 
 drawGraph();
 
 renderRows();
+
+yInput.addEventListener("input", (event) => {
+  event.target.value = event.target.value.replace(/[a-zA-ZА-Яа-я]/g, "");
+});
 
 clearButton.addEventListener("click", function () {
   results = [];
@@ -20,23 +25,39 @@ xButton.addEventListener("click", increaseX);
 document.getElementById("myForm").addEventListener("submit", function (event) {
   event.preventDefault();
 
+  removeError();
+
   console.log("debug 1");
   const formData = new FormData(event.target);
+
+  const yString = formData.get("changeY");
+
+  if (yString == "") {
+    showError("Вы забыли вписать Y");
+    return;
+  }
 
   const x = parseInt(xElement.textContent);
   const y = parseFloat(formData.get("changeY"));
   const r = parseInt(formData.get("changeR"));
 
+  console.log(y);
+
+  if (isNaN(y)) {
+    showError("Y должен быть числом");
+    return;
+  }
+
+  const isYInBounds = y >= -3 && y <= 3;
+  if (!isYInBounds) {
+    showError("Y должен быть от -3 до 3 (включительно)");
+    return;
+  }
+
   const checkingResult =
     checkBottomLeftCorner(x, y, r) ||
     checkBottomRightCorner(x, y, r) ||
     checkUpperLeftCorner(x, y, r);
-
-  if (checkingResult) {
-    alert("Попали");
-  } else {
-    alert(getRandomInsults());
-  }
 
   const result = {
     x: x,
@@ -217,17 +238,20 @@ function formatDate(timestamp) {
   }).format(new Date(timestamp));
 }
 
-function getRandomInsults() {
-  const insults = [
-    "Вы ни на что не годны",
-    "Не стоило этого делать",
-    "Это прям очень плохо",
-    "У этого будут последствия",
-    "Вам стоит вернуться в школу",
-    "Моя кошка справилась бы с этим лучше",
-    "Ваши родственники будут Вами недовольны",
-  ];
+function showError(errorText) {
+  const existingError = document.getElementById("error");
 
-  const random = Math.floor(Math.random() * insults.length);
-  return insults[random];
+  if (existingError) {
+    existingError.textContent = errorText;
+    return;
+  }
+}
+
+function removeError() {
+  const existingError = document.getElementById("error");
+
+  if (existingError) {
+    existingError.textContent = "";
+    return;
+  }
 }

@@ -36,6 +36,7 @@
         font-size: 1.6rem;
         letter-spacing: 0.02em;
         background: #e6e2da;
+        color: blue;
         padding: 0.5rem 1.2rem;
         display: inline-block;
         margin: 0.2rem 0 0.6rem 0;
@@ -179,6 +180,10 @@
         border-radius: 32px;
         margin: 0.2rem auto;
       }
+
+      #error {
+        color: red;
+      }
     </style>
   </head>
   <body>
@@ -216,17 +221,10 @@
                 <td>
                   <div class="input-group">
                     <label for="changeY">Изменение Y:</label>
-                    <input
-                      id="changeY"
-                      name="changeY"
-                      type="number"
-                      min="-3"
-                      max="3"
-                      step="any"
-                      required
-                    />
-                    <span>(-3,…,3)</span>
+                    <input id="changeY" name="changeY" maxlength="10" />
+                    <span id="yHint">(-3,…,3)</span>
                   </div>
+                  <div id="error"></div>
                 </td>
               </tr>
 
