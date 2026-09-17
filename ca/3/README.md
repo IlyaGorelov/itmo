@@ -58,7 +58,7 @@ assert count_leading_zeros(2) == 30
 assert count_leading_zeros(16) == 27
 ```
 
-m68k:
+m68k: [wrench.edu](https://wrench.edu.swampbuds.me/report/a414da27-4cf0-4896-82cc-865570494b96)
 
 ```py
 def format_string(input: str) -> tuple[str | list[int], str]:
