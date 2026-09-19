@@ -4,7 +4,7 @@ memory_size: 8192 # Memory size in bytes
 
 # I/O configuration
 memory_mapped_io:
-  0x80: ["a", " ", "%", "1", "d", " ", 10, "4", 10] # ABC %d\n\n - should be error because there is no number
+  0x80: [3] # ABC %d\n\n - should be error because there is no number
   0x84: [] # Output-only port at address 0x84
 
 # Reports configuration
@@ -12,9 +12,9 @@ reports:
   - name: "Execution trace"
     slice: all
     view: |
-      {pc}: {instruction:next} {pc:label} {D0:hex}
+      {pc}: {instruction:next} {pc:label}
 
   - name: "Result verification"
     slice: last
     view: |
-      numio[0x84]: {io:0x84:sym}
+      numio[0x84]: {io:0x84:dec}
