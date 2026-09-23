@@ -1,6 +1,8 @@
 # My option: 77772
 
-[Link](https://se.ifmo.ru/~s502362/1/lab1.html)
+[Link](https://se.ifmo.ru/~s502362/2/lab2.html)
+
+[Гайд на httpd](https://github.com/Imtjl/2nd-year-guide/blob/main/WEB/guide-httpd.pdf)
 
 # Лабораторная работа #2
 

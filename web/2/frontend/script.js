@@ -80,7 +80,7 @@ document
     }
 
     const response = await fetch(
-      "https://helios.cs.ifmo.ru:8000/fcgi-bin/backend.jar",
+      "https://helios.cs.ifmo.ru:24443/fcgi-bin/backend.jar",
       {
         method: "POST",
         body: new URLSearchParams(formData),
