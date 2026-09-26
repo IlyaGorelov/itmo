@@ -1,0 +1,11 @@
+
+module kl2tpd-custom 1.0;
+
+require {
+	type l2tpd_t;
+	type cgroup_t;
+	class dir search;
+}
+
+#============= l2tpd_t ==============
+allow l2tpd_t cgroup_t:dir search;

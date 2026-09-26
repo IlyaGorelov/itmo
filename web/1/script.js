@@ -4,6 +4,8 @@ const xElement = document.getElementById("currentX");
 const resultBody = document.getElementById("resultBody");
 const yInput = document.getElementById("changeY");
 
+const epsilon = 1e-10;
+
 let results = JSON.parse(localStorage.getItem("results") || "[]");
 
 drawGraph();
@@ -212,7 +214,7 @@ function addRow(result) {
 
 function checkUpperLeftCorner(x, y, r) {
   if (x <= 0 && x >= -r && y >= 0) {
-    return y <= x * 0.5 + 0.5;
+    return y <= x * 0.5 + 0.5 * r;
   }
   return false;
 }
@@ -228,6 +230,7 @@ function checkBottomRightCorner(x, y, r) {
   if (x >= 0 && x <= r && y <= 0 && y >= -r) {
     return r * r >= x * x + y * y;
   }
+
   return false;
 }
 

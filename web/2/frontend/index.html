@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 2</title>
+    <style>
+      :root {
+        --c1: #f1f3e0;
+        --c2: #d2dcb6;
+        --c3: #a1bc98;
+        --c4: #778873;
+
+        --surface: #ffffff;
+        --text: #2b3328;
+        --text-muted: #5c6657;
+        --error: #b91c1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1rem;
+        background: var(--c1);
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        line-height: 1.45;
+      }
+
+      .layout {
+        width: 100%;
+        max-width: 1040px;
+        background: var(--surface);
+        border: 1px solid var(--c3);
+        border-radius: 14px;
+        padding: 1.5rem 1.75rem 1.75rem;
+        box-shadow: 0 1px 2px rgba(43, 51, 40, 0.06);
+      }
+
+      header {
+        display: block;
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: #ffffff;
+        background: var(--c4);
+        padding: 0.75rem 1.1rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .top-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .canvas-wrapper {
+        flex: 0 0 500px;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        background: var(--c2);
+        border: 1px solid var(--c3);
+        border-radius: 12px;
+        padding: 0.75rem;
+      }
+
+      canvas {
+        background: #ffffff;
+        border-radius: 8px;
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+
+      .form-panel {
+        flex: 1 1 340px;
+        min-width: 300px;
+        background: var(--c2);
+        border: 1px solid var(--c3);
+        border-radius: 12px;
+        padding: 1.1rem 1.25rem 1.25rem;
+      }
+
+      .form-panel h2 {
+        margin: 0 0 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c4);
+      }
+
+      form {
+        display: block;
+      }
+
+      .form-grid {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .form-grid td {
+        padding: 0.5rem 0;
+        vertical-align: middle;
+      }
+
+      .input-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem 0.7rem;
+      }
+
+      .input-group > label:first-child {
+        font-weight: 600;
+        min-width: 7rem;
+        color: var(--text);
+      }
+
+      .radio-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.15rem 0.5rem 0.15rem 0.35rem;
+        border: 1px solid var(--c3);
+        border-radius: 8px;
+        background: var(--surface);
+        transition: 0.12s ease;
+        cursor: pointer;
+      }
+
+      .radio-item:hover {
+        border-color: var(--c4);
+        background: var(--c1);
+      }
+
+      .radio-item input[type="radio"] {
+        margin: 0;
+        accent-color: var(--c4);
+        cursor: pointer;
+      }
+
+      .radio-item label {
+        font-size: 0.92rem;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input:not([type]) {
+        padding: 0.4rem 0.6rem;
+        border: 1px solid var(--c3);
+        border-radius: 8px;
+        background: var(--surface);
+        font-size: 0.95rem;
+        color: var(--text);
+        transition: 0.12s ease;
+        width: 8rem;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      input:not([type]):focus {
+        outline: none;
+        border-color: var(--c4);
+        box-shadow: 0 0 0 3px var(--c2);
+      }
+
+      .hint {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+
+      .error {
+        color: var(--error);
+        font-size: 0.82rem;
+        min-height: 1rem;
+        margin-top: 0.15rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+        margin-top: 0.5rem;
+      }
+
+      input[type="submit"],
+      button {
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.12s ease;
+        padding: 0.5rem 1.4rem;
+        border: 1px solid transparent;
+      }
+
+      input[type="submit"] {
+        background: var(--c4);
+        color: #ffffff;
+        border-color: var(--c4);
+      }
+
+      input[type="submit"]:hover {
+        background: #66755f;
+        border-color: #66755f;
+      }
+
+      input[type="submit"]:active {
+        transform: translateY(1px);
+      }
+
+      #clear {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--c3);
+      }
+
+      #clear:hover {
+        background: var(--c1);
+        border-color: var(--c4);
+      }
+
+      .bottom-row {
+        margin-top: 1.75rem;
+      }
+
+      .bottom-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--c4);
+        margin: 0;
+      }
+
+      #resultTable {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--c3);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 0.92rem;
+      }
+
+      #resultTable thead th {
+        background: var(--c2);
+        color: var(--text);
+        padding: 0.65rem 0.5rem;
+        font-weight: 700;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-align: center;
+        border-bottom: 1px solid var(--c3);
+      }
+
+      #resultTable td {
+        padding: 0.5rem 0.5rem;
+        text-align: center;
+        border-bottom: 1px solid var(--c2);
+      }
+
+      #resultTable tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      #resultTable tbody tr:nth-child(even) {
+        background: var(--c1);
+      }
+
+      #resultTable tbody tr:hover {
+        background: var(--c2);
+      }
+
+      .hit-yes {
+        color: #166534;
+        font-weight: 600;
+      }
+
+      .hit-no {
+        color: #9a3412;
+        font-weight: 600;
+      }
+
+      #currentX {
+        font-weight: 600;
+        color: var(--c4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header>Горелов Илья Александрович, P3231, Вариант: 77772</header>
+
+      <div class="top-row">
+        <div class="canvas-wrapper">
+          <canvas id="myCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <div class="form-panel">
+          <h2>Параметры</h2>
+          <form id="myForm">
+            <table class="form-grid">
+              <tr>
+                <td>
+                  <div class="input-group">
+                    <label>Изменение X:</label>
+                    <label id="xInput" class="radio-item"
+                      ><input type="radio" name="x" value="-5" /><label
+                        >-5</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="-4" /><label
+                        >-4</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="-3" /><label
+                        >-3</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="-2" /><label
+                        >-2</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="-1" /><label
+                        >-1</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="0" /><label
+                        >0</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="1" /><label
+                        >1</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="2" /><label
+                        >2</label
+                      ></label
+                    >
+                    <label class="radio-item"
+                      ><input type="radio" name="x" value="3" /><label
+                        >3</label
+                      ></label
+                    >
+                  </div>
+                  <div class="error" id="errorX"></div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="input-group">
+                    <label for="y">Изменение Y:</label>
+                    <input id="y" name="y" maxlength="10" />
+                    <span class="hint" id="yHint">(-5,…,3)</span>
+                  </div>
+                  <div class="error" id="errorY"></div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="input-group">
+                    <label for="r">Изменение R:</label>
+                    <input id="r" name="r" maxlength="10" />
+                    <span class="hint" id="rHint">(2,…,5)</span>
+                  </div>
+                  <div class="error" id="errorR"></div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="actions">
+                    <input type="submit" value="Отправить" />
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="bottom-header">
+          <div class="section-title">Результаты</div>
+          <button type="button" id="clear">Очистить</button>
+        </div>
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>X</th>
+              <th>Y</th>
+              <th>R</th>
+              <th>Попали?</th>
+              <th>Дата и время</th>
+              <th>Время выполнения, мс</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

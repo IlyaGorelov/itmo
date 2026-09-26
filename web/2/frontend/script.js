@@ -11,12 +11,18 @@ drawGraph();
 
 renderRows();
 
+document.querySelectorAll('input[name="x"]').forEach((input) => {
+  input.addEventListener("change", drawInputPoint);
+});
+
 yInput.addEventListener("input", (event) => {
   event.target.value = event.target.value.replace(/[a-zA-ZА-Яа-я]/g, "");
+  drawInputPoint();
 });
 
 rInput.addEventListener("input", (event) => {
   event.target.value = event.target.value.replace(/[a-zA-ZА-Яа-я]/g, "");
+  drawInputPoint();
 });
 
 clearButton.addEventListener("click", function () {
@@ -34,6 +40,12 @@ document
     let wasError = false;
 
     const formData = new FormData(event.target);
+
+    const xString = formData.get("x");
+    if (xString == null) {
+      showErrorX("Выберите X");
+      wasError = true;
+    }
 
     const yString = formData.get("y");
 
@@ -79,18 +91,14 @@ document
       return;
     }
 
-    const response = await fetch(
-      "https://helios.cs.ifmo.ru:24443/fcgi-bin/backend.jar",
-      {
-        method: "POST",
-        body: new URLSearchParams(formData),
-      },
-    );
+    const response = await fetch("/fcgi-bin/backend.jar", {
+      method: "POST",
+      body: new URLSearchParams(formData),
+    });
     console.log("send");
 
     const result = await response.json();
     console.log(result);
-    result.time = Date.now();
 
     results.push(result);
 
@@ -99,38 +107,55 @@ document
     addRow(result);
   });
 
-function drawGraph() {
+function drawGraph(r) {
   const c = document.getElementById("myCanvas");
   const width = parseInt(c.getAttribute("width"));
   const arrowLength = width * 0.02;
 
   const ctx = c.getContext("2d");
 
+  ctx.clearRect(0, 0, width, width);
+
   const fontSize = width * 0.05;
   ctx.font = fontSize + "px Arial";
 
-  // areas
-  ctx.fillStyle = "lightblue";
+  const scale = width / 10;
+
+  const hasR =
+    typeof r === "number" && !isNaN(r) && parseInt(r) >= 2 && parseInt(r) <= 5;
+
+  const roundedR = Math.round(r * 10) / 10;
+  const roundedHalfR = Math.round((r / 2) * 10) / 10;
+
+  const labelR = hasR ? String(roundedR) : "R";
+  const labelR2 = hasR ? String(roundedHalfR) : "R/2";
+  const labelNegR = hasR ? String(-roundedR) : "-R";
+  const labelNegR2 = hasR ? String(-roundedHalfR) : "-R/2";
+
+  ctx.textAlign = "right";
+
+  const basePixels = 4 * scale;
+
+  ctx.fillStyle = "#a1bc98";
 
   ctx.beginPath();
   ctx.moveTo(width / 2, width / 2);
-  ctx.arc(width / 2, width / 2, width * 0.2, Math.PI, Math.PI * 1.5);
+  ctx.arc(width / 2, width / 2, basePixels / 2, Math.PI, Math.PI * 1.5);
   ctx.closePath();
   ctx.fill();
 
   ctx.beginPath();
-  ctx.moveTo(width * 0.1, width * 0.5);
-  ctx.lineTo(width * 0.5, width * 0.9);
+  ctx.moveTo(width * 0.5 - basePixels, width * 0.5);
+  ctx.lineTo(width * 0.5, width * 0.5 + basePixels);
   ctx.lineTo(width * 0.5, width * 0.5);
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillRect(width * 0.5, width * 0.5, width * 0.4, width * 0.2);
+  ctx.fillRect(width * 0.5, width * 0.5, basePixels, basePixels / 2);
 
   ctx.fillStyle = "black";
 
   ctx.beginPath();
-  // horizontal arrow
   let fromX = 0;
   let fromY = width / 2;
   let toX = width;
@@ -141,7 +166,6 @@ function drawGraph() {
   ctx.moveTo(toX, toY);
   ctx.lineTo(toX - arrowLength, toY - arrowLength);
 
-  //vertical arrow
   fromX = width / 2;
   fromY = width;
   toX = width / 2;
@@ -155,44 +179,102 @@ function drawGraph() {
 
   ctx.stroke();
 
-  ctx.fillText("y", width * 0.53, width * 0.03);
+  ctx.fillText("y", width * 0.47, width * 0.03);
   ctx.fillText("x", width * 0.97, width * 0.48);
 
-  // serifs at the vertical axis
-  ctx.moveTo(width * 0.49, width * 0.1);
-  ctx.lineTo(width * 0.51, width * 0.1);
-  ctx.fillText("R", width * 0.53, width * 0.11);
+  ctx.moveTo(width * 0.49, width / 2 - basePixels);
+  ctx.lineTo(width * 0.51, width / 2 - basePixels);
+  ctx.fillText(labelR, width * 0.47, width / 2 - basePixels + fontSize * 0.3);
 
-  ctx.moveTo(width * 0.49, width * 0.3);
-  ctx.lineTo(width * 0.51, width * 0.3);
-  ctx.fillText("R/2", width * 0.53, width * 0.31);
+  ctx.moveTo(width * 0.49, width / 2 - basePixels / 2);
+  ctx.lineTo(width * 0.51, width / 2 - basePixels / 2);
+  ctx.fillText(
+    labelR2,
+    width * 0.47,
+    width / 2 - basePixels / 2 + fontSize * 0.3,
+  );
 
-  ctx.moveTo(width * 0.49, width * 0.7);
-  ctx.lineTo(width * 0.51, width * 0.7);
-  ctx.fillText("-R/2", width * 0.53, width * 0.71);
+  ctx.moveTo(width * 0.49, width / 2 + basePixels / 2);
+  ctx.lineTo(width * 0.51, width / 2 + basePixels / 2);
+  ctx.fillText(
+    labelNegR2,
+    width * 0.47,
+    width / 2 + basePixels / 2 + fontSize * 0.3,
+  );
 
-  ctx.moveTo(width * 0.49, width * 0.9);
-  ctx.lineTo(width * 0.51, width * 0.9);
-  ctx.fillText("-R", width * 0.53, width * 0.91);
+  ctx.moveTo(width * 0.49, width / 2 + basePixels);
+  ctx.lineTo(width * 0.51, width / 2 + basePixels);
+  ctx.fillText(
+    labelNegR,
+    width * 0.47,
+    width / 2 + basePixels + fontSize * 0.3,
+  );
 
-  // serifs at the horiznotal axis
-  ctx.moveTo(width * 0.1, width * 0.49);
-  ctx.lineTo(width * 0.1, width * 0.51);
-  ctx.fillText("R/2", width * 0.65, width * 0.47);
+  ctx.moveTo(width / 2 - basePixels, width * 0.49);
+  ctx.lineTo(width / 2 - basePixels, width * 0.51);
+  ctx.fillText(
+    labelNegR,
+    width / 2 - basePixels + fontSize * 0.3,
+    width * 0.57,
+  );
 
-  ctx.moveTo(width * 0.3, width * 0.49);
-  ctx.lineTo(width * 0.3, width * 0.51);
-  ctx.fillText("R", width * 0.88, width * 0.47);
+  ctx.moveTo(width / 2 - basePixels / 2, width * 0.49);
+  ctx.lineTo(width / 2 - basePixels / 2, width * 0.51);
+  ctx.fillText(
+    labelNegR2,
+    width / 2 - basePixels / 2 + fontSize * 0.5,
+    width * 0.57,
+  );
 
-  ctx.moveTo(width * 0.7, width * 0.49);
-  ctx.lineTo(width * 0.7, width * 0.51);
-  ctx.fillText("-R", width * 0.08, width * 0.47);
+  ctx.moveTo(width / 2 + basePixels / 2, width * 0.49);
+  ctx.lineTo(width / 2 + basePixels / 2, width * 0.51);
+  ctx.fillText(
+    labelR2,
+    width / 2 + basePixels / 2 + fontSize * 0.3,
+    width * 0.57,
+  );
 
-  ctx.moveTo(width * 0.9, width * 0.49);
-  ctx.lineTo(width * 0.9, width * 0.51);
-  ctx.fillText("-R/2", width * 0.24, width * 0.47);
+  ctx.moveTo(width / 2 + basePixels, width * 0.49);
+  ctx.lineTo(width / 2 + basePixels, width * 0.51);
+  ctx.fillText(labelR, width / 2 + basePixels + fontSize * 0.3, width * 0.57);
 
   ctx.stroke();
+}
+
+function drawInputPoint() {
+  const xInput = document.querySelector('input[name="x"]:checked');
+
+  const x = xInput ? parseInt(xInput.value) : NaN;
+  const y = parseFloat(yInput.value);
+  const r = parseFloat(rInput.value);
+
+  if (isNaN(x) || isNaN(y) || isNaN(r)) {
+    drawGraph(r);
+    return;
+  }
+
+  drawGraph(r);
+  drawPoint(x, y, r);
+}
+
+function drawPoint(x, y, r) {
+  const c = document.getElementById("myCanvas");
+  const width = parseInt(c.getAttribute("width"));
+  const ctx = c.getContext("2d");
+
+  const basePixels = (width / 10) * 4;
+  const scale = basePixels / r;
+
+  const centerX = width / 2;
+  const centerY = width / 2;
+
+  const canvasX = centerX + x * scale;
+  const canvasY = centerY - y * scale;
+
+  ctx.beginPath();
+  ctx.arc(canvasX, canvasY, width * 0.015, 0, Math.PI * 2);
+  ctx.fillStyle = "#2b3328";
+  ctx.fill();
 }
 
 function renderRows() {
@@ -219,10 +301,21 @@ function addRow(result) {
   const checkingResultCell = document.createElement("td");
   checkingResultCell.textContent = result.checkingResult ? "Да" : "Нет";
 
-  const dateCell = document.createElement("td");
-  dateCell.textContent = formatDate(result.time);
+  const timestamp = document.createElement("td");
+  timestamp.textContent = formatDate(result.timestamp);
 
-  row.append(numberCell, xCell, yCell, rCell, checkingResultCell, dateCell);
+  const executionTimeMs = document.createElement("td");
+  executionTimeMs.textContent = result.executionTimeMs;
+
+  row.append(
+    numberCell,
+    xCell,
+    yCell,
+    rCell,
+    checkingResultCell,
+    timestamp,
+    executionTimeMs,
+  );
   resultBody.appendChild(row);
 }
 
@@ -255,6 +348,15 @@ function formatDate(timestamp) {
   }).format(new Date(timestamp));
 }
 
+function showErrorX(errorText) {
+  const existingError = document.getElementById("errorX");
+
+  if (existingError && existingError.textContent == "") {
+    existingError.textContent = errorText;
+    return;
+  }
+}
+
 function showErrorY(errorText) {
   const existingError = document.getElementById("errorY");
 
@@ -274,9 +376,13 @@ function showErrorR(errorText) {
 }
 
 function removeErrors() {
+  const existingErrorX = document.getElementById("errorX");
   const existingErrorY = document.getElementById("errorY");
   const existingErrorR = document.getElementById("errorR");
 
+  if (existingErrorX) {
+    existingErrorX.textContent = "";
+  }
   if (existingErrorY) {
     existingErrorY.textContent = "";
   }

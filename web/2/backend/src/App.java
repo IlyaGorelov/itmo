@@ -1,13 +1,12 @@
 import com.fastcgi.FCGIInterface;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import objects.Result;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class App {
@@ -17,15 +16,16 @@ public class App {
         var fcgiInterface = new FCGIInterface();
 
         while (fcgiInterface.FCGIaccept() >= 0) {
+            long startTime = System.currentTimeMillis();
             try {
-                handleRequest();
+                handleRequest(startTime);
             } catch (Exception e) {
                 System.err.print(e.getMessage());
             }
         }
     }
 
-    private static void handleRequest() throws IOException {
+    private static void handleRequest(long startTime) throws IOException {
         System.err.println("request exists");
 
         String body = readRequestBody();
@@ -46,10 +46,13 @@ public class App {
 
         boolean isSuccess = checkPoint(x, y, r);
 
-        result = new Result(x, y, r, isSuccess);
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        Instant currentTime = Instant.now();
+
+        result = new Result(x, y, r, isSuccess, currentTime, executionTime);
 
         sendResponse();
-
     }
 
     private static String readRequestBody() throws IOException {
@@ -125,21 +128,30 @@ public class App {
     }
 
     private static void sendResponse() {
-        String json = """
+        String json = String.format(Locale.US,
+                """
                 {
                     "x": %d,
                     "y": %f,
                     "r": %f,
-                    "checkingResult": %b
+                    "checkingResult": %b,
+                    "timestamp": "%s",
+                    "executionTimeMs": %d
                 }
-                """.formatted(
+                """,
                 result.x,
                 result.y,
                 result.r,
-                result.checkingResult);
+                result.checkingResult,
+                result.currentTime,
+                result.executionTimeMs);
+
 
         String httpResponse = """
                 HTTP/1.1 200 OK
+                Access-Control-Allow-Origin: *
+                Access-Control-Allow-Methods: POST, GET, OPTIONS
+                Access-Control-Allow-Headers: Content-Type
                 Content-Type: application/json; charset=UTF-8
                 Content-Length: %d
 
