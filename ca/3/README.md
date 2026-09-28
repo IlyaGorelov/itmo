@@ -210,7 +210,7 @@ assert format_string('%5d\n42\n') == (' 42', '')
 assert format_string('%-5d\n42\n') == ('42 ', '')
 ```
 
-risc-iv: [wrench.edu](https://wrench.edu.swampbuds.me/report/2c30de41-e569-4cf4-9539-751c442d700a)
+risc-iv: [wrench.edu](https://wrench.edu.swampbuds.me/report/d01d1425-0e01-41a8-a2c0-1fca43e2fc2d)
 
 ```py
 def sum_odd_n(n: int) -> int:
