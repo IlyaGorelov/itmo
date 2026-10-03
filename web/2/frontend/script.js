@@ -95,7 +95,12 @@ document
       method: "POST",
       body: new URLSearchParams(formData),
     });
-    console.log("send");
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log(errorData.error);
+      return;
+    }
 
     const result = await response.json();
     console.log(result);

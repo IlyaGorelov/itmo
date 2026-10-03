@@ -1,4 +1,8 @@
 import com.fastcgi.FCGIInterface;
+
+import objects.Point;
+import objects.PointChecker;
+import objects.PointValidator;
 import objects.Result;
 
 import java.io.IOException;
@@ -30,21 +34,38 @@ public class App {
 
         String body = readRequestBody();
 
-        System.err.println("METHOD = " +
-                FCGIInterface.request.params.getProperty("REQUEST_METHOD"));
+        String method = FCGIInterface.request.params.getProperty("REQUEST_METHOD");
 
-        System.err.println("CONTENT_LENGTH = " +
-                FCGIInterface.request.params.getProperty("CONTENT_LENGTH"));
-
-        System.err.println("BODY = " + body);
+        if (!method.equals("POST")) {
+            sendError("Invalid request method");
+            return;
+        }
 
         var parsedParams = parseBody(body);
 
-        int x = Integer.parseInt(parsedParams.get("x"));
-        double y = Double.parseDouble(parsedParams.get("y"));
-        double r = Double.parseDouble(parsedParams.get("r"));
+        int x;
+        double y;
+        double r;
+        try {
+            x = Integer.parseInt(parsedParams.get("x"));
+            y = Double.parseDouble(parsedParams.get("y"));
+            r = Double.parseDouble(parsedParams.get("r"));
+        } catch (Exception exception) {
+            sendError("Invalid parameters");
+            return;
+        }
 
-        boolean isSuccess = checkPoint(x, y, r);
+        Point point = new Point(x, y, r);
+
+        var validator = new PointValidator();
+        if (!validator.isValid(point)) {
+            sendError("Point validation failed");
+            return;
+        }
+
+        var checker = new PointChecker();
+
+        boolean isSuccess = checker.checkPoint(point);
 
         long endTime = System.currentTimeMillis();
         long executionTime = endTime - startTime;
@@ -99,46 +120,18 @@ public class App {
         return params;
     }
 
-    private static boolean checkPoint(int x, double y, double r) {
-        return checkBottomLeftCorner(x, y, r) ||
-                checkBottomRightCorner(x, y, r) ||
-                checkUpperLeftCorner(x, y, r);
-    }
-
-    private static boolean checkUpperLeftCorner(int x, double y, double r) {
-        if (x <= 0 && x >= -r / 2 && y >= 0) {
-            return (r * r) / 4 >= x * x + y * y;
-        }
-        return false;
-    }
-
-    private static boolean checkBottomLeftCorner(int x, double y, double r) {
-        if (x <= 0 && x >= -r && y <= 0) {
-            return y >= -x - r;
-        }
-        return false;
-    }
-
-    private static boolean checkBottomRightCorner(int x, double y, double r) {
-        if (x >= 0 && x <= r && y <= 0 && y >= -r / 2) {
-            return true;
-        }
-
-        return false;
-    }
-
     private static void sendResponse() {
         String json = String.format(Locale.US,
                 """
-                {
-                    "x": %d,
-                    "y": %f,
-                    "r": %f,
-                    "checkingResult": %b,
-                    "timestamp": "%s",
-                    "executionTimeMs": %d
-                }
-                """,
+                        {
+                            "x": %d,
+                            "y": %f,
+                            "r": %f,
+                            "checkingResult": %b,
+                            "timestamp": "%s",
+                            "executionTimeMs": %d
+                        }
+                        """,
                 result.x,
                 result.y,
                 result.r,
@@ -146,11 +139,35 @@ public class App {
                 result.currentTime,
                 result.executionTimeMs);
 
-
         String httpResponse = """
                 HTTP/1.1 200 OK
                 Access-Control-Allow-Origin: *
-                Access-Control-Allow-Methods: POST, GET, OPTIONS
+                Access-Control-Allow-Methods: POST
+                Access-Control-Allow-Headers: Content-Type
+                Content-Type: application/json; charset=UTF-8
+                Content-Length: %d
+
+                %s
+                """.formatted(
+                json.getBytes(StandardCharsets.UTF_8).length,
+                json);
+
+        System.out.print(httpResponse);
+    }
+
+    private static void sendError(String message) {
+        String json = String.format(Locale.US,
+                """
+                        {
+                            "error": "%s"
+                        }
+                        """,
+                message);
+
+        String httpResponse = """
+                HTTP/1.1 400 Bad Request
+                Access-Control-Allow-Origin: *
+                Access-Control-Allow-Methods: POST
                 Access-Control-Allow-Headers: Content-Type
                 Content-Type: application/json; charset=UTF-8
                 Content-Length: %d
