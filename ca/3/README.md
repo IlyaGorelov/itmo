@@ -228,7 +228,7 @@ assert sum_odd_n(10) == 25
 assert sum_odd_n(90000) == 2025000000
 ```
 
-scheme: `acc32-neumann[-pipeline-2]` - общая память; конвейер из 2 стадий (IF/EX)  
+scheme: [link](https://github.com/IlyaGorelov/itmo/blob/685c97e4c972e49c1d83e81fba10d2a9b85628d0/ca/3/ca_scheme.drawio.png) `acc32-neumann[-pipeline-2]` - общая память; конвейер из 2 стадий (IF/EX)  
 vliw: null
 
 # Лабораторная работа №3. Опыты
