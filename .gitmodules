@@ -1,3 +1,6 @@
 [submodule "plangs/assignment-1-io-library"]
 	path = plangs/assignment-1-io-library
 	url = https://gitlab.se.ifmo.ru/GorelovIlya/assignment-1-io-library.git
+[submodule "plangs/assignment-2-dictionary"]
+	path = plangs/assignment-2-dictionary
+	url = ssh://git@gitlab.se.ifmo.ru:4815/GorelovIlya/assignment-2-dictionary.git
